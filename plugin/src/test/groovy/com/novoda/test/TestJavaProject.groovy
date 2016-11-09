@@ -5,7 +5,7 @@ final class TestJavaProject extends TestProject {
     private static final Closure<String> TEMPLATE = { TestProject project ->
         """
 plugins {
-    id 'static-analysis'
+    id 'com.novoda.static-analysis'
 }
 repositories {
     jcenter()
