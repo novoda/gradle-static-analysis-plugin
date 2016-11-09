@@ -53,6 +53,42 @@ staticAnalysis {
 }
 ```
 
+### How to use
+
+The plugin at the moment is released to the maven repo in the Novoda Bintray account. Be sure you are including the right
+maven repo in your build script as well as the right dependency:
+```gradle
+buildscript {
+    repositories {
+        maven { url "https://dl.bintray.com/novoda/maven" }
+    }
+    dependencies {
+        classpath 'com.novoda:gradle-static-analysis-plugin:0.1'
+    }
+}
+```
+and then apply the plugin via:
+```gradle
+apply plugin: 'com.novoda.static-analysis'
+```
+
+A typical configuration for the plugin will look like:
+```gradle
+staticAnalysis {
+    penalty {
+        maxErrors = 0
+        maxWarnings = 100
+    }
+    checkstyle {
+        configFile project.file('path/to/modules.xml')
+    }
+    pmd {
+        ruleSetFiles = project.file('path/to/rules.xml')
+    }
+    findbugs {}
+}
+```
+
 ### Current status / Roadmap
 
 The plugin is **under early development** and to be considered in pre-alpha stage.
