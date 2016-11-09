@@ -10,15 +10,21 @@ the model adopted by the Android plugin compared to the the Java one.<br/>
 The `static-analysis-plugin` aims to provide:
 - flexible, configurable penalty strategy for builds,
 - easy, Android-friendly integration for all static analysis,
-- convenient way of sharing same setup across different projects (TBD),
-- healthy, versionable and configurable defaults (TBD).
+- convenient way of sharing same setup across different projects,
+- healthy, versionable and configurable defaults.
 
-The plugin is **under early development** and to be considered in pre-alpha stage. At the moment not all integrations
-have been completed. The table below summarises the current status.
+### Current status
+
+The plugin is **under early development** and to be considered in pre-alpha stage.
+
+#### Static analysis tools supported
 
 Tool | Android | Java
 :----:|:--------:|:--------:
 `Checkstyle` | :white_check_mark: | :white_check_mark:
 `PMD` | :white_check_mark: | :white_check_mark:
 `FindBugs` | :white_check_mark: | :white_check_mark:
-<br/>
+
+#### Support for sharable configurations
+
+TBD
