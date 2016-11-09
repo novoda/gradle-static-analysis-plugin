@@ -5,7 +5,7 @@ import com.google.common.io.Resources
 public final class Fixtures {
     private static final Exception NO_INSTANCE_ALLOWED = new UnsupportedOperationException("No instance allowed");
     private static final File ROOT_DIR = new File(Resources.getResource('.').file).parentFile.parentFile.parentFile
-    private static final File FIXTURES_DIR = new File(ROOT_DIR, 'fixtures')
+    private static final File FIXTURES_DIR = new File(ROOT_DIR, 'src/test/fixtures')
     public static final File BUILD_DIR = new File(ROOT_DIR, 'build')
     public static final File LOCAL_PROPERTIES = new File(ROOT_DIR.parentFile, 'local.properties')
     public static final File ANDROID_MANIFEST = new File(FIXTURES_DIR, 'AndroidManifest.xml')
