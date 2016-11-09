@@ -12,7 +12,7 @@ buildscript {
     }
 }
 plugins {
-    id 'static-analysis'
+    id 'com.novoda.static-analysis'
 }
 repositories {
     jcenter()
