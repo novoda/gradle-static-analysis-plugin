@@ -43,6 +43,22 @@ class FindbugsIntegrationTest {
     }
 
     @Test
+    public void shouldDetectMoreWarningsWhenEffortIsMaxAndReportLevelIsLow() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 1
+                }''')
+                .withFindbugs('findbugs { effort = \'max\' \n reportLevel = \'low\'}')
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 2)
+        assertThat(result.logs).containsFindbugsViolations(0, 3,
+                result.buildFile('reports/findbugs/debug.html'))
+    }
+
+    @Test
     public void shouldFailBuildWhenFindbugsErrorsOverTheThreshold() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_HIGH_VIOLATION)
