@@ -50,7 +50,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withFindbugs('findbugs { effort = \'max\' \n reportLevel = \'low\'}')
+                .withFindbugs("findbugs { effort = 'max' \n reportLevel = 'low'}")
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 2)
