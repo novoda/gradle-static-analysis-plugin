@@ -59,8 +59,6 @@ class FindbugsConfigurator {
     }
 
     private void configureTask(Project project, FindBugs findBugs, Task evaluateViolations, Violations violations, List<String> excludes) {
-        findBugs.effort = 'max'
-        findBugs.reportLevel = 'low'
         findBugs.ignoreFailures = true
         findBugs.reports.xml.enabled = true
         findBugs.reports.html.enabled = false
