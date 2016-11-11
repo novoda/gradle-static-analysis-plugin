@@ -146,7 +146,7 @@ public class PmdIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenPmdConfiguredToIgnoreFaultySourceSets() {
+    public void shouldNotFailBuildWhenPmdConfiguredToIgnoreFaultySourceFolders() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
                 .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)

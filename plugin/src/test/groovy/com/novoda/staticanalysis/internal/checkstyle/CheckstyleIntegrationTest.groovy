@@ -126,7 +126,7 @@ public class CheckstyleIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenCheckstyleConfiguredToIgnoreFaultySourceSet() {
+    public void shouldNotFailBuildWhenCheckstyleConfiguredToIgnoreFaultySourceFolder() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
