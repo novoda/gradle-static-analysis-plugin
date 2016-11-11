@@ -60,6 +60,9 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
 
     protected abstract Class<T> getTaskClass()
 
-    protected abstract void configureTask(T task)
+    protected void configureTask(T task) {
+        task.group = 'verification'
+        task.exclude(excludes)
+    }
 
 }

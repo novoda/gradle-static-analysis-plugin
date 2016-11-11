@@ -65,11 +65,10 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
 
     @Override
     protected void configureTask(Checkstyle checkstyle) {
-        checkstyle.group = 'verification'
+        super.configureTask(checkstyle)
         checkstyle.showViolations = false
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
-        checkstyle.exclude(excludes)
         checkstyle.doLast {
             File xmlReportFile = checkstyle.reports.xml.destination
             File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
