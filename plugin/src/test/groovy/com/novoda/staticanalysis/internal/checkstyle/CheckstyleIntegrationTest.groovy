@@ -144,6 +144,24 @@ public class CheckstyleIntegrationTest {
     }
 
     @Test
+    public void shouldNotFailBuildWhenCheckstyleConfiguredToIgnoreFaultySourceSet() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withFile(Fixtures.Checkstyle.MODULES, 'config/checkstyle/checkstyle.xml')
+                .withPenalty('''{
+                    maxWarnings = 1
+                    maxErrors = 0
+                }''')
+                .withCheckstyle(checkstyle(DEFAULT_CONFIG, "exclude ${projectRule.printSourceSet('test')}.java.srcDirs"))
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).containsCheckstyleViolations(0, 1,
+                result.buildFile('reports/checkstyle/main.html'))
+    }
+
+    @Test
     public void shouldNotFailWhenCheckstyleNotConfigured() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)

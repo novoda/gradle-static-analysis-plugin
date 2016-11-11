@@ -166,6 +166,23 @@ class FindbugsIntegrationTest {
     }
 
     @Test
+    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultySourceSet() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
+                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 10
+                }''')
+                .withFindbugs("findbugs { exclude ${projectRule.printSourceSet('release')}.java.srcDirs }")
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).containsFindbugsViolations(0, 2,
+                result.buildFile('reports/findbugs/debug.html'))
+    }
+
+    @Test
     public void shouldCollectDuplicatedFindbugsWarningsAndErrorsAcrossAndroidVariantsForSharedSourceSets() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isAndroidProject()

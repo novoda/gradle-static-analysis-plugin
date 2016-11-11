@@ -164,6 +164,24 @@ public class PmdIntegrationTest {
     }
 
     @Test
+    public void shouldNotFailBuildWhenPmdConfiguredToIgnoreFaultySourceSets() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')",
+                "exclude ${projectRule.printSourceSet('main')}.java.srcDirs",
+                "exclude ${projectRule.printSourceSet('main2')}.java.srcDirs"))
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).doesNotContainPmdViolations()
+    }
+
+    @Test
     public void shouldNotFailBuildWhenPmdNotConfigured() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
