@@ -12,8 +12,8 @@ import org.gradle.internal.logging.ConsoleRenderer
 
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
-    PmdConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolations) {
-        super(project, violations, evaluateViolations)
+    PmdConfigurator(Project project, EvaluateViolationsTask evaluateViolations) {
+        super(project, evaluateViolations.maybeCreate('PMD'), evaluateViolations)
     }
 
     @Override

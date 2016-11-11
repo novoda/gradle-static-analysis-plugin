@@ -2,7 +2,6 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.FindBugs
@@ -13,8 +12,8 @@ import org.gradle.internal.logging.ConsoleRenderer
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
-    FindbugsConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolations) {
-        super(project, violations, evaluateViolations)
+    FindbugsConfigurator(Project project, EvaluateViolationsTask evaluateViolations) {
+        super(project, evaluateViolations.maybeCreate('Findbugs'), evaluateViolations)
     }
 
     @Override

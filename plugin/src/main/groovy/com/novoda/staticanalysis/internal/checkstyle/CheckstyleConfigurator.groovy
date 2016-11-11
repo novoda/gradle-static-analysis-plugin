@@ -3,7 +3,6 @@ package com.novoda.staticanalysis.internal.checkstyle
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import com.novoda.staticanalysis.internal.Violations
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -13,8 +12,8 @@ import org.gradle.internal.logging.ConsoleRenderer
 
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
-    CheckstyleConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolationsTask) {
-        super(project, violations, evaluateViolationsTask)
+    CheckstyleConfigurator(Project project, EvaluateViolationsTask evaluateViolationsTask) {
+        super(project, evaluateViolationsTask.maybeCreate('Checkstyle'), evaluateViolationsTask)
     }
 
     @Override
