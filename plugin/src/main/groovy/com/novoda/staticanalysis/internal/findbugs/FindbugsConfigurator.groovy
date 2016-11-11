@@ -91,26 +91,4 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         }
     }
 
-    static class GenerateHtmlReport extends JavaExec {
-        @Input
-        File xmlReportFile
-
-        @Input
-        File htmlReportFile
-
-        @Override
-        void exec() {
-            if (xmlReportFile != null && xmlReportFile.exists()) {
-                main = 'edu.umd.cs.findbugs.PrintingBugReporter'
-                standardOutput = createHtmlReportOutput()
-                args '-html', xmlReportFile
-                super.exec()
-            }
-        }
-
-        private FileOutputStream createHtmlReportOutput() {
-            new FileOutputStream(htmlReportFile)
-        }
-    }
-
 }
