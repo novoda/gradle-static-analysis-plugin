@@ -7,27 +7,31 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.tasks.TaskAction
 
 class EvaluateViolationsTask extends DefaultTask {
-    private PenaltyExtension penalty
-    private NamedDomainObjectContainer<Violations> allViolations
+    private PenaltyExtension penaltyExtension
+    private NamedDomainObjectContainer<Violations> violationsContainer
 
     EvaluateViolationsTask() {
         group = 'verification'
-        description = 'Evaluate total violations against penalty thresholds.'
+        description = 'Evaluate total violations against penaltyExtension thresholds.'
     }
 
-    void setPenalty(PenaltyExtension penalty) {
-        this.penalty = penalty
+    void setPenaltyExtension(PenaltyExtension penalty) {
+        this.penaltyExtension = penalty
     }
 
-    void setAllViolations(NamedDomainObjectContainer<Violations> allViolations) {
-        this.allViolations = allViolations
+    void setViolationsContainer(NamedDomainObjectContainer<Violations> allViolations) {
+        this.violationsContainer = allViolations
+    }
+
+    Violations maybeCreate(String name) {
+        violationsContainer.maybeCreate(name)
     }
 
     @TaskAction
-    public void run() {
+    void run() {
         Map<String, Integer> total = [errors: 0, warnings: 0]
         String fullMessage = '\n'
-        allViolations.each { Violations violations ->
+        violationsContainer.each { Violations violations ->
             int errors = violations.errors
             int warnings = violations.warnings
             if (errors > 0 || warnings > 0) {
@@ -36,8 +40,8 @@ class EvaluateViolationsTask extends DefaultTask {
                 total['warnings'] += warnings
             }
         }
-        int errorsDiff = Math.max(0, total['errors'] - penalty.maxErrors)
-        int warningsDiff = Math.max(0, total['warnings'] - penalty.maxWarnings)
+        int errorsDiff = Math.max(0, total['errors'] - penaltyExtension.maxErrors)
+        int warningsDiff = Math.max(0, total['warnings'] - penaltyExtension.maxWarnings)
         if (errorsDiff > 0 || warningsDiff > 0) {
             throw new GradleException("Violations limit exceeded by $errorsDiff errors, $warningsDiff warnings.\n$fullMessage")
         } else {

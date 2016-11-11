@@ -1,52 +1,49 @@
 package com.novoda.staticanalysis.internal.pmd
 
+import com.novoda.staticanalysis.EvaluateViolationsTask
+import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.internal.Violations
+import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
 import org.gradle.internal.logging.ConsoleRenderer
 
-class PmdConfigurator {
+class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
-    void configure(Project project, Violations violations, StaticAnalysisExtension extension, Task evaluateViolations) {
-        extension.ext.pmd = { Closure config ->
-            project.apply plugin: 'pmd'
-            List<String> excludes = []
-            configureExtension(project.extensions.findByType(PmdExtension), excludes, config)
-            project.afterEvaluate {
-                configureAndroidIfNeeded(project)
-                project.tasks.withType(Pmd) { pmd ->
-                    configureTask(pmd, violations, excludes)
-                    evaluateViolations.dependsOn pmd
-                }
+    PmdConfigurator(Project project, EvaluateViolationsTask evaluateViolations) {
+        super(project, evaluateViolations.maybeCreate('PMD'), evaluateViolations)
+    }
+
+    @Override
+    protected String getToolName() {
+        'pmd'
+    }
+
+    @Override
+    protected Class<PmdExtension> getExtensionClass() {
+        PmdExtension
+    }
+
+    @Override
+    protected Class<Pmd> getTaskClass() {
+        Pmd
+    }
+
+    @Override
+    protected Action<PmdExtension> getDefaultConfiguration() {
+        new Action<PmdExtension>() {
+            @Override
+            void execute(PmdExtension pmdExtension) {
+                pmdExtension.toolVersion = '5.5.1'
+                pmdExtension.rulePriority = 5
             }
         }
     }
 
-    private void configureAndroidIfNeeded(Project project) {
-        boolean isAndroidApp = project.plugins.hasPlugin('com.android.application')
-        boolean isAndroidLib = project.plugins.hasPlugin('com.android.library')
-        if (isAndroidApp || isAndroidLib) {
-            def variants = isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants
-            configureAndroid(project, variants)
-        }
-    }
-
-    private Object configureExtension(PmdExtension extension, List<String> excludes, Closure config) {
-        extension.with {
-            toolVersion = '5.5.1'
-            ext.exclude = { String filter ->
-                excludes.add(filter)
-            }
-            config.delegate = it
-            config()
-        }
-    }
-
-    private void configureAndroid(Project project, Object variants) {
+    @Override
+    protected void configureAndroid(Object variants) {
         project.with {
             android.sourceSets.all { sourceSet ->
                 def sourceDirs = sourceSet.java.srcDirs
@@ -66,10 +63,10 @@ class PmdConfigurator {
         }
     }
 
-    private void configureTask(Pmd pmd, Violations violations, List<String> excludes) {
+    @Override
+    protected void configureTask(Pmd pmd) {
         pmd.group = 'verification'
         pmd.ignoreFailures = true
-        pmd.rulePriority = 5
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
         pmd.exclude(excludes)
         pmd.doLast {
@@ -77,9 +74,10 @@ class PmdConfigurator {
             File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
             evaluateReports(xmlReportFile, htmlReportFile, violations)
         }
+        evaluateViolations.dependsOn pmd
     }
 
-    private void evaluateReports(File xmlReportFile, File htmlReportFile, Violations violations) {
+    private static void evaluateReports(File xmlReportFile, File htmlReportFile, Violations violations) {
         PmdViolationsEvaluator evaluator = new PmdViolationsEvaluator(xmlReportFile)
         int errors = 0, warnings = 0
         evaluator.collectViolations().each { PmdViolationsEvaluator.PmdViolation violation ->
@@ -92,5 +90,4 @@ class PmdConfigurator {
         String reportUrl = new ConsoleRenderer().asClickableFileUrl(htmlReportFile ?: xmlReportFile)
         violations.addViolations(errors, warnings, reportUrl)
     }
-
 }
