@@ -6,8 +6,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.FindBugs
 import org.gradle.api.plugins.quality.FindBugsExtension
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.JavaExec
 import org.gradle.internal.logging.ConsoleRenderer
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
