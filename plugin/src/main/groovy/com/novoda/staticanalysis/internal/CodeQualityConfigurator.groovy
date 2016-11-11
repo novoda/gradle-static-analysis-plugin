@@ -12,12 +12,13 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected final Project project
     protected final Violations violations
     protected final EvaluateViolationsTask evaluateViolations
-    protected final SourceFilter filter = new SourceFilter()
+    protected final SourceFilter filter
 
     protected CodeQualityConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
+        this.filter = new SourceFilter(project)
     }
 
     void execute() {

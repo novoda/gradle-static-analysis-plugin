@@ -25,7 +25,7 @@ class SourceFilterTest {
         project = ProjectBuilder.builder()
                 .withProjectDir(temporaryFolder.newFolder())
                 .build()
-        filter = new SourceFilter()
+        filter = new SourceFilter(project)
     }
 
     @Test
@@ -65,8 +65,24 @@ class SourceFilterTest {
                 srcDir project.file(SOURCES_WITH_ERRORS)
             }
         }
-        SourceTask task = givenTaskWith(project.sourceSets.main.java.srcDirs)
-        filter.exclude(project.fileTree(SOURCES_WITH_ERRORS))
+        SourceTask task = givenTaskWith(errorsSources)
+        filter.exclude(project.sourceSets.main.java.srcDirs)
+
+        filter.applyTo(task)
+
+        assertThat(task.source).isEmpty()
+    }
+
+    @Test
+    public void shouldRemoveFilesInSpecifiedFileCollectionWhenSourceFileExcluded() {
+        project.apply plugin: 'java'
+        project.sourceSets.main {
+            java {
+                srcDir project.file(SOURCES_WITH_ERRORS)
+            }
+        }
+        SourceTask task = givenTaskWith(errorsSources)
+        filter.exclude(new File(SOURCES_WITH_ERRORS, 'Greeter.java'))
 
         filter.applyTo(task)
 
