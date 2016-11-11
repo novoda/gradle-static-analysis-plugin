@@ -1,59 +1,49 @@
 package com.novoda.staticanalysis.internal.checkstyle
 
+import com.novoda.staticanalysis.EvaluateViolationsTask
+import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.internal.Violations
 import groovy.util.slurpersupport.GPathResult
+import org.gradle.api.Action
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.internal.logging.ConsoleRenderer
 
-class CheckstyleConfigurator {
+class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
-    void configure(Project project, Violations violations, StaticAnalysisExtension extension, Task evaluateViolations) {
-        extension.ext.checkstyle = { Closure config ->
-            project.apply plugin: 'checkstyle'
-            List<String> excludes = []
-            project.extensions.findByType(CheckstyleExtension).with {
-                toolVersion = '7.1.2'
-                ext.exclude = { String filter ->
-                    excludes.add(filter)
-                }
-                config.delegate = it
-                config()
-            }
-            project.afterEvaluate {
-                boolean isAndroidApp = project.plugins.hasPlugin('com.android.application')
-                boolean isAndroidLib = project.plugins.hasPlugin('com.android.library')
-                if (isAndroidApp || isAndroidLib) {
-                    def variants = isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants
-                    configureAndroid(project, variants)
-                }
-                project.tasks.withType(Checkstyle) { checkstyle ->
-                    checkstyle.group = 'verification'
-                    checkstyle.showViolations = false
-                    checkstyle.ignoreFailures = true
-                    checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
-                    checkstyle.exclude(excludes)
-                    checkstyle.doLast {
-                        File xmlReportFile = checkstyle.reports.xml.destination
-                        File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
+    CheckstyleConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolationsTask) {
+        super(project, violations, evaluateViolationsTask)
+    }
 
-                        GPathResult xml = new XmlSlurper().parse(xmlReportFile)
-                        int errors = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'error' }.size()
-                        int warnings = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'warning' }.size()
-                        String reportUrl = new ConsoleRenderer().asClickableFileUrl(htmlReportFile ?: xmlReportFile)
-                        violations.addViolations(errors, warnings, reportUrl)
-                    }
-                    evaluateViolations.dependsOn checkstyle
-                }
+    @Override
+    protected String getToolName() {
+        'checkstyle'
+    }
+
+    @Override
+    protected Class<CheckstyleExtension> getExtensionClass() {
+        CheckstyleExtension
+    }
+
+    @Override
+    protected Action<CheckstyleExtension> getDefaultConfiguration() {
+        new Action<CheckstyleExtension>() {
+            @Override
+            void execute(CheckstyleExtension checkstyleExtension) {
+                checkstyleExtension.toolVersion = '7.1.2'
             }
         }
     }
 
-    private static void configureAndroid(Project project, Object variants) {
+    @Override
+    protected Class<Checkstyle> getTaskClass() {
+        Checkstyle
+    }
+
+    @Override
+    protected void configureAndroid(Object variants) {
         project.with {
             android.sourceSets.all { sourceSet ->
                 def sourceDirs = sourceSet.java.srcDirs
@@ -72,5 +62,25 @@ class CheckstyleConfigurator {
                 }
             }
         }
+    }
+
+    @Override
+    protected void configureTask(Checkstyle checkstyle) {
+        checkstyle.group = 'verification'
+        checkstyle.showViolations = false
+        checkstyle.ignoreFailures = true
+        checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
+        checkstyle.exclude(excludes)
+        checkstyle.doLast {
+            File xmlReportFile = checkstyle.reports.xml.destination
+            File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
+
+            GPathResult xml = new XmlSlurper().parse(xmlReportFile)
+            int errors = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'error' }.size()
+            int warnings = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'warning' }.size()
+            String reportUrl = new ConsoleRenderer().asClickableFileUrl(htmlReportFile ?: xmlReportFile)
+            violations.addViolations(errors, warnings, reportUrl)
+        }
+        evaluateViolations.dependsOn checkstyle
     }
 }
