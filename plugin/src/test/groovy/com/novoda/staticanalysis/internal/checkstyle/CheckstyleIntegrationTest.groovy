@@ -108,7 +108,7 @@ public class CheckstyleIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenCheckstyleConfiguredIgnoreSourceSets() {
+    public void shouldNotFailBuildWhenCheckstyleConfiguredToExcludePattern() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
@@ -118,6 +118,24 @@ public class CheckstyleIntegrationTest {
                     maxErrors = 0
                 }''')
                 .withCheckstyle(checkstyle(DEFAULT_CONFIG, "exclude 'Greeter.java'"))
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).containsCheckstyleViolations(0, 1,
+                result.buildFile('reports/checkstyle/main.html'))
+    }
+
+    @Test
+    public void shouldNotFailBuildWhenCheckstyleConfiguredToIgnoreFaultySourceSet() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withFile(Fixtures.Checkstyle.MODULES, 'config/checkstyle/checkstyle.xml')
+                .withPenalty('''{
+                    maxWarnings = 1
+                    maxErrors = 0
+                }''')
+                .withCheckstyle(checkstyle(DEFAULT_CONFIG, "exclude project.fileTree('${Fixtures.Checkstyle.SOURCES_WITH_ERRORS}')"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -169,7 +187,6 @@ public class CheckstyleIntegrationTest {
         assertThat(result.logs).containsCheckstyleViolations(0, 1,
                 result.buildFile('reports/checkstyle/main.html'))
     }
-
 
     private static String checkstyle(String configFile, String... configs) {
         """checkstyle {
