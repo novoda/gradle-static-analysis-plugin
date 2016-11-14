@@ -65,10 +65,9 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     @Override
     protected void configureTask(Pmd pmd) {
-        pmd.group = 'verification'
+        super.configureTask(pmd)
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
-        pmd.exclude(excludes)
         pmd.doLast {
             File xmlReportFile = pmd.reports.xml.destination
             File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
