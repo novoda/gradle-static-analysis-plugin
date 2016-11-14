@@ -1,6 +1,9 @@
 # gradle-static-analysis-plugin
-**TL;DR:** A Gradle plugin to easily apply the same setup of static analysis tools across different Android or Java projects.<br/>
-<br/>
+[![](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin)](https://ci.novoda.com/job/gradle-static-analysis-plugin/lastSuccessfulBuild/console) [![](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE.txt) [![Bintray](https://api.bintray.com/packages/novoda/maven/gradle-static-analysis-plugin/images/download.svg) ](https://bintray.com/novoda/maven/gradle-static-analysis-plugin/_latestVersion)
+
+A Gradle plugin to easily apply the same setup of static analysis tools across different Android or Java projects.<br/>
+
+## Description
 
 Gradle supports many popular static analysis (Checkstyle, PMD, FindBugs, etc) via a set of built-in
 plugins. Using these plugins in an Android module will require an additional setup to compensate for the differences between
@@ -11,6 +14,44 @@ The `gradle-static-analysis-plugin` aims to provide:
 - easy, Android-friendly integration for all static analysis,
 - convenient way of sharing same setup across different projects,
 - healthy, versionable and configurable defaults.
+
+## Adding to your project
+
+The plugin at the moment is released to the maven repo in the Novoda Bintray account. Be sure you are including the right
+maven repo in your build script as well as the right dependency:
+```gradle
+buildscript {
+    repositories {
+        maven { url "https://dl.bintray.com/novoda/maven" }
+    }
+    dependencies {
+        classpath 'com.novoda:gradle-static-analysis-plugin:0.2'
+    }
+}
+```
+and then apply the plugin via:
+```gradle
+apply plugin: 'com.novoda.static-analysis'
+```
+
+## Simple usage
+
+A typical configuration for the plugin will look like:
+```gradle
+staticAnalysis {
+    penalty {
+        maxErrors = 0
+        maxWarnings = 100
+    }
+    checkstyle {
+        configFile project.file('path/to/modules.xml')
+    }
+    pmd {
+        ruleSetFiles = project.file('path/to/rules.xml')
+    }
+    findbugs {}
+}
+```
 
 #### Configurable thresholds
 Users can define maximum amount of warnings and errors tolerated in a build via the gradle configuration:
@@ -47,45 +88,11 @@ in the configuration of your tool of choice:
 ```gradle
 staticAnalysis {
     findbugs {
-        exclude 'SkipThisPlease.java'
-        exclude 'AndThisToo.java'
+        exclude '**/*Test.java' // file pattern
+        exclude project.fileTree('src/test/java') // entire folder
+        exclude project.file('src/main/java/foo/bar/Constants.java') // specific file
+        exclude project.sourceSets.main.java.srcDirs // entire source set
     }
-}
-```
-
-### How to use
-
-The plugin at the moment is released to the maven repo in the Novoda Bintray account. Be sure you are including the right
-maven repo in your build script as well as the right dependency:
-```gradle
-buildscript {
-    repositories {
-        maven { url "https://dl.bintray.com/novoda/maven" }
-    }
-    dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:0.1'
-    }
-}
-```
-and then apply the plugin via:
-```gradle
-apply plugin: 'com.novoda.static-analysis'
-```
-
-A typical configuration for the plugin will look like:
-```gradle
-staticAnalysis {
-    penalty {
-        maxErrors = 0
-        maxWarnings = 100
-    }
-    checkstyle {
-        configFile project.file('path/to/modules.xml')
-    }
-    pmd {
-        ruleSetFiles = project.file('path/to/rules.xml')
-    }
-    findbugs {}
 }
 ```
 
