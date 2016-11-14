@@ -47,8 +47,10 @@ in the configuration of your tool of choice:
 ```gradle
 staticAnalysis {
     findbugs {
-        exclude 'SkipThisPlease.java'
-        exclude 'AndThisToo.java'
+        exclude '**/*Test.java' // file pattern
+        exclude project.fileTree('src/test/java') // entire folder
+        exclude project.file('src/main/java/foo/bar/Constants.java') // specific file
+        exclude project.sourceSets.main.java.srcDirs // entire source set
     }
 }
 ```
@@ -63,7 +65,7 @@ buildscript {
         maven { url "https://dl.bintray.com/novoda/maven" }
     }
     dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:0.1'
+        classpath 'com.novoda:gradle-static-analysis-plugin:0.2'
     }
 }
 ```
