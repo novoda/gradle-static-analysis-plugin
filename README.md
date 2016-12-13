@@ -47,7 +47,7 @@ staticAnalysis {
         configFile project.file('path/to/modules.xml')
     }
     pmd {
-        ruleSetFiles = project.file('path/to/rules.xml')
+        ruleSetFiles = project.files('path/to/rules.xml')
     }
     findbugs {}
 }
