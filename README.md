@@ -17,12 +17,11 @@ The `gradle-static-analysis-plugin` aims to provide:
 
 ## Adding to your project
 
-The plugin at the moment is released to the maven repo in the Novoda Bintray account. Be sure you are including the right
-maven repo in your build script as well as the right dependency:
+The plugin is released in jcenter and can be included as a classpath dependency:
 ```gradle
 buildscript {
     repositories {
-        maven { url "https://dl.bintray.com/novoda/maven" }
+       jcenter()
     }
     dependencies {
         classpath 'com.novoda:gradle-static-analysis-plugin:0.2'
