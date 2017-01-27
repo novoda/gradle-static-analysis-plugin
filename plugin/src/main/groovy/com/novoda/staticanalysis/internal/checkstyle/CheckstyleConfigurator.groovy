@@ -46,7 +46,6 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
         project.with {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->
-
                     def taskName = "checkstyle${sourceSet.name.capitalize()}"
                     Checkstyle checkstyle = tasks.findByName(taskName)
                     if (checkstyle == null) {

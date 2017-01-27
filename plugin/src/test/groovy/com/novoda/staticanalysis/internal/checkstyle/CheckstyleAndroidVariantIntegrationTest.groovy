@@ -11,7 +11,7 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class CheckstyleAndroidVariantIntegrationTest {
 
-    private static final String DEFAULT_CONFIG = "configFile new File('${Fixtures.Checkstyle.MODULES.path}')"
+    private static final String DEFAULT_CONFIG = "checkstyle { configFile new File('${Fixtures.Checkstyle.MODULES.path}') }"
 
     @Rule
     public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
@@ -24,13 +24,14 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsCheckstyleViolations(0, 1,
                 result.buildFile('reports/checkstyle/main.html'))
     }
+
 
     @Test
     public void shouldNotFailBuildWhenCheckstyleViolationsBelowThresholdInMainApplicationVariant() {
@@ -40,7 +41,7 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -57,7 +58,7 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -75,7 +76,7 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -99,7 +100,7 @@ class CheckstyleAndroidVariantIntegrationTest {
                         demo
                     }
                 ''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -130,7 +131,7 @@ class CheckstyleAndroidVariantIntegrationTest {
                         }
                     }
                 ''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -159,16 +160,10 @@ class CheckstyleAndroidVariantIntegrationTest {
                         variant.setIgnore(true);
                     }
                 ''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withCheckstyle(DEFAULT_CONFIG)
                 .build('check')
 
         assertThat(result.logs).doesNotContainCheckstyleViolations()
     }
 
-    private static String checkstyle(String configFile, String... configs) {
-        """checkstyle {
-            ${configFile}
-            ${configs.join('\n\t\t\t')}
-        }"""
-    }
 }
