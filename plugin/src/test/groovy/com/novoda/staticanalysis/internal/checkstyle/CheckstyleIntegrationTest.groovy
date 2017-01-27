@@ -98,7 +98,6 @@ public class CheckstyleIntegrationTest {
         projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
-                .withFile(Fixtures.Checkstyle.MODULES, 'config/checkstyle/checkstyle.xml')
                 .withPenalty('''{
                     maxWarnings = 1
                     maxErrors = 1
@@ -112,7 +111,6 @@ public class CheckstyleIntegrationTest {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
-                .withFile(Fixtures.Checkstyle.MODULES, 'config/checkstyle/checkstyle.xml')
                 .withPenalty('''{
                     maxWarnings = 1
                     maxErrors = 0
@@ -130,7 +128,6 @@ public class CheckstyleIntegrationTest {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
-                .withFile(Fixtures.Checkstyle.MODULES, 'config/checkstyle/checkstyle.xml')
                 .withPenalty('''{
                     maxWarnings = 1
                     maxErrors = 0
@@ -148,7 +145,6 @@ public class CheckstyleIntegrationTest {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withSourceSet('test', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
-                .withFile(Fixtures.Checkstyle.MODULES, 'config/checkstyle/checkstyle.xml')
                 .withPenalty('''{
                     maxWarnings = 1
                     maxErrors = 0

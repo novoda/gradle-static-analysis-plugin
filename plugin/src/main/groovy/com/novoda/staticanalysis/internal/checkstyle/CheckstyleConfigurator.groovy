@@ -6,14 +6,23 @@ import com.novoda.staticanalysis.internal.QuietLogger
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.Task
+import org.gradle.api.file.FileCollection
+import org.gradle.api.internal.file.TemporaryFileProvider
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
+import org.gradle.api.resources.TextResource
+import org.gradle.api.tasks.TaskDependency
 import org.gradle.internal.logging.ConsoleRenderer
 
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
-    CheckstyleConfigurator(Project project, EvaluateViolationsTask evaluateViolationsTask) {
+    public static final String UTF_8 = 'UTF-8'
+    private final TemporaryFileProvider temporaryFileProvider
+
+    CheckstyleConfigurator(Project project, EvaluateViolationsTask evaluateViolationsTask, TemporaryFileProvider temporaryFileProvider) {
         super(project, evaluateViolationsTask.maybeCreate('Checkstyle'), evaluateViolationsTask)
+        this.temporaryFileProvider = temporaryFileProvider
     }
 
     @Override
@@ -32,6 +41,57 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
             @Override
             void execute(CheckstyleExtension checkstyleExtension) {
                 checkstyleExtension.toolVersion = '7.1.2'
+
+                def url = 'com/novoda/staticanalysis/internal/checkstyle/modules.xml'
+                def stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(url)
+
+                def tokens = url.tokenize('/')
+                def fileName = tokens[-1]
+                String[] filePath = tokens.split({ it != fileName })[0] as String[]
+                File file = temporaryFileProvider.createTemporaryFile('temp-', "-${fileName}", filePath);
+                file.write(stream.text, UTF_8)
+
+                checkstyleExtension.config = new TextResource() {
+                    @Override
+                    String asString() {
+                        file.text
+                    }
+
+                    @Override
+                    Reader asReader() {
+                        new FileInputStream(file)
+                    }
+
+                    @Override
+                    File asFile(String charset) {
+                        throw new UnsupportedOperationException("Cannot create file for $url")
+                    }
+
+                    @Override
+                    File asFile() {
+                        file
+                    }
+
+                    @Override
+                    Object getInputProperties() {
+                        null
+                    }
+
+                    @Override
+                    FileCollection getInputFiles() {
+                        null
+                    }
+
+                    @Override
+                    TaskDependency getBuildDependencies() {
+                        new TaskDependency() {
+                            @Override
+                            Set<? extends Task> getDependencies(Task task) {
+                                Collections.emptySet()
+                            }
+                        }
+                    }
+                }
             }
         }
     }

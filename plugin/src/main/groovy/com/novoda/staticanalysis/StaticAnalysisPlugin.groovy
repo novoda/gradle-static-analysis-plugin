@@ -7,8 +7,18 @@ import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
 import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.file.TemporaryFileProvider
 
-class StaticAnalysisPlugin implements Plugin<Project> {
+import javax.inject.Inject
+
+public class StaticAnalysisPlugin implements Plugin<Project> {
+
+    private final TemporaryFileProvider temporaryFileProvider
+
+    @Inject
+    public StaticAnalysisPlugin(TemporaryFileProvider temporaryFileProvider) {
+        this.temporaryFileProvider = temporaryFileProvider
+    }
 
     @Override
     void apply(Project project) {
@@ -29,7 +39,7 @@ class StaticAnalysisPlugin implements Plugin<Project> {
 
     private List<CodeQualityConfigurator> createConfigurators(Project project, EvaluateViolationsTask evaluateViolations) {
         [
-                new CheckstyleConfigurator(project, evaluateViolations),
+                new CheckstyleConfigurator(project, evaluateViolations, temporaryFileProvider),
                 new PmdConfigurator(project, evaluateViolations),
                 new FindbugsConfigurator(project, evaluateViolations)
         ]

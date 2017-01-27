@@ -8,7 +8,7 @@ abstract class TestProject {
         """
 staticAnalysis {
     ${(project.penalty ?: '').replace('            ', '')}
-    ${(project.checkstyle ?: '').replace('        ', '    ')}
+    ${(project.checkstyle ?: 'checkstyle {}').replace('        ', '    ')}
     ${(project.pmd ?: '').replace('        ', '    ')}
     ${(project.findbugs ?: '').replace('        ', '    ')}
 }
@@ -43,7 +43,7 @@ staticAnalysis {
     }
 
     List<String> defaultArguments() {
-        Collections.emptyList()
+        ['--stacktrace']
     }
 
     public TestProject withFile(File source, String path) {
