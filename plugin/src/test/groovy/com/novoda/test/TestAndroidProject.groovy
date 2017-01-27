@@ -1,7 +1,7 @@
 package com.novoda.test
 
-class TestAndroidProject extends TestProject {
-    private static final Closure<String> TEMPLATE = { TestProject project ->
+class TestAndroidProject extends TestProject<TestAndroidProject> {
+    private static final Closure<String> TEMPLATE = { TestAndroidProject project ->
         """
 buildscript {
     repositories {
@@ -31,10 +31,13 @@ android {
     sourceSets {
         ${formatSourceSets(project)}
     }
+    ${project.additionalAndroidConfig}
 }
 ${formatExtension(project)}
 """
     }
+
+    private String additionalAndroidConfig = ''
 
     TestAndroidProject() {
         super(TEMPLATE)
@@ -61,5 +64,10 @@ ${formatExtension(project)}
     @Override
     List<String> defaultArguments() {
         ['-x', 'lint'] + super.defaultArguments()
+    }
+
+    TestAndroidProject withAdditionalAndroidConfig(String additionalAndroidConfig) {
+        this.additionalAndroidConfig = additionalAndroidConfig
+        return this
     }
 }

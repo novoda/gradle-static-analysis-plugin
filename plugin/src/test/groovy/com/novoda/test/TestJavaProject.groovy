@@ -1,6 +1,6 @@
 package com.novoda.test
 
-final class TestJavaProject extends TestProject {
+final class TestJavaProject extends TestProject<TestJavaProject> {
 
     private static final Closure<String> TEMPLATE = { TestProject project ->
         """

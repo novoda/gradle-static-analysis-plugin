@@ -3,7 +3,7 @@ package com.novoda.test
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
 
-abstract class TestProject {
+abstract class TestProject<T extends TestProject> {
     private static final Closure<String> EXTENSION_TEMPLATE = { TestProject project ->
         """
 staticAnalysis {
@@ -46,12 +46,12 @@ staticAnalysis {
         Collections.emptyList()
     }
 
-    public TestProject withFile(File source, String path) {
+    public T withFile(File source, String path) {
         write(source.text, path)
         return this
     }
 
-    public TestProject withFile(String text, String path) {
+    public T withFile(String text, String path) {
         write(text, path)
         return this
     }
@@ -62,27 +62,27 @@ staticAnalysis {
         file.text = text
     }
 
-    public TestProject withSourceSet(String sourceSet, File... srcDirs) {
+    public T withSourceSet(String sourceSet, File... srcDirs) {
         sourceSets[sourceSet] = srcDirs
         return this
     }
 
-    public TestProject withPenalty(String penalty) {
+    public T withPenalty(String penalty) {
         this.penalty = "penalty $penalty"
         return this
     }
 
-    public TestProject withCheckstyle(String checkstyle) {
+    public T withCheckstyle(String checkstyle) {
         this.checkstyle = checkstyle
         return this
     }
 
-    public TestProject withPmd(String pmd) {
+    public T withPmd(String pmd) {
         this.pmd = pmd
         return this
     }
 
-    public TestProject withFindbugs(String findbugs) {
+    public T withFindbugs(String findbugs) {
         this.findbugs = findbugs
         return this
     }
