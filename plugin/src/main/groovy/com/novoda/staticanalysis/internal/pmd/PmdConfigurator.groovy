@@ -45,18 +45,21 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     @Override
     protected void configureAndroid(Object variants) {
         project.with {
-            android.sourceSets.all { sourceSet ->
-                def sourceDirs = sourceSet.java.srcDirs
-                def notEmptyDirs = sourceDirs.findAll { it.list()?.length > 0 }
-                if (notEmptyDirs.empty) {
-                    return
-                }
-                Pmd pmd = tasks.create("pmd${sourceSet.name.capitalize()}", Pmd)
-                pmd.with {
-                    description = "Run PMD analysis for ${sourceSet.name} classes"
-                    source = sourceSet.java.srcDirs
-                }
-                variants.all { variant ->
+            variants.all { variant ->
+                variant.sourceSets.each { sourceSet ->
+                    def taskName = "pmd${sourceSet.name.capitalize()}"
+                    Pmd pmd = tasks.findByName(taskName)
+                    if (pmd == null) {
+                        pmd = tasks.create(taskName, Pmd)
+                        def sourceDirs = sourceSet.java.srcDirs
+                        def notEmptyDirs = sourceDirs.findAll { it.list()?.length > 0 }
+                        if (!notEmptyDirs.empty) {
+                            pmd.with {
+                                description = "Run PMD analysis for ${sourceSet.name} classes"
+                                source = sourceSet.java.srcDirs
+                            }
+                        }
+                    }
                     pmd.mustRunAfter variant.javaCompile
                 }
             }
