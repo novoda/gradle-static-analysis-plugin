@@ -13,6 +13,8 @@ import static com.novoda.test.LogsSubject.assertThat
 @RunWith(Parameterized.class)
 public class PmdIntegrationTest {
 
+    private static final String DEFAULT_RULES = "project.files('${Fixtures.Pmd.RULES.path}')"
+
     @Parameterized.Parameters
     public static List<Object[]> rules() {
         return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()].collect { [it] as Object[] }
@@ -33,7 +35,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')"))
+                .withPmd(pmd(DEFAULT_RULES))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
@@ -44,19 +46,17 @@ public class PmdIntegrationTest {
     @Test
     public void shouldFailBuildWhenPmdErrorOverTheThreshold() {
         TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION, Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')"))
+                .withPmd(pmd(DEFAULT_RULES))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(2, 0)
         assertThat(result.logs).containsPmdViolations(2, 0,
-                result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/main2.html'))
+                result.buildFile('reports/pmd/main.html'))
     }
 
     @Test
@@ -66,7 +66,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')"))
+                .withPmd(pmd(DEFAULT_RULES))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -76,23 +76,19 @@ public class PmdIntegrationTest {
     @Test
     public void shouldNotFailBuildWhenPmdWarningsAndErrorsEncounteredAndNoThresholdTrespassed() {
         TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
-                .withSourceSet('main3', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
-                .withSourceSet('main4', Fixtures.Pmd.SOURCES_WITH_PRIORITY_4_VIOLATION)
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION, Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('test', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION, Fixtures.Pmd.SOURCES_WITH_PRIORITY_4_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 100
                     maxErrors = 100
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')"))
+                .withPmd(pmd(DEFAULT_RULES))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsPmdViolations(2, 2,
                 result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/main2.html'),
-                result.buildFile('reports/pmd/main3.html'),
-                result.buildFile('reports/pmd/main4.html'))
+                result.buildFile('reports/pmd/test.html'))
     }
 
     /**
@@ -107,7 +103,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')"))
+                .withPmd(pmd(DEFAULT_RULES))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsPmdViolations(1, 1,
@@ -117,15 +113,13 @@ public class PmdIntegrationTest {
     @Test
     public void shouldNotFailBuildWhenPmdConfiguredToNotIgnoreFailures() {
         projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
-                .withSourceSet('main3', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
-                .withSourceSet('main4', Fixtures.Pmd.SOURCES_WITH_PRIORITY_4_VIOLATION)
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION, Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('test', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION, Fixtures.Pmd.SOURCES_WITH_PRIORITY_4_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 100
                     maxErrors = 100
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')", "ignoreFailures = false"))
+                .withPmd(pmd(DEFAULT_RULES, "ignoreFailures = false"))
                 .build('check')
     }
 
@@ -133,12 +127,12 @@ public class PmdIntegrationTest {
     public void shouldNotFailBuildWhenPmdConfiguredToExcludePatterns() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('test', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')", "exclude 'Priority1Violator.java'", "exclude 'Priority2Violator.java'"))
+                .withPmd(pmd(DEFAULT_RULES, "exclude 'Priority1Violator.java'", "exclude 'Priority2Violator.java'"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -149,12 +143,12 @@ public class PmdIntegrationTest {
     public void shouldNotFailBuildWhenPmdConfiguredToIgnoreFaultySourceFolders() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('test', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')",
+                .withPmd(pmd(DEFAULT_RULES,
                 "exclude project.fileTree('${Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION}')",
                 "exclude project.fileTree('${Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION}')"))
                 .build('check')
@@ -167,14 +161,14 @@ public class PmdIntegrationTest {
     public void shouldNotFailBuildWhenPmdConfiguredToIgnoreFaultySourceSets() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('test', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd("project.files('${Fixtures.Pmd.RULES.path}')",
+                .withPmd(pmd(DEFAULT_RULES,
                 "exclude ${projectRule.printSourceSet('main')}.java.srcDirs",
-                "exclude ${projectRule.printSourceSet('main2')}.java.srcDirs"))
+                "exclude ${projectRule.printSourceSet('test')}.java.srcDirs"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -185,7 +179,7 @@ public class PmdIntegrationTest {
     public void shouldNotFailBuildWhenPmdNotConfigured() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('main2', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
+                .withSourceSet('test', Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)
                 .withPenalty('''{
                     maxWarnings = 0
                     maxErrors = 0
