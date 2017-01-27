@@ -35,6 +35,8 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 boolean isAndroidLib = project.plugins.hasPlugin('com.android.library')
                 if (isAndroidApp || isAndroidLib) {
                     configureAndroid(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
+                    configureAndroid(project.android.testVariants)
+                    configureAndroid(project.android.unitTestVariants)
                 }
                 project.tasks.withType(taskClass) { task -> configureTask(task) }
             }
