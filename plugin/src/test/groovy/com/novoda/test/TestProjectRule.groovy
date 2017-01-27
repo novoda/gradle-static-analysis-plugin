@@ -4,17 +4,17 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 
-final class TestProjectRule implements TestRule {
+final class TestProjectRule<T extends TestProject> implements TestRule {
 
-    private final Closure<TestProject> projectFactory
+    private final Closure<T> projectFactory
     private final Closure<String> sourceSetNameFactory
-    private TestProject project
+    private T project
 
-    static TestProjectRule forJavaProject() {
+    static TestProjectRule<TestJavaProject> forJavaProject() {
         new TestProjectRule({ new TestJavaProject() }, { String name -> "project.sourceSets.$name" })
     }
 
-    static TestProjectRule forAndroidProject() {
+    static TestProjectRule<TestAndroidProject> forAndroidProject() {
         new TestProjectRule({ new TestAndroidProject() }, { String name -> "project.android.sourceSets.$name" })
     }
 
@@ -23,7 +23,7 @@ final class TestProjectRule implements TestRule {
         this.sourceSetNameFactory = sourceSetNameFactory
     }
 
-    public TestProject newProject() {
+    public T newProject() {
         project = projectFactory.call()
         return project
     }
