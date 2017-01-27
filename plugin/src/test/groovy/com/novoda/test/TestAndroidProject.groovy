@@ -1,7 +1,7 @@
 package com.novoda.test
 
-class TestAndroidProject extends TestProject {
-    private static final Closure<String> TEMPLATE = { TestProject project ->
+class TestAndroidProject extends TestProject<TestAndroidProject> {
+    private static final Closure<String> TEMPLATE = { TestAndroidProject project ->
         """
 buildscript {
     repositories {
