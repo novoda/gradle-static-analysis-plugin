@@ -1,0 +1,5 @@
+com.novoda.staticanalysis
+com.novoda.staticanalysis.internal
+com.novoda.staticanalysis.internal.checkstyle
+com.novoda.staticanalysis.internal.findbugs
+com.novoda.staticanalysis.internal.pmd
