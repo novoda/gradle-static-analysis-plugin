@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.3 *(27/01/2017)*
+--------------------------
+
+- Honour project variants when creating tasks for Checkstyle and PMD ([PR#16](https://github.com/novoda/gradle-static-analysis-plugin/pull/16))
+
 Version 0.2 *(14/11/2016)*
 --------------------------
 

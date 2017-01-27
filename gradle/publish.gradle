@@ -3,7 +3,7 @@ publish {
     userOrg = 'novoda'
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
-    publishVersion = '0.2'
+    publishVersion = '0.3'
     website = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
