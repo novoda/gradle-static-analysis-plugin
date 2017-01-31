@@ -45,7 +45,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureAndroid(Object variants) {
+    protected void configureAndroidProject(Object variants) {
         variants.all { variant ->
             FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
             task.with {

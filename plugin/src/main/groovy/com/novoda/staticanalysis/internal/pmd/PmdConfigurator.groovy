@@ -43,7 +43,7 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureAndroid(Object variants) {
+    protected void configureAndroidProject(Object variants) {
         project.with {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->

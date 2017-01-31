@@ -34,9 +34,9 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 boolean isAndroidApp = project.plugins.hasPlugin('com.android.application')
                 boolean isAndroidLib = project.plugins.hasPlugin('com.android.library')
                 if (isAndroidApp || isAndroidLib) {
-                    configureAndroid(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
-                    configureAndroid(project.android.testVariants)
-                    configureAndroid(project.android.unitTestVariants)
+                    configureAndroidProject(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
+                    configureAndroidProject(project.android.testVariants)
+                    configureAndroidProject(project.android.unitTestVariants)
                 }
                 project.tasks.withType(taskClass) { task ->
                     task.group = 'verification'
@@ -63,7 +63,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         }
     }
 
-    protected abstract void configureAndroid(Object variants)
+    protected abstract void configureAndroidProject(Object variants)
 
     protected abstract Class<T> getTaskClass()
 
