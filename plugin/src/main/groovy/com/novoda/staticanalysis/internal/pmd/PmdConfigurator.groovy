@@ -51,13 +51,9 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
                     Pmd pmd = tasks.findByName(taskName)
                     if (pmd == null) {
                         pmd = tasks.create(taskName, Pmd)
-                        def sourceDirs = sourceSet.java.srcDirs
-                        def notEmptyDirs = sourceDirs.findAll { it.list()?.length > 0 }
-                        if (!notEmptyDirs.empty) {
-                            pmd.with {
-                                description = "Run PMD analysis for ${sourceSet.name} classes"
-                                source = sourceSet.java.srcDirs
-                            }
+                        pmd.with {
+                            description = "Run PMD analysis for ${sourceSet.name} classes"
+                            source = sourceSet.java.srcDirs
                         }
                     }
                     pmd.mustRunAfter variant.javaCompile
