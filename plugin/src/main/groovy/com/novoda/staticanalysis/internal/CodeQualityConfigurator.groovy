@@ -12,13 +12,13 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected final Project project
     protected final Violations violations
     protected final EvaluateViolationsTask evaluateViolations
-    protected final SourceFilter filter
+    protected final SourceFilter sourceFilter
 
     protected CodeQualityConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
-        this.filter = new SourceFilter(project)
+        this.sourceFilter = new SourceFilter(project)
     }
 
     void execute() {
@@ -26,7 +26,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             project.apply plugin: toolPlugin
             project.extensions.findByType(extensionClass).with {
                 defaultConfiguration.execute(it)
-                ext.exclude = { Object rule -> filter.exclude(rule) }
+                ext.exclude = { Object rule -> sourceFilter.exclude(rule) }
                 config.delegate = it
                 config()
             }
@@ -40,7 +40,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 }
                 project.tasks.withType(taskClass) { task ->
                     task.group = 'verification'
-                    filter.applyTo(task)
+                    sourceFilter.applyTo(task)
                     configureReportEvaluation(task)
                 }
             }
