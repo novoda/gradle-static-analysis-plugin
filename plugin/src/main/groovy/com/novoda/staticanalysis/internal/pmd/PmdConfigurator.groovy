@@ -48,15 +48,15 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->
                     def taskName = "pmd${sourceSet.name.capitalize()}"
-                    Pmd pmd = tasks.findByName(taskName)
-                    if (pmd == null) {
-                        pmd = tasks.create(taskName, Pmd)
-                        pmd.with {
+                    Pmd task = tasks.findByName(taskName)
+                    if (task == null) {
+                        task = tasks.create(taskName, Pmd)
+                        task.with {
                             description = "Run PMD analysis for ${sourceSet.name} classes"
                             source = sourceSet.java.srcDirs
                         }
                     }
-                    pmd.mustRunAfter variant.javaCompile
+                    task.mustRunAfter variant.javaCompile
                 }
             }
         }
