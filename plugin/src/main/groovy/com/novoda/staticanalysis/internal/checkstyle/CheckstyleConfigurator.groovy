@@ -56,6 +56,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
                             classpath = files("$buildDir/intermediates/classes/")
                         }
                     }
+                    sourceFilter.applyTo(task)
                     task.mustRunAfter variant.javaCompile
                 }
             }

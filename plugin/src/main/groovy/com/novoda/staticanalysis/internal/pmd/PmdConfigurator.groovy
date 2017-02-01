@@ -56,6 +56,7 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
                             source = sourceSet.java.srcDirs
                         }
                     }
+                    sourceFilter.applyTo(task)
                     task.mustRunAfter variant.javaCompile
                 }
             }

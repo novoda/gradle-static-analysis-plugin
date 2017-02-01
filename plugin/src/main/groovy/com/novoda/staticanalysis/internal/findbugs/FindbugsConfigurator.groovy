@@ -49,13 +49,13 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         variants.all { variant ->
             FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
             task.with {
-                group = "verification"
                 description = "Run FindBugs analysis for ${variant.name} classes"
                 source = variant.sourceSets.java.srcDirs.collect { it.path }.flatten()
                 classes = project.fileTree(variant.javaCompile.destinationDir)
                 classpath = variant.javaCompile.classpath
-                dependsOn variant.javaCompile
             }
+            sourceFilter.applyTo(task)
+            task.dependsOn variant.javaCompile
         }
     }
 

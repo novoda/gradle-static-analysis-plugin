@@ -37,10 +37,11 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                     configureAndroidProject(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
                     configureAndroidProject(project.android.testVariants)
                     configureAndroidProject(project.android.unitTestVariants)
+                } else {
+                    configureJavaProject()
                 }
                 project.tasks.withType(taskClass) { task ->
                     task.group = 'verification'
-                    sourceFilter.applyTo(task)
                     configureReportEvaluation(task)
                 }
             }
@@ -64,6 +65,10 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     }
 
     protected abstract void configureAndroidProject(Object variants)
+
+    protected void configureJavaProject() {
+        project.tasks.withType(taskClass) { task -> sourceFilter.applyTo(task) }
+    }
 
     protected abstract Class<T> getTaskClass()
 
