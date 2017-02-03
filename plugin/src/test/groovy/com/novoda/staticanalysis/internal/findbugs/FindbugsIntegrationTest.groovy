@@ -140,7 +140,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs { exclude "HighPriorityViolator.java" }')
+                .withFindbugs('findbugs { exclude "com/novoda/test/HighPriorityViolator.java" }')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
