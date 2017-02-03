@@ -92,7 +92,6 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     private static List<String> createIncludePatterns(List<Path> includedSourceFiles, List<Path> sourceDirs) {
         createRelativePaths(includedSourceFiles, sourceDirs)
                 .collect { Path relativePath -> (relativePath as String) - '.java' + '*' }
-                .each { println "[include: $it]" }
     }
 
     private static List<Path> createRelativePaths(List<Path> includedSourceFiles, List<Path> sourceDirs) {
