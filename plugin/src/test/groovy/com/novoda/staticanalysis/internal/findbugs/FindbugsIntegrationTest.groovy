@@ -134,8 +134,8 @@ class FindbugsIntegrationTest {
     @Test
     public void shouldNotFailBuildWhenFindbugsConfiguredToExcludePattern() {
         TestProject.Result result = projectRule.newProject()
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
+                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withPenalty('''{
                     maxErrors = 0
                     maxWarnings = 10
