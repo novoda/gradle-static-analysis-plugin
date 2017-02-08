@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+Version 0.3.1 *(08/02/2017)*
+--------------------------
+
+- Honour exclude filters in Findbugs tasks ([PR#20](https://github.com/novoda/gradle-static-analysis-plugin/pull/20))
+
 Version 0.3 *(27/01/2017)*
 --------------------------
 
