@@ -61,7 +61,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             }
             sourceFilter.applyTo(task)
             task.conventionMapping.map("classes", {
-                List<String> includes = createIncludesPatternsFrom(task.source, androidSourceDirs)
+                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
                 project.fileTree(variant.javaCompile.destinationDir).include(includes)
             }.memoize());
             task.dependsOn variant.javaCompile
@@ -77,20 +77,17 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                 sourceFilter.applyTo(task)
                 task.conventionMapping.map("classes", {
                     List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
-                    List<String> includes = createIncludesPatternsFrom(task.source, sourceDirs)
+                    List<String> includes = createIncludePatterns(task.source, sourceDirs)
                     createClassesTreeFrom(sourceSet).include(includes)
                 }.memoize());
             }
         }
     }
 
-    private static List<String> createIncludesPatternsFrom(FileCollection sourceFiles, List<File> sourceDirs) {
-        List<Path> includedSourceFiles = sourceFiles.matching { '**/*.java' }.files.collect { it.toPath() }
-        createIncludePatterns(includedSourceFiles, sourceDirs.collect { it.toPath() })
-    }
-
-    private static List<String> createIncludePatterns(List<Path> includedSourceFiles, List<Path> sourceDirs) {
-        createRelativePaths(includedSourceFiles, sourceDirs)
+    private static List<String> createIncludePatterns(FileCollection sourceFiles, List<File> sourceDirs) {
+        List<Path> includedSourceFilesPaths = sourceFiles.matching { '**/*.java' }.files.collect { it.toPath() }
+        List<Path> sourceDirsPaths = sourceDirs.collect { it.toPath() }
+        createRelativePaths(includedSourceFilesPaths, sourceDirsPaths)
                 .collect { Path relativePath -> (relativePath as String) - '.java' + '*' }
     }
 
