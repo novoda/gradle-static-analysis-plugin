@@ -60,16 +60,24 @@ task prepareRelease {
 
 String extractChangelog() {
     String fullChangelog = rootProject.file('CHANGELOG.md').text
-    def latestChangelog = (fullChangelog =~ /Version ${project.version}.*\n-*([\s\S]*?)Version.*\n-*/)
+    def latestChangelog = (fullChangelog =~ /\[Version ${project.version}.*\n-*([\s\S]*?)\[Version.*\n-*/)
     if (latestChangelog.size() > 0) {
         return latestChangelog[0][1].trim()
     }
 
-    def firstChangelog = (fullChangelog =~ /Version ${project.version}.*\n-*([\s\S]*)/)
+    def firstChangelog = (fullChangelog =~ /\[Version ${project.version}.*\n-*([\s\S]*)/)
     if (firstChangelog.size() > 0) {
         return firstChangelog[0][1].trim()
     }
     throw new GradleException("No changelog found for version $project.version")
+}
+
+task printChangelog {
+    group = 'help'
+    description = "Print the provisional changelog for version $project.version"
+    doLast {
+        println "\nChangelog for version $project.version:\n${extractChangelog()}\n"
+    }
 }
 
 task publishArtifact {
