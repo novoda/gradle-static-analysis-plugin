@@ -1,9 +1,102 @@
+version = '0.3.1'
+String tag = "v$project.version"
+groovydoc.docTitle = 'Static Analysis Plugin'
+
 apply plugin: 'com.novoda.bintray-release'
 publish {
     userOrg = 'novoda'
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
-    publishVersion = '0.3'
+    publishVersion = project.version
     website = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
+apply plugin: 'com.novoda.build-properties'
+buildProperties {
+    secrets {
+        file(rootProject.file('secrets.properties'), '''
+This file should contain:
+- git.username: the username used to push to the repo
+- git.password: the password used to push to the repo
+		''')
+    }
+}
+
+apply plugin: 'org.ajoberstar.grgit'
+apply plugin: 'org.ajoberstar.github-pages'
+
+githubPages {
+    commitMessage = "Deploy groovydoc for release $tag"
+    pages {
+        from groovydoc.destinationDir
+        into "docs/${project.version}"
+    }
+}
+
+task prepareGhCredentials {
+    description = 'Prepare GitHub credentials'
+    group = 'release'
+    doLast {
+        System.properties['org.ajoberstar.grgit.auth.username'] = buildProperties.secrets['git.username'].string
+        System.properties['org.ajoberstar.grgit.auth.password'] = buildProperties.secrets['git.password'].string
+    }
+}
+
+prepareGhPages.dependsOn groovydoc
+publishGhPages.dependsOn prepareGhCredentials
+
+task prepareRelease {
+    description = 'Prepare changelog and tag for release'
+    group = 'release'
+    dependsOn prepareGhPages, prepareGhCredentials
+    doLast {
+        String changelog = extractChangelog()
+        grgit.tag.add {
+            name = tag
+            message = "Release $tag\n\n$changelog"
+        }
+    }
+}
+
+String extractChangelog() {
+    String fullChangelog = rootProject.file('CHANGELOG.md').text
+    def latestChangelog = (fullChangelog =~ /Version ${project.version}.*\n-*([\s\S]*?)Version.*\n-*/)
+    if (latestChangelog.size() > 0) {
+        return latestChangelog[0][1].trim()
+    }
+
+    def firstChangelog = (fullChangelog =~ /Version ${project.version}.*\n-*([\s\S]*)/)
+    if (firstChangelog.size() > 0) {
+        return firstChangelog[0][1].trim()
+    }
+    throw new GradleException("No changelog found for version $project.version")
+}
+
+task publishArtifact {
+    description = "Publish artifact for plugin version: $tag"
+    group = 'release'
+    project.afterEvaluate { dependsOn bintrayUpload }
+    mustRunAfter prepareRelease
+}
+
+task publishGroovydoc {
+    description = "Deploy groovydoc for plugin version: $tag"
+    group = 'release'
+    dependsOn publishGhPages
+    mustRunAfter publishArtifact
+}
+
+task publishRelease {
+    description = "Publish release for plugin version: $tag"
+    group = 'release'
+    if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
+        dependsOn prepareRelease, publishArtifact, publishGroovydoc
+        doLast {
+            grgit.push {
+                tags = true
+            }
+        }
+    } else {
+        dependsOn publishArtifact
+    }
+}

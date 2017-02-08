@@ -24,7 +24,7 @@ buildscript {
        jcenter()
     }
     dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:0.3'
+        classpath 'com.novoda:gradle-static-analysis-plugin:0.3.1'
     }
 }
 ```

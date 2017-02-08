@@ -5,6 +5,8 @@ subprojects {
         }
         dependencies {
             classpath 'com.novoda:bintray-release:0.4.0'
+            classpath 'com.novoda:gradle-build-properties-plugin:0.2'
+            classpath 'org.ajoberstar:gradle-git:1.6.0'
         }
     }
 
