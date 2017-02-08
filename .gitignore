@@ -20,3 +20,6 @@ local.properties
 
 # Generated files
 gen/
+
+# Properties files
+secrets.properties
