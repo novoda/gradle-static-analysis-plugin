@@ -42,33 +42,29 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureAndroid(Object variants) {
+    protected void configureAndroidProject(Object variants) {
         project.with {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->
                     def taskName = "checkstyle${sourceSet.name.capitalize()}"
-                    Checkstyle checkstyle = tasks.findByName(taskName)
-                    if (checkstyle == null) {
-                        checkstyle = tasks.create(taskName, Checkstyle)
-                        def sourceDirs = sourceSet.java.srcDirs
-                        def notEmptyDirs = sourceDirs.findAll { it.list()?.length > 0 }
-                        if (!notEmptyDirs.empty) {
-                            checkstyle.with {
-                                description = "Run Checkstyle analysis for ${sourceSet.name} classes"
-                                source = sourceSet.java.srcDirs
-                                classpath = files("$buildDir/intermediates/classes/")
-                            }
+                    Checkstyle task = tasks.findByName(taskName)
+                    if (task == null) {
+                        task = tasks.create(taskName, Checkstyle)
+                        task.with {
+                            description = "Run Checkstyle analysis for ${sourceSet.name} classes"
+                            source = sourceSet.java.srcDirs
+                            classpath = files("$buildDir/intermediates/classes/")
                         }
                     }
-                    checkstyle.mustRunAfter variant.javaCompile
+                    sourceFilter.applyTo(task)
+                    task.mustRunAfter variant.javaCompile
                 }
             }
         }
     }
 
     @Override
-    protected void configureTask(Checkstyle checkstyle) {
-        super.configureTask(checkstyle)
+    protected void configureReportEvaluation(Checkstyle checkstyle) {
         checkstyle.showViolations = false
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }

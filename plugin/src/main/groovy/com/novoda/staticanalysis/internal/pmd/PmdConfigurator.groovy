@@ -43,32 +43,28 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureAndroid(Object variants) {
+    protected void configureAndroidProject(Object variants) {
         project.with {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->
                     def taskName = "pmd${sourceSet.name.capitalize()}"
-                    Pmd pmd = tasks.findByName(taskName)
-                    if (pmd == null) {
-                        pmd = tasks.create(taskName, Pmd)
-                        def sourceDirs = sourceSet.java.srcDirs
-                        def notEmptyDirs = sourceDirs.findAll { it.list()?.length > 0 }
-                        if (!notEmptyDirs.empty) {
-                            pmd.with {
-                                description = "Run PMD analysis for ${sourceSet.name} classes"
-                                source = sourceSet.java.srcDirs
-                            }
+                    Pmd task = tasks.findByName(taskName)
+                    if (task == null) {
+                        task = tasks.create(taskName, Pmd)
+                        task.with {
+                            description = "Run PMD analysis for ${sourceSet.name} classes"
+                            source = sourceSet.java.srcDirs
                         }
                     }
-                    pmd.mustRunAfter variant.javaCompile
+                    sourceFilter.applyTo(task)
+                    task.mustRunAfter variant.javaCompile
                 }
             }
         }
     }
 
     @Override
-    protected void configureTask(Pmd pmd) {
-        super.configureTask(pmd)
+    protected void configureReportEvaluation(Pmd pmd) {
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
         pmd.doLast {
