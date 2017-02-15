@@ -10,16 +10,20 @@ class Violations {
         this.toolName = toolName
     }
 
-    public String getName() {
+    String getName() {
         return toolName
     }
 
-    public int getErrors() {
+    int getErrors() {
         errors
     }
 
-    public int getWarnings() {
+    int getWarnings() {
         warnings
+    }
+
+    List<String> getReports() {
+        return reports
     }
 
     public void addViolations(int errors, int warnings, String reportUrl) {
@@ -30,8 +34,4 @@ class Violations {
         }
     }
 
-    public String getMessage() {
-        "$toolName rule violations were found ($errors errors, $warnings warnings). See the reports at:\n" +
-                "${reports.collect { "- $it" }.join('\n')}"
-    }
 }

@@ -35,7 +35,7 @@ class EvaluateViolationsTask extends DefaultTask {
             int errors = violations.errors
             int warnings = violations.warnings
             if (errors > 0 || warnings > 0) {
-                fullMessage += "> $violations.message\n"
+                fullMessage += "> ${getViolationsMessage(violations)}\n"
                 total['errors'] += errors
                 total['warnings'] += warnings
             }
@@ -48,4 +48,10 @@ class EvaluateViolationsTask extends DefaultTask {
             project.logger.warn fullMessage
         }
     }
+
+    static String getViolationsMessage(Violations violations) {
+        "$violations.name rule violations were found ($violations.errors errors, $violations.warnings warnings). See the reports at:\n" +
+                "${violations.reports.collect { "- $it" }.join('\n')}"
+    }
+
 }
