@@ -12,12 +12,14 @@ staticAnalysis {
     ${(project.pmd ?: '').replace('        ', '    ')}
     ${(project.findbugs ?: '').replace('        ', '    ')}
 }
+${project.additionalConfiguration}
 """
     }
 
     private final File projectDir
     private final GradleRunner gradleRunner
     private final Closure<String> template
+    String additionalConfiguration = ''
     Map<String, List<File>> sourceSets = [main: []]
     String penalty
     String checkstyle
@@ -84,6 +86,11 @@ staticAnalysis {
 
     public T withFindbugs(String findbugs) {
         this.findbugs = findbugs
+        return this
+    }
+
+    public T withAdditionalConfiguration(String additionalConfiguration) {
+        this.additionalConfiguration = additionalConfiguration
         return this
     }
 
