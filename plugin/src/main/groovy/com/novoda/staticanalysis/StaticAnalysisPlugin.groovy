@@ -24,6 +24,7 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         project.tasks.create('evaluateViolations', EvaluateViolationsTask) { task ->
             task.penaltyExtension = extension.penalty
             task.violationsContainer = project.container(Violations)
+            task.conventionMapping.putAt('reportUrlRenderer', { ReportUrlRenderer.DEFAULT })
         }
     }
 

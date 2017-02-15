@@ -1,15 +1,15 @@
 package com.novoda.staticanalysis
 
 import com.novoda.staticanalysis.internal.Violations
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
-import org.gradle.internal.logging.ConsoleRenderer
 
-class EvaluateViolationsTask extends DefaultTask {
+class EvaluateViolationsTask extends ConventionTask {
     private PenaltyExtension penaltyExtension
     private NamedDomainObjectContainer<Violations> violationsContainer
+    private ReportUrlRenderer reportUrlRenderer
 
     EvaluateViolationsTask() {
         group = 'verification'
@@ -26,6 +26,10 @@ class EvaluateViolationsTask extends DefaultTask {
 
     Violations maybeCreate(String name) {
         violationsContainer.maybeCreate(name)
+    }
+
+    ReportUrlRenderer getReportUrlRenderer() {
+        reportUrlRenderer
     }
 
     @TaskAction
@@ -50,10 +54,9 @@ class EvaluateViolationsTask extends DefaultTask {
         }
     }
 
-    static String getViolationsMessage(Violations violations) {
-        def consoleRenderer = new ConsoleRenderer()
+    String getViolationsMessage(Violations violations) {
         "$violations.name rule violations were found ($violations.errors errors, $violations.warnings warnings). See the reports at:\n" +
-                "${violations.reports.collect { "- ${consoleRenderer.asClickableFileUrl(it)}" }.join('\n')}"
+                "${violations.reports.collect { "- ${reportUrlRenderer.render(it)}" }.join('\n')}"
     }
 
 }
