@@ -143,6 +143,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             generateHtmlReport.htmlReportFile = htmlReportFile
             generateHtmlReport.classpath = findBugs.findbugsClasspath
             generateHtmlReport.dependsOn findBugs
+            generateHtmlReport.onlyIf { xmlReportFile?.exists() }
             evaluateViolations.dependsOn generateHtmlReport
         }
     }
