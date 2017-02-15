@@ -2,6 +2,9 @@ package com.novoda.test
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+
+import javax.annotation.Nullable
 
 abstract class TestProject<T extends TestProject> {
     private static final Closure<String> EXTENSION_TEMPLATE = { TestProject project ->
@@ -140,6 +143,11 @@ ${project.additionalConfiguration}
 
         File buildFile(String path) {
             new File(buildDir, path)
+        }
+
+        @Nullable
+        TaskOutcome outcome(String taskPath) {
+            buildResult.task(taskPath).outcome
         }
 
         public static class Logs {
