@@ -2,6 +2,9 @@ package com.novoda.test
 
 import org.gradle.testkit.runner.BuildResult
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
+
+import javax.annotation.Nullable
 
 abstract class TestProject<T extends TestProject> {
     private static final Closure<String> EXTENSION_TEMPLATE = { TestProject project ->
@@ -12,12 +15,14 @@ staticAnalysis {
     ${(project.pmd ?: '').replace('        ', '    ')}
     ${(project.findbugs ?: '').replace('        ', '    ')}
 }
+${project.additionalConfiguration}
 """
     }
 
     private final File projectDir
     private final GradleRunner gradleRunner
     private final Closure<String> template
+    String additionalConfiguration = ''
     Map<String, List<File>> sourceSets = [main: []]
     String penalty
     String checkstyle
@@ -87,6 +92,11 @@ staticAnalysis {
         return this
     }
 
+    public T withAdditionalConfiguration(String additionalConfiguration) {
+        this.additionalConfiguration = additionalConfiguration
+        return this
+    }
+
     public Result build(String... arguments) {
         BuildResult buildResult = newRunner(arguments).build()
         createResult(buildResult)
@@ -133,6 +143,11 @@ staticAnalysis {
 
         File buildFile(String path) {
             new File(buildDir, path)
+        }
+
+        @Nullable
+        TaskOutcome outcome(String taskPath) {
+            buildResult.task(taskPath).outcome
         }
 
         public static class Logs {

@@ -1,7 +1,9 @@
 package com.novoda.staticanalysis.internal.findbugs
 
+import com.google.common.truth.Truth
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -165,20 +167,46 @@ class FindbugsIntegrationTest {
                 result.buildFile('reports/findbugs/debug.html'))
     }
 
-    @Test
-    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultySourceSet() {
-        TestProject.Result result = projectRule.newProject()
+    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyJavaSourceSets() {
+        TestProject project = projectRule.newProject()
+        assumeThat(project).isJavaProject()
+
+        TestProject.Result result = project
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
+                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
                 .withPenalty('''{
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs("findbugs { exclude ${projectRule.printSourceSet('release')}.java.srcDirs }")
+                .withFindbugs('findbugs { exclude project.sourceSets.test.java.srcDirs }')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(0, 2,
+                result.buildFile('reports/findbugs/debug.html'))
+    }
+
+    @Test
+    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyAndroidSourceSets() {
+        TestProject project = projectRule.newProject()
+        assumeThat(project).isAndroidProject()
+
+        TestProject.Result result = project
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
+                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
+                .withSourceSet('androidTest', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 1
+                }''')
+                .withFindbugs('''findbugs {
+                    exclude project.android.sourceSets.test.java.srcDirs
+                    exclude project.android.sourceSets.androidTest.java.srcDirs
+                }''')
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).containsFindbugsViolations(0, 1,
                 result.buildFile('reports/findbugs/debug.html'))
     }
 
@@ -200,6 +228,116 @@ class FindbugsIntegrationTest {
         assertThat(result.logs).containsFindbugsViolations(2, 4,
                 result.buildFile('reports/findbugs/debug.html'),
                 result.buildFile('reports/findbugs/release.html'))
+    }
+
+    @Test
+    public void shouldSkipFindbugsTasksForIgnoredFaultyJavaSourceSets() {
+        TestProject project = projectRule.newProject()
+        assumeThat(project).isJavaProject()
+
+        TestProject.Result result = project
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
+                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 10
+                }''')
+                .withFindbugs('findbugs { exclude project.sourceSets.test.java.srcDirs }')
+                .build('check')
+
+        Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.SUCCESS)
+        Truth.assertThat(result.outcome(':generateFindbugsDebugHtmlReport')).isEqualTo(TaskOutcome.SUCCESS)
+        Truth.assertThat(result.outcome(':findbugsTest')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':generateFindbugsTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
+    }
+
+    @Test
+    public void shouldSkipFindbugsTasksForIgnoredFaultyAndroidSourceSets() {
+        TestProject project = projectRule.newProject()
+        assumeThat(project).isAndroidProject()
+
+        TestProject.Result result = project
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
+                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
+                .withSourceSet('androidTest', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 1
+                }''')
+                .withFindbugs('''findbugs {
+                    exclude project.android.sourceSets.test.java.srcDirs
+                    exclude project.android.sourceSets.androidTest.java.srcDirs
+                }''')
+                .build('check')
+
+        Truth.assertThat(result.outcome(':findbugsDebugAndroidTest')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':generateFindbugsDebugAndroidTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
+        Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.SUCCESS)
+        Truth.assertThat(result.outcome(':generateFindbugsDebugHtmlReport')).isEqualTo(TaskOutcome.SUCCESS)
+        Truth.assertThat(result.outcome(':findbugsDebugUnitTest')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':generateFindbugsDebugUnitTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
+        Truth.assertThat(result.outcome(':findbugsRelease')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':generateFindbugsReleaseHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
+    }
+
+    @Test
+    public void shouldProvideNoClassesToFindbugsTaskWhenNoJavaSourcesToAnalyse() {
+        TestProject project = projectRule.newProject()
+        assumeThat(project).isJavaProject()
+
+        TestProject.Result result = project
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
+                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 10
+                }''')
+                .withFindbugs('findbugs { exclude project.sourceSets.test.java.srcDirs }')
+                .withAdditionalConfiguration(addCheckFindbugsClassesTask())
+                .build('checkFindbugsClasses')
+
+        Truth.assertThat(result.outcome(':checkFindbugsClasses')).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    @Test
+    public void shouldProvideNoClassesToFindbugsTaskWhenNoAndroidSourcesToAnalyse() {
+        TestProject project = projectRule.newProject()
+        assumeThat(project).isAndroidProject()
+
+        TestProject.Result result = project
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
+                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
+                .withSourceSet('androidTest', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 1
+                }''')
+                .withFindbugs('''findbugs {
+                    exclude project.android.sourceSets.test.java.srcDirs
+                    exclude project.android.sourceSets.androidTest.java.srcDirs
+                }''')
+                .withAdditionalConfiguration(addCheckFindbugsClassesTask())
+                .build('checkFindbugsClasses')
+
+        Truth.assertThat(result.outcome(':checkFindbugsClasses')).isEqualTo(TaskOutcome.SUCCESS)
+    }
+
+    /**
+     * The custom task created in the snippet below will check whether {@code Findbugs} tasks with
+     * empty {@code source} will have empty {@code classes} too. </p>
+     */
+    private String addCheckFindbugsClassesTask() {
+        '''
+        project.task('checkFindbugsClasses') {
+            dependsOn project.tasks.findByName('evaluateViolations')
+            doLast {
+                project.tasks.withType(FindBugs).all { findbugs ->
+                    if (findbugs.source.isEmpty() && !findbugs.classes.isEmpty()) {
+                        throw new GradleException("${findbugs.path}.source is empty but ${findbugs.path}.classes is not: \\n${findbugs.classes.files}")
+                    }
+                }
+            }
+        }'''
     }
 
 }

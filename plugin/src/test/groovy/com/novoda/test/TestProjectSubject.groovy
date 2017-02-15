@@ -27,4 +27,8 @@ class TestProjectSubject extends Subject<TestProjectSubject, TestProject> {
     public void isAndroidProject() {
         check().that(actual()).isInstanceOf(TestAndroidProject)
     }
+
+    public void isJavaProject() {
+        check().that(actual()).isInstanceOf(TestJavaProject)
+    }
 }
