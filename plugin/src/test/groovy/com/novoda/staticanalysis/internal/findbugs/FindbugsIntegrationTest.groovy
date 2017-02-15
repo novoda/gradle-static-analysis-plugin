@@ -323,23 +323,8 @@ class FindbugsIntegrationTest {
     }
 
     /**
-     * <p>While integrating the plugin in one of our projects we realised that Findbugs was analysing a source folder
-     * even though an {@code exclude} rule was provided for it.
-     * After quite some investigation we realised that the issue is related to the way we create {@code include} patterns
-     * from the filtered collection in {@code source}: given a {@code Findbugs} task we peek into the filtered set
-     * of source files and for each of them we create an {@code include} rule for the related class(es).
-     * Let's assume {@code source} contains {@code foo/Bar.java}; then the plugin will produce
-     * {@code foo/Bar*} as include pattern to allow the {@code Bar.class} (and its inner classes) to be included in
-     * the analysis.</p>
-     *
-     * <p>When the {@code source} is empty (eg: all the source files have been filtered out) no include pattern can be
-     * generated, therefore the collection of classes won't be filtered at all. This sometimes is not a problem
-     * because the analysis task is skipped anyway ({@code source} property is marked as {@code @SkipWhenEmpty}), but this
-     * seems not enough to cover all cases. We decided then to enforce an empty collection for {@code classes} when
-     * an empty {@code source} is found.</p>
-     *
-     * </p>This method provides a snippet that will create a custom task checking whther this constraint is valid
-     * in a specific project. </p>
+     * The custom task created in the snippet below will check whether {@code Findbugs} tasks with
+     * empty {@code source} will have empty {@code classes} too. </p>
      */
     private String addCheckFindbugsClassesTask() {
         '''
