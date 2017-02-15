@@ -62,10 +62,14 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             sourceFilter.applyTo(task)
             task.conventionMapping.map("classes", {
                 List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-                project.fileTree(variant.javaCompile.destinationDir).include(includes)
-            }.memoize());
+                getAndroidClasses(variant, includes)
+            });
             task.dependsOn variant.javaCompile
         }
+    }
+
+    private FileCollection getAndroidClasses(Object variant, List<String> includes) {
+        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes)
     }
 
     @Override
@@ -78,8 +82,8 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                 task.conventionMapping.map("classes", {
                     List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
                     List<String> includes = createIncludePatterns(task.source, sourceDirs)
-                    createClassesTreeFrom(sourceSet).include(includes)
-                }.memoize());
+                    getJavaClasses(sourceSet, includes)
+                });
             }
         }
     }
@@ -98,6 +102,10 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                     .collect { Path sourceDir -> sourceDir.relativize(sourceFile) }
         }
         .flatten()
+    }
+
+    private FileCollection getJavaClasses(SourceSet sourceSet, List<String> includes) {
+        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet).include(includes)
     }
 
     /**
