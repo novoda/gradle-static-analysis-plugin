@@ -5,6 +5,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.tasks.TaskAction
+import org.gradle.internal.logging.ConsoleRenderer
 
 class EvaluateViolationsTask extends DefaultTask {
     private PenaltyExtension penaltyExtension
@@ -50,8 +51,9 @@ class EvaluateViolationsTask extends DefaultTask {
     }
 
     static String getViolationsMessage(Violations violations) {
+        def consoleRenderer = new ConsoleRenderer()
         "$violations.name rule violations were found ($violations.errors errors, $violations.warnings warnings). See the reports at:\n" +
-                "${violations.reports.collect { "- $it" }.join('\n')}"
+                "${violations.reports.collect { "- ${consoleRenderer.asClickableFileUrl(it)}" }.join('\n')}"
     }
 
 }

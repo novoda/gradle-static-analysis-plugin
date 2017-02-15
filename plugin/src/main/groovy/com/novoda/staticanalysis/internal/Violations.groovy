@@ -4,7 +4,7 @@ class Violations {
     private final String toolName
     private int errors = 0
     private int warnings = 0
-    private List<String> reports = []
+    private List<File> reports = []
 
     Violations(String toolName) {
         this.toolName = toolName
@@ -22,15 +22,15 @@ class Violations {
         warnings
     }
 
-    List<String> getReports() {
+    List<File> getReports() {
         return reports
     }
 
-    public void addViolations(int errors, int warnings, String reportUrl) {
+    public void addViolations(int errors, int warnings, File report) {
         this.errors += errors
         this.warnings += warnings
         if (errors > 0 || warnings > 0) {
-            reports += reportUrl
+            reports += report
         }
     }
 

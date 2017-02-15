@@ -9,7 +9,6 @@ import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.quality.FindBugs
 import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
-import org.gradle.internal.logging.ConsoleRenderer
 
 import java.nio.file.Path
 
@@ -133,8 +132,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     private void evaluateReports(File xmlReportFile, File htmlReportFile) {
         def evaluator = new FinbugsViolationsEvaluator(xmlReportFile)
-        String reportUrl = new ConsoleRenderer().asClickableFileUrl(htmlReportFile)
-        violations.addViolations(evaluator.errorsCount(), evaluator.warningsCount(), reportUrl)
+        violations.addViolations(evaluator.errorsCount(), evaluator.warningsCount(), htmlReportFile)
     }
 
     private GenerateHtmlReport createHtmlReportTask(FindBugs findBugs, File xmlReportFile, File htmlReportFile) {
