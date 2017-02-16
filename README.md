@@ -76,6 +76,25 @@ the relevant html reports, for instance:
     - file:///foo/project/build/reports/pmd/main4.html
 ```
 
+It's possible to specify a custom renderer for the report urls in the logs via the `logs` extension. This can be useful in CI
+ environments, where the local paths are not reachable directly. For instance the snippet below will replace the base url with
+ one of your choice:
+```gradle
+staticAnalysis {
+    ...
+    logs {
+        baseReportUrl "http://ci.mycompany.com/job/myproject/ws/app/build/reports"
+    }
+}
+```
+so that in the logs you will see the report urls printed as
+```
+> Checkstyle rule violations were found (0 errors, 1 warnings). See the reports at:
+- http://ci.mycompany.com/job/myproject/ws/app/build/reports/checkstyle/main.html
+```
+More info on the topic can be found in the [`LogsExtension`](https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/LogsExtension.groovy)
+groovydoc.
+
 #### Out-of-the-box support for Android projects
 Android projects use a gradle model that is not compatible with the Java one, supported by the built-in static analysis tools plugins.
 Applying `gradle-static-analysis-plugin` to your Android project will make sure all the necessary tasks are created and correctly configured
