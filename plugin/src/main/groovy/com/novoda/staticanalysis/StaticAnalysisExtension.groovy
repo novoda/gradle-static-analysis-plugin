@@ -1,6 +1,7 @@
 package com.novoda.staticanalysis
 
 import org.gradle.api.Action
+import org.gradle.api.Project
 
 class StaticAnalysisExtension {
 
@@ -20,13 +21,26 @@ class StaticAnalysisExtension {
     }
 
     private PenaltyExtension currentPenalty = new PenaltyExtension()
+    private final LogsExtension logs
+
+    StaticAnalysisExtension(Project project) {
+        this.logs = new LogsExtension(project)
+    }
 
     void penalty(Action<? super PenaltyExtension> action) {
         action.execute(currentPenalty)
     }
 
+    void logs(Action<? super LogsExtension> action) {
+        action.execute(logs)
+    }
+
     PenaltyExtension getPenalty() {
         currentPenalty
+    }
+
+    ReportUrlRenderer getReportUrlRenderer() {
+        logs.reportUrlRenderer
     }
 
 }
