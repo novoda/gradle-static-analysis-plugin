@@ -29,6 +29,26 @@ class LogsConfigurationIntegrationTest {
     }
 
     @Test
+    public void shouldUseCustomReportUrlRendererWhenProvided() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 1
+                }''')
+                .withToolsConfig("""
+                    $DEFAULT_CHECKSTYLE_CONFIG
+                    logs {
+                        reportUrlRenderer { report -> "**\${report.path}**" }
+                    }
+                """)
+                .build('check')
+
+        assertThat(result.logs).containsCheckstyleViolations(0, 1,
+                "**${result.buildFileUrl('reports/checkstyle/main.html')}**")
+    }
+
+    @Test
     public void shouldUseDifferentBaseReportUrlWhenProvided() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
