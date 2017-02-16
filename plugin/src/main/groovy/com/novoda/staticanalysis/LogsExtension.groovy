@@ -47,7 +47,7 @@ class LogsExtension {
      * @param newBaseUrl the base url to be used
      * @param localBaseUrl optional, the local base url to be replaced with {@code newBaseUrl}
      */
-    void baseReportUrl(String newBaseUrl, String localBaseUrl = "$project.buildDir/reports") {
+    void reportBaseUrl(String newBaseUrl, String localBaseUrl = "$project.buildDir/reports") {
         reportUrlRenderer { report -> newBaseUrl + (report.path - ~/$localBaseUrl/) }
     }
 

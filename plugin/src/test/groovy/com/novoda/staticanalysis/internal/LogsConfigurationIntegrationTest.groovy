@@ -49,7 +49,7 @@ class LogsConfigurationIntegrationTest {
     }
 
     @Test
-    public void shouldUseDifferentBaseReportUrlWhenProvided() {
+    public void shouldUseDifferentReportBaseUrlWhenProvided() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
@@ -59,7 +59,7 @@ class LogsConfigurationIntegrationTest {
                 .withToolsConfig("""
                     $DEFAULT_CHECKSTYLE_CONFIG
                     logs {
-                        baseReportUrl "what://foo/bar/reports"
+                        reportBaseUrl "what://foo/bar/reports"
                     }
                 """)
                 .build('check')
@@ -68,7 +68,7 @@ class LogsConfigurationIntegrationTest {
     }
 
     @Test
-    public void shouldMatchDifferentBaseReportUrlWhenProvided() {
+    public void shouldMatchDifferentReportBaseUrlWhenProvided() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
@@ -78,7 +78,7 @@ class LogsConfigurationIntegrationTest {
                 .withToolsConfig("""
                     $DEFAULT_CHECKSTYLE_CONFIG
                     logs {
-                        baseReportUrl "what://foo/bar", "\${project.buildDir}/reports"
+                        reportBaseUrl "what://foo/bar", "\${project.buildDir}/reports"
                     }
                 """)
                 .build('check')

@@ -83,7 +83,7 @@ It's possible to specify a custom renderer for the report urls in the logs via t
 staticAnalysis {
     ...
     logs {
-        baseReportUrl "http://ci.mycompany.com/job/myproject/ws/app/build/reports"
+        reportBaseUrl "http://ci.mycompany.com/job/myproject/ws/app/build/reports"
     }
 }
 ```
