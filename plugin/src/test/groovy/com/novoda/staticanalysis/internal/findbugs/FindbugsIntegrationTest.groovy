@@ -41,7 +41,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsFindbugsViolations(0, 2,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     @Test
@@ -57,7 +57,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(0, 2)
         assertThat(result.logs).containsFindbugsViolations(0, 3,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     @Test
@@ -73,7 +73,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsFindbugsViolations(1, 0,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     @Test
@@ -104,8 +104,8 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(1, 2,
-                result.buildFile('reports/findbugs/debug.html'),
-                result.buildFile('reports/findbugs/release.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'),
+                result.buildFileUrl('reports/findbugs/release.html'))
     }
 
     @Test
@@ -147,7 +147,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(0, 2,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     @Test
@@ -164,7 +164,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(0, 2,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyJavaSourceSets() {
@@ -183,7 +183,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(0, 2,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     @Test
@@ -207,7 +207,7 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(0, 1,
-                result.buildFile('reports/findbugs/debug.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
     @Test
@@ -226,8 +226,8 @@ class FindbugsIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(2, 4,
-                result.buildFile('reports/findbugs/debug.html'),
-                result.buildFile('reports/findbugs/release.html'))
+                result.buildFileUrl('reports/findbugs/debug.html'),
+                result.buildFileUrl('reports/findbugs/release.html'))
     }
 
     @Test

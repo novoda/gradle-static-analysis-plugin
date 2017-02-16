@@ -127,8 +127,8 @@ ${project.additionalConfiguration}
             new Logs(buildResult.output)
         }
 
-        File buildFile(String path) {
-            new File(buildDir, path)
+        String buildFileUrl(String path) {
+            new File(buildDir, path).path
         }
 
         @Nullable

@@ -40,7 +40,7 @@ public class PmdIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsPmdViolations(0, 1,
-                result.buildFile('reports/pmd/main.html'))
+                result.buildFileUrl('reports/pmd/main.html'))
     }
 
     @Test
@@ -56,7 +56,7 @@ public class PmdIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(2, 0)
         assertThat(result.logs).containsPmdViolations(2, 0,
-                result.buildFile('reports/pmd/main.html'))
+                result.buildFileUrl('reports/pmd/main.html'))
     }
 
     @Test
@@ -87,8 +87,8 @@ public class PmdIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsPmdViolations(2, 2,
-                result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/test.html'))
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/test.html'))
     }
 
     /**
@@ -107,7 +107,7 @@ public class PmdIntegrationTest {
                 .buildAndFail('check')
 
         assertThat(result.logs).containsPmdViolations(1, 1,
-                result.buildFile('reports/pmd/main.html'))
+                result.buildFileUrl('reports/pmd/main.html'))
     }
 
     @Test

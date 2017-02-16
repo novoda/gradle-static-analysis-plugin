@@ -29,7 +29,7 @@ class PmdAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsPmdViolations(0, 1,
-                result.buildFile('reports/pmd/main.html'))
+                result.buildFileUrl('reports/pmd/main.html'))
     }
 
     @Test
@@ -45,7 +45,7 @@ class PmdAndroidVariantIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsPmdViolations(0, 1,
-                result.buildFile('reports/pmd/main.html'))
+                result.buildFileUrl('reports/pmd/main.html'))
     }
 
     @Test
@@ -62,8 +62,8 @@ class PmdAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsPmdViolations(1, 1,
-                result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/test.html'))
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/test.html'))
     }
 
     @Test
@@ -80,8 +80,8 @@ class PmdAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsPmdViolations(1, 1,
-                result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/androidTest.html'))
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/androidTest.html'))
     }
 
     @Test
@@ -104,8 +104,8 @@ class PmdAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsPmdViolations(1, 1,
-                result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/demo.html'))
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/demo.html'))
     }
 
     @Test
@@ -135,8 +135,8 @@ class PmdAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsPmdViolations(1, 1,
-                result.buildFile('reports/pmd/main.html'),
-                result.buildFile('reports/pmd/demo.html'))
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/demo.html'))
     }
 
     @Test

@@ -59,24 +59,22 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
         outputSubject.doesNotContain(FINDBUGS_VIOLATIONS_FOUND)
     }
 
-    public void containsCheckstyleViolations(int errors, int warnings, File... reports) {
-        outputSubject.contains("$CHECKSTYLE_VIOLATIONS_FOUND ($errors errors, $warnings warnings). See the reports at:\n")
-        for (File report : reports) {
-            outputSubject.contains(report.path)
-        }
+    public void containsCheckstyleViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(CHECKSTYLE_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
-    public void containsPmdViolations(int errors, int warnings, File... reports) {
-        outputSubject.contains("$PMD_VIOLATIONS_FOUND ($errors errors, $warnings warnings). See the reports at:\n")
-        for (File report : reports) {
-            outputSubject.contains(report.path)
-        }
+    public void containsPmdViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(PMD_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
-    public void containsFindbugsViolations(int errors, int warnings, File... reports) {
-        outputSubject.contains("$FINDBUGS_VIOLATIONS_FOUND ($errors errors, $warnings warnings). See the reports at:\n")
-        for (File report : reports) {
-            outputSubject.contains(report.path)
+    public void containsFindbugsViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(FINDBUGS_VIOLATIONS_FOUND, errors, warnings, reportUrls)
+    }
+
+    private void containsToolViolations(String template, int errors, int warnings, String... reportUrls) {
+        outputSubject.contains("$template ($errors errors, $warnings warnings). See the reports at:\n")
+        for (String reportUrl : reportUrls) {
+            outputSubject.contains(reportUrl)
         }
     }
 }

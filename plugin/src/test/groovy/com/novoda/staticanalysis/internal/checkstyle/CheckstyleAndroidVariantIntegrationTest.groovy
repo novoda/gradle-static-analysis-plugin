@@ -29,7 +29,7 @@ class CheckstyleAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsCheckstyleViolations(0, 1,
-                result.buildFile('reports/checkstyle/main.html'))
+                result.buildFileUrl('reports/checkstyle/main.html'))
     }
 
 
@@ -46,7 +46,7 @@ class CheckstyleAndroidVariantIntegrationTest {
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsCheckstyleViolations(0, 1,
-                result.buildFile('reports/checkstyle/main.html'))
+                result.buildFileUrl('reports/checkstyle/main.html'))
     }
 
     @Test
@@ -63,8 +63,8 @@ class CheckstyleAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsCheckstyleViolations(1, 1,
-                result.buildFile('reports/checkstyle/main.html'),
-                result.buildFile('reports/checkstyle/test.html'))
+                result.buildFileUrl('reports/checkstyle/main.html'),
+                result.buildFileUrl('reports/checkstyle/test.html'))
     }
 
     @Test
@@ -81,8 +81,8 @@ class CheckstyleAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsCheckstyleViolations(1, 1,
-                result.buildFile('reports/checkstyle/main.html'),
-                result.buildFile('reports/checkstyle/androidTest.html'))
+                result.buildFileUrl('reports/checkstyle/main.html'),
+                result.buildFileUrl('reports/checkstyle/androidTest.html'))
     }
 
     @Test
@@ -105,8 +105,8 @@ class CheckstyleAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsCheckstyleViolations(1, 1,
-                result.buildFile('reports/checkstyle/main.html'),
-                result.buildFile('reports/checkstyle/demo.html'))
+                result.buildFileUrl('reports/checkstyle/main.html'),
+                result.buildFileUrl('reports/checkstyle/demo.html'))
     }
 
     @Test
@@ -136,8 +136,8 @@ class CheckstyleAndroidVariantIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsCheckstyleViolations(1, 1,
-                result.buildFile('reports/checkstyle/main.html'),
-                result.buildFile('reports/checkstyle/demo.html'))
+                result.buildFileUrl('reports/checkstyle/main.html'),
+                result.buildFileUrl('reports/checkstyle/demo.html'))
     }
 
     @Test
