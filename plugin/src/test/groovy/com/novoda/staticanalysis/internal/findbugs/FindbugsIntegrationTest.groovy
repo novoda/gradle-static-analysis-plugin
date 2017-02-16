@@ -36,7 +36,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withFindbugs('findbugs {}')
+                .withToolsConfig('findbugs {}')
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
@@ -52,7 +52,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withFindbugs("findbugs { effort = 'max' \n reportLevel = 'low'}")
+                .withToolsConfig("findbugs { effort = 'max' \n reportLevel = 'low'}")
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 2)
@@ -68,7 +68,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 0
                 }''')
-                .withFindbugs('findbugs {}')
+                .withToolsConfig('findbugs {}')
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -83,7 +83,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 0
                 }''')
-                .withFindbugs('findbugs {}')
+                .withToolsConfig('findbugs {}')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -99,7 +99,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 10
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs {}')
+                .withToolsConfig('findbugs {}')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -117,7 +117,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 10
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs { ignoreFailures = false }')
+                .withToolsConfig('findbugs { ignoreFailures = false }')
                 .build('check')
     }
 
@@ -142,7 +142,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs { exclude "com/novoda/test/HighPriorityViolator.java" }')
+                .withToolsConfig('findbugs { exclude "com/novoda/test/HighPriorityViolator.java" }')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -159,7 +159,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs("findbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }")
+                .withToolsConfig("findbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }" )
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -178,7 +178,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs { exclude project.sourceSets.test.java.srcDirs }')
+                .withToolsConfig('findbugs { exclude project.sourceSets.test.java.srcDirs }')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -199,7 +199,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withFindbugs('''findbugs {
+                .withToolsConfig('''findbugs {
                     exclude project.android.sourceSets.test.java.srcDirs
                     exclude project.android.sourceSets.androidTest.java.srcDirs
                 }''')
@@ -221,7 +221,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 10
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs {}')
+                .withToolsConfig('findbugs {}')
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -242,7 +242,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs { exclude project.sourceSets.test.java.srcDirs }')
+                .withToolsConfig('findbugs { exclude project.sourceSets.test.java.srcDirs }')
                 .build('check')
 
         Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.SUCCESS)
@@ -264,7 +264,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withFindbugs('''findbugs {
+                .withToolsConfig('''findbugs {
                     exclude project.android.sourceSets.test.java.srcDirs
                     exclude project.android.sourceSets.androidTest.java.srcDirs
                 }''')
@@ -292,7 +292,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withFindbugs('findbugs { exclude project.sourceSets.test.java.srcDirs }')
+                .withToolsConfig('findbugs { exclude project.sourceSets.test.java.srcDirs }')
                 .withAdditionalConfiguration(addCheckFindbugsClassesTask())
                 .build('checkFindbugsClasses')
 
@@ -312,7 +312,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withFindbugs('''findbugs {
+                .withToolsConfig('''findbugs {
                     exclude project.android.sourceSets.test.java.srcDirs
                     exclude project.android.sourceSets.androidTest.java.srcDirs
                 }''')

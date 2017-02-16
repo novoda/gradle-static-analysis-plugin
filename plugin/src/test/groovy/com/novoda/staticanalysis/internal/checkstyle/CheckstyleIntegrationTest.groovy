@@ -35,7 +35,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
@@ -52,7 +52,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 100
                     maxErrors = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -68,7 +68,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -84,7 +84,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 100
                     maxErrors = 100
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -103,7 +103,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 1
                     maxErrors = 1
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG, "ignoreFailures = false"))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG, "ignoreFailures = false"))
                 .build('check')
     }
 
@@ -117,7 +117,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 1
                     maxErrors = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG, "exclude 'Greeter.java'"))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG, "exclude 'Greeter.java'"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -135,7 +135,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 1
                     maxErrors = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG, "exclude project.fileTree('${Fixtures.Checkstyle.SOURCES_WITH_ERRORS}')"))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG, "exclude project.fileTree('${Fixtures.Checkstyle.SOURCES_WITH_ERRORS}')"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -153,7 +153,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = 1
                     maxErrors = 0
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG, "exclude ${projectRule.printSourceSet('test')}.java.srcDirs"))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG, "exclude ${projectRule.printSourceSet('test')}.java.srcDirs"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -183,7 +183,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = -10
                     maxErrors = -10
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -198,7 +198,7 @@ public class CheckstyleIntegrationTest {
                     maxWarnings = -10
                     maxErrors = -10
                 }''')
-                .withCheckstyle(checkstyle(DEFAULT_CONFIG))
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)

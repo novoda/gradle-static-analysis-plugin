@@ -11,7 +11,7 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class PmdAndroidVariantIntegrationTest {
 
-    private static final String DEFAULT_RULES = "pmd { ruleSetFiles = project.files('${Fixtures.Pmd.RULES.path}') }"
+    private static final String DEFAULT_PMD_RULES = "pmd { ruleSetFiles = project.files('${Fixtures.Pmd.RULES.path}') }"
 
     @Rule
     public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
@@ -24,7 +24,7 @@ class PmdAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 0
                 }''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
@@ -40,7 +40,7 @@ class PmdAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -57,7 +57,7 @@ class PmdAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -75,7 +75,7 @@ class PmdAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -99,7 +99,7 @@ class PmdAndroidVariantIntegrationTest {
                         demo
                     }
                 ''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -130,7 +130,7 @@ class PmdAndroidVariantIntegrationTest {
                         }
                     }
                 ''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -159,7 +159,7 @@ class PmdAndroidVariantIntegrationTest {
                         variant.setIgnore(true);
                     }
                 ''')
-                .withPmd(DEFAULT_RULES)
+                .withToolsConfig(DEFAULT_PMD_RULES)
                 .build('check')
 
         assertThat(result.logs).doesNotContainCheckstyleViolations()

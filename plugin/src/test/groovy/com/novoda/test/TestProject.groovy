@@ -11,9 +11,7 @@ abstract class TestProject<T extends TestProject> {
         """
 staticAnalysis {
     ${(project.penalty ?: '').replace('            ', '')}
-    ${(project.checkstyle ?: '').replace('        ', '    ')}
-    ${(project.pmd ?: '').replace('        ', '    ')}
-    ${(project.findbugs ?: '').replace('        ', '    ')}
+    ${(project.toolsConfig ?: '').replace('        ', '    ')}
 }
 ${project.additionalConfiguration}
 """
@@ -25,9 +23,7 @@ ${project.additionalConfiguration}
     String additionalConfiguration = ''
     Map<String, List<File>> sourceSets = [main: []]
     String penalty
-    String checkstyle
-    String pmd
-    String findbugs
+    String toolsConfig = ''
 
     TestProject(Closure<String> template) {
         this.template = template
@@ -77,18 +73,8 @@ ${project.additionalConfiguration}
         return this
     }
 
-    public T withCheckstyle(String checkstyle) {
-        this.checkstyle = checkstyle
-        return this
-    }
-
-    public T withPmd(String pmd) {
-        this.pmd = pmd
-        return this
-    }
-
-    public T withFindbugs(String findbugs) {
-        this.findbugs = findbugs
+    public T withToolsConfig(String toolsConfig) {
+        this.toolsConfig = toolsConfig
         return this
     }
 

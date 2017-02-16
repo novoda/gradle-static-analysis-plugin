@@ -35,7 +35,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES))
+                .withToolsConfig(pmd(DEFAULT_RULES))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
@@ -51,7 +51,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES))
+                .withToolsConfig(pmd(DEFAULT_RULES))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(2, 0)
@@ -66,7 +66,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES))
+                .withToolsConfig(pmd(DEFAULT_RULES))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -82,7 +82,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 100
                     maxErrors = 100
                 }''')
-                .withPmd(pmd(DEFAULT_RULES))
+                .withToolsConfig(pmd(DEFAULT_RULES))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -103,7 +103,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES))
+                .withToolsConfig(pmd(DEFAULT_RULES))
                 .buildAndFail('check')
 
         assertThat(result.logs).containsPmdViolations(1, 1,
@@ -119,7 +119,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 100
                     maxErrors = 100
                 }''')
-                .withPmd(pmd(DEFAULT_RULES, "ignoreFailures = false"))
+                .withToolsConfig(pmd(DEFAULT_RULES, "ignoreFailures = false"))
                 .build('check')
     }
 
@@ -132,7 +132,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES, "exclude 'Priority1Violator.java'", "exclude 'Priority2Violator.java'"))
+                .withToolsConfig(pmd(DEFAULT_RULES, "exclude 'Priority1Violator.java'", "exclude 'Priority2Violator.java'"))
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -148,7 +148,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES,
+                .withToolsConfig(pmd(DEFAULT_RULES,
                 "exclude project.fileTree('${Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION}')",
                 "exclude project.fileTree('${Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION}')"))
                 .build('check')
@@ -166,7 +166,7 @@ public class PmdIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withPmd(pmd(DEFAULT_RULES,
+                .withToolsConfig(pmd(DEFAULT_RULES,
                 "exclude ${projectRule.printSourceSet('main')}.java.srcDirs",
                 "exclude ${projectRule.printSourceSet('test')}.java.srcDirs"))
                 .build('check')
