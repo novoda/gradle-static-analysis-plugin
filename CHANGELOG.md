@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+[Version 0.3.2](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.3.2)
+--------------------------
+
+- Better classes filtering for Findbugs tasks ([PR#23](https://github.com/novoda/gradle-static-analysis-plugin/pull/23))
+
 [Version 0.3.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.3.1)
 --------------------------
 
