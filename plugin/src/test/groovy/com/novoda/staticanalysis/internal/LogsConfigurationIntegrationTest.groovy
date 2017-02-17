@@ -17,8 +17,8 @@ class LogsConfigurationIntegrationTest {
     final String DEFAULT_CHECKSTYLE_CONFIG = "checkstyle { configFile new File('${Fixtures.Checkstyle.MODULES.path}') }"
 
     @Parameterized.Parameters
-    public static List<Object[]> rules() {
-        return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()].collect { [it] as Object[] }
+    public static Iterable<TestProjectRule> rules() {
+        return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }
 
     @Rule
