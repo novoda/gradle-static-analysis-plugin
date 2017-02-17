@@ -8,7 +8,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
-import org.gradle.internal.logging.ConsoleRenderer
 
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
@@ -85,7 +84,6 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
                 warnings += 1
             }
         }
-        String reportUrl = new ConsoleRenderer().asClickableFileUrl(htmlReportFile ?: xmlReportFile)
-        violations.addViolations(errors, warnings, reportUrl)
+        violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
     }
 }

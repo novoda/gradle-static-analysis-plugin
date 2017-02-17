@@ -8,7 +8,6 @@ import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
-import org.gradle.internal.logging.ConsoleRenderer
 
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
@@ -75,8 +74,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
             GPathResult xml = new XmlSlurper().parse(xmlReportFile)
             int errors = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'error' }.size()
             int warnings = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'warning' }.size()
-            String reportUrl = new ConsoleRenderer().asClickableFileUrl(htmlReportFile ?: xmlReportFile)
-            violations.addViolations(errors, warnings, reportUrl)
+            violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
         }
         evaluateViolations.dependsOn checkstyle
     }

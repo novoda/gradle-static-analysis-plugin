@@ -9,6 +9,7 @@ import org.gradle.api.tasks.TaskAction
 class EvaluateViolationsTask extends DefaultTask {
     private PenaltyExtension penaltyExtension
     private NamedDomainObjectContainer<Violations> violationsContainer
+    private ReportUrlRenderer reportUrlRenderer
 
     EvaluateViolationsTask() {
         group = 'verification'
@@ -27,6 +28,10 @@ class EvaluateViolationsTask extends DefaultTask {
         violationsContainer.maybeCreate(name)
     }
 
+    ReportUrlRenderer getReportUrlRenderer() {
+        reportUrlRenderer
+    }
+
     @TaskAction
     void run() {
         Map<String, Integer> total = [errors: 0, warnings: 0]
@@ -35,7 +40,7 @@ class EvaluateViolationsTask extends DefaultTask {
             int errors = violations.errors
             int warnings = violations.warnings
             if (errors > 0 || warnings > 0) {
-                fullMessage += "> $violations.message\n"
+                fullMessage += "> ${getViolationsMessage(violations)}\n"
                 total['errors'] += errors
                 total['warnings'] += warnings
             }
@@ -48,4 +53,10 @@ class EvaluateViolationsTask extends DefaultTask {
             project.logger.warn fullMessage
         }
     }
+
+    String getViolationsMessage(Violations violations) {
+        "$violations.name rule violations were found ($violations.errors errors, $violations.warnings warnings). See the reports at:\n" +
+                "${violations.reports.collect { "- ${reportUrlRenderer.render(it)}" }.join('\n')}"
+    }
+
 }

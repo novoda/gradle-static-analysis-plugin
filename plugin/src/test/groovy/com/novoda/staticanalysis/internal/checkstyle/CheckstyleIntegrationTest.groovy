@@ -16,8 +16,8 @@ public class CheckstyleIntegrationTest {
     public static final String DEFAULT_CONFIG = "configFile new File('${Fixtures.Checkstyle.MODULES.path}')"
 
     @Parameterized.Parameters
-    public static List<Object[]> rules() {
-        return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()].collect { [it] as Object[] }
+    public static Iterable<TestProjectRule> rules() {
+        return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }
 
     @Rule
