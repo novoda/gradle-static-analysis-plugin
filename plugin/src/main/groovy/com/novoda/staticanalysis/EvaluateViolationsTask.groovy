@@ -1,12 +1,12 @@
 package com.novoda.staticanalysis
 
 import com.novoda.staticanalysis.internal.Violations
+import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.TaskAction
 
-class EvaluateViolationsTask extends ConventionTask {
+class EvaluateViolationsTask extends DefaultTask {
     private PenaltyExtension penaltyExtension
     private NamedDomainObjectContainer<Violations> violationsContainer
     private ReportUrlRenderer reportUrlRenderer
