@@ -1,6 +1,8 @@
 package com.novoda.staticanalysis
 
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
 
 class StaticAnalysisExtension {
@@ -22,9 +24,16 @@ class StaticAnalysisExtension {
 
     private PenaltyExtension currentPenalty = new PenaltyExtension()
     private final LogsExtension logs
+    private final NamedDomainObjectContainer<RulesExtension> rules
 
     StaticAnalysisExtension(Project project) {
         this.logs = new LogsExtension(project)
+        this.rules = project.container(RulesExtension, new NamedDomainObjectFactory<RulesExtension>() {
+            @Override
+            RulesExtension create(String name) {
+                new RulesExtension(name, project)
+            }
+        })
     }
 
     void penalty(Action<? super PenaltyExtension> action) {
@@ -35,12 +44,20 @@ class StaticAnalysisExtension {
         action.execute(logs)
     }
 
+    void rules(Action<? super NamedDomainObjectContainer<RulesExtension>> action) {
+        action.execute(rules)
+    }
+
     PenaltyExtension getPenalty() {
         currentPenalty
     }
 
     ReportUrlRenderer getReportUrlRenderer() {
         logs.reportUrlRenderer
+    }
+
+    NamedDomainObjectContainer<RulesExtension> getRules() {
+        rules
     }
 
 }
