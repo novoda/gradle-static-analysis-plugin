@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
@@ -64,7 +65,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         }
     }
 
-    protected abstract void configureAndroidProject(Object variants)
+    protected abstract void configureAndroidProject(NamedDomainObjectSet variants)
 
     protected void configureJavaProject() {
         project.tasks.withType(taskClass) { task -> sourceFilter.applyTo(task) }

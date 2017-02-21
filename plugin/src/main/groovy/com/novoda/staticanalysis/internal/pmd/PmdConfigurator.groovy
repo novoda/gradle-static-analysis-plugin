@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
@@ -42,7 +43,7 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureAndroidProject(Object variants) {
+    protected void configureAndroidProject(NamedDomainObjectSet variants) {
         project.with {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->
