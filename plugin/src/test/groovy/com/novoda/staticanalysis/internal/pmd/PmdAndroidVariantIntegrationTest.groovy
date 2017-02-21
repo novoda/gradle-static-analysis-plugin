@@ -1,5 +1,6 @@
 package com.novoda.staticanalysis.internal.pmd
 
+import com.google.common.truth.Truth
 import com.novoda.test.Fixtures
 import com.novoda.test.TestAndroidProject
 import com.novoda.test.TestProject
@@ -162,7 +163,135 @@ class PmdAndroidVariantIntegrationTest {
                 .withToolsConfig(DEFAULT_PMD_RULES)
                 .build('check')
 
-        assertThat(result.logs).doesNotContainCheckstyleViolations()
+        assertThat(result.logs).doesNotContainPmdViolations()
+    }
+
+    @Test
+    public void shouldContainPmdTasksForAllVariantsByDefault() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
+                .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withSourceSet('full', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 1
+                    maxWarnings = 1
+                }''')
+                .withAdditionalAndroidConfig('''
+                    productFlavors {
+                        demo
+                        full
+                    }
+                ''')
+                .withToolsConfig(DEFAULT_PMD_RULES)
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(1, 0)
+        assertThat(result.logs).containsPmdViolations(2, 1,
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/demo.html'),
+                result.buildFileUrl('reports/pmd/full.html'))
+        Truth.assertThat(result.tasksPaths.findAll { it.startsWith(':pmd') }).containsAllIn([
+                ":pmdDebug",
+                ":pmdDemo",
+                ":pmdDemoDebug",
+                ":pmdDemoRelease",
+                ":pmdFull",
+                ":pmdFullDebug",
+                ":pmdFullRelease",
+                ":pmdMain",
+                ":pmdRelease",
+                ":pmdTest",
+                ":pmdTestDebug",
+                ":pmdTestDemo",
+                ":pmdTestDemoDebug",
+                ":pmdTestDemoRelease",
+                ":pmdTestFull",
+                ":pmdTestFullDebug",
+                ":pmdTestFullRelease",
+                ":pmdTestRelease",
+                ":pmdAndroidTest",
+                ":pmdAndroidTestDemo",
+                ":pmdAndroidTestFull"])
+    }
+
+    @Test
+    public void shouldNotFailBuildWhenPmdViolationsBelowThresholdInIncludedVariants() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
+                .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withSourceSet('full', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 1
+                    maxWarnings = 1
+                }''')
+                .withAdditionalAndroidConfig('''
+                    productFlavors {
+                        demo
+                        full
+                    }
+                ''')
+                .withToolsConfig("""
+                    pmd {
+                        ruleSetFiles = project.files('${Fixtures.Pmd.RULES.path}')
+                        includeVariants { variant -> variant.name.equals('demoDebug') }
+                    }
+                """)
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).containsPmdViolations(1, 1,
+                result.buildFileUrl('reports/pmd/main.html'),
+                result.buildFileUrl('reports/pmd/demo.html'))
+    }
+
+    @Test
+    public void shouldContainPmdTasksForIncludedVariantsOnly() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
+                .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withSourceSet('full', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 1
+                    maxWarnings = 1
+                }''')
+                .withAdditionalAndroidConfig('''
+                    productFlavors {
+                        demo
+                        full
+                    }
+                ''')
+                .withToolsConfig("""
+                    pmd {
+                        ruleSetFiles = project.files('${Fixtures.Pmd.RULES.path}')
+                        includeVariants { variant -> variant.name.equals('demoDebug') }
+                    }
+                """)
+                .build('check')
+
+        def pmdTasks = result.tasksPaths.findAll { it.startsWith(':pmd') }
+        Truth.assertThat(pmdTasks).containsAllIn([
+                ":pmdDebug",
+                ":pmdDemo",
+                ":pmdDemoDebug",
+                ":pmdMain"])
+        Truth.assertThat(pmdTasks).containsNoneIn([
+                ":pmdDemoRelease",
+                ":pmdFull",
+                ":pmdFullDebug",
+                ":pmdFullRelease",
+                ":pmdRelease",
+                ":pmdTest",
+                ":pmdTestDebug",
+                ":pmdTestDemo",
+                ":pmdTestDemoDebug",
+                ":pmdTestDemoRelease",
+                ":pmdTestFull",
+                ":pmdTestFullDebug",
+                ":pmdTestFullRelease",
+                ":pmdTestRelease",
+                ":pmdAndroidTest",
+                ":pmdAndroidTestDemo",
+                ":pmdAndroidTestFull"])
     }
 
 }

@@ -1,5 +1,6 @@
 package com.novoda.staticanalysis.internal.checkstyle
 
+import com.google.common.truth.Truth
 import com.novoda.test.Fixtures
 import com.novoda.test.TestAndroidProject
 import com.novoda.test.TestProject
@@ -11,13 +12,15 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class CheckstyleAndroidVariantIntegrationTest {
 
-    private static final String DEFAULT_CHECKSTYLE_CONFIG = "checkstyle { configFile new File('${Fixtures.Checkstyle.MODULES.path}') }"
+    private static final String DEFAULT_CHECKSTYLE_CONFIG = """
+        checkstyle { configFile new File('${Fixtures.Checkstyle.MODULES.path}') }
+    """
 
     @Rule
     public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
 
     @Test
-    public void shouldFailBuildWhenCheckstyleViolationsOverThresholdInMainApplicationVariant() {
+    public void shouldFailBuildWhenCheckstyleViolationsOverThresholdInApplicationVariant() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
@@ -34,7 +37,7 @@ class CheckstyleAndroidVariantIntegrationTest {
 
 
     @Test
-    public void shouldNotFailBuildWhenCheckstyleViolationsBelowThresholdInMainApplicationVariant() {
+    public void shouldNotFailBuildWhenCheckstyleViolationsBelowThresholdInApplicationVariant() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
@@ -164,6 +167,134 @@ class CheckstyleAndroidVariantIntegrationTest {
                 .build('check')
 
         assertThat(result.logs).doesNotContainCheckstyleViolations()
+    }
+
+    @Test
+    public void shouldContainCheckstyleTasksForAllVariantsByDefault() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withSourceSet('demo', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withSourceSet('full', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withPenalty('''{
+                    maxErrors = 1
+                    maxWarnings = 1
+                }''')
+                .withAdditionalAndroidConfig('''
+                    productFlavors {
+                        demo
+                        full
+                    }
+                ''')
+                .withToolsConfig(DEFAULT_CHECKSTYLE_CONFIG)
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(1, 0)
+        assertThat(result.logs).containsCheckstyleViolations(2, 1,
+                result.buildFileUrl('reports/checkstyle/main.html'),
+                result.buildFileUrl('reports/checkstyle/demo.html'),
+                result.buildFileUrl('reports/checkstyle/full.html'))
+        Truth.assertThat(result.tasksPaths.findAll { it.startsWith(':checkstyle') }).containsAllIn([
+                ":checkstyleDebug",
+                ":checkstyleDemo",
+                ":checkstyleDemoDebug",
+                ":checkstyleDemoRelease",
+                ":checkstyleFull",
+                ":checkstyleFullDebug",
+                ":checkstyleFullRelease",
+                ":checkstyleMain",
+                ":checkstyleRelease",
+                ":checkstyleTest",
+                ":checkstyleTestDebug",
+                ":checkstyleTestDemo",
+                ":checkstyleTestDemoDebug",
+                ":checkstyleTestDemoRelease",
+                ":checkstyleTestFull",
+                ":checkstyleTestFullDebug",
+                ":checkstyleTestFullRelease",
+                ":checkstyleTestRelease",
+                ":checkstyleAndroidTest",
+                ":checkstyleAndroidTestDemo",
+                ":checkstyleAndroidTestFull"])
+    }
+
+    @Test
+    public void shouldNotFailBuildWhenCheckstyleViolationsBelowThresholdInIncludedVariants() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withSourceSet('demo', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withSourceSet('full', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withPenalty('''{
+                    maxErrors = 1
+                    maxWarnings = 1
+                }''')
+                .withAdditionalAndroidConfig('''
+                    productFlavors {
+                        demo
+                        full
+                    }
+                ''')
+                .withToolsConfig("""
+                    checkstyle {
+                        configFile new File('${Fixtures.Checkstyle.MODULES.path}')
+                        includeVariants { variant -> variant.name.equals('demoDebug') }
+                    }
+                """)
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).containsCheckstyleViolations(1, 1,
+                result.buildFileUrl('reports/checkstyle/main.html'),
+                result.buildFileUrl('reports/checkstyle/demo.html'))
+    }
+
+    @Test
+    public void shouldContainCheckstyleTasksForIncludedVariantsOnly() {
+        TestProject.Result result = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withSourceSet('demo', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withSourceSet('full', Fixtures.Checkstyle.SOURCES_WITH_ERRORS)
+                .withPenalty('''{
+                    maxErrors = 1
+                    maxWarnings = 1
+                }''')
+                .withAdditionalAndroidConfig('''
+                    productFlavors {
+                        demo
+                        full
+                    }
+                ''')
+                .withToolsConfig("""
+                    checkstyle {
+                        configFile new File('${Fixtures.Checkstyle.MODULES.path}')
+                        includeVariants { variant -> variant.name.equals('demoDebug') }
+                    }
+                """)
+                .build('check')
+
+        def checkstyleTasks = result.tasksPaths.findAll { it.startsWith(':checkstyle') }
+        Truth.assertThat(checkstyleTasks).containsAllIn([
+                ":checkstyleDebug",
+                ":checkstyleDemo",
+                ":checkstyleDemoDebug",
+                ":checkstyleMain"])
+        Truth.assertThat(checkstyleTasks).containsNoneIn([
+                ":checkstyleDemoRelease",
+                ":checkstyleFull",
+                ":checkstyleFullDebug",
+                ":checkstyleFullRelease",
+                ":checkstyleRelease",
+                ":checkstyleTest",
+                ":checkstyleTestDebug",
+                ":checkstyleTestDemo",
+                ":checkstyleTestDemoDebug",
+                ":checkstyleTestDemoRelease",
+                ":checkstyleTestFull",
+                ":checkstyleTestFullDebug",
+                ":checkstyleTestFullRelease",
+                ":checkstyleTestRelease",
+                ":checkstyleAndroidTest",
+                ":checkstyleAndroidTestDemo",
+                ":checkstyleAndroidTestFull"])
     }
 
 }

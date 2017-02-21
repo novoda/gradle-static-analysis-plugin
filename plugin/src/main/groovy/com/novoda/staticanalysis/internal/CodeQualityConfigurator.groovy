@@ -14,12 +14,14 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected final Violations violations
     protected final EvaluateViolationsTask evaluateViolations
     protected final SourceFilter sourceFilter
+    protected Closure<Boolean> includeVariantsFilter
 
     protected CodeQualityConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
         this.sourceFilter = new SourceFilter(project)
+        this.includeVariantsFilter = { true }
     }
 
     void execute() {
@@ -28,6 +30,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             project.extensions.findByType(extensionClass).with {
                 defaultConfiguration.execute(it)
                 ext.exclude = { Object rule -> sourceFilter.exclude(rule) }
+                ext.includeVariants = { Closure<Boolean> filter -> includeVariantsFilter = filter }
                 config.delegate = it
                 config()
             }
@@ -35,9 +38,11 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 boolean isAndroidApp = project.plugins.hasPlugin('com.android.application')
                 boolean isAndroidLib = project.plugins.hasPlugin('com.android.library')
                 if (isAndroidApp || isAndroidLib) {
-                    configureAndroidProject(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
-                    configureAndroidProject(project.android.testVariants)
-                    configureAndroidProject(project.android.unitTestVariants)
+                    NamedDomainObjectSet<Object> variants = project.container(Object)
+                    variants.addAll(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
+                    variants.addAll(project.android.testVariants)
+                    variants.addAll(project.android.unitTestVariants)
+                    configureAndroidProject(variants.matching { includeVariantsFilter(it) })
                 } else {
                     configureJavaProject()
                 }

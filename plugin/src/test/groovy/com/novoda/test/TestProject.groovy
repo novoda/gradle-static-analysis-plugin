@@ -131,6 +131,10 @@ ${project.additionalConfiguration}
             new File(buildDir, path).path
         }
 
+        List<String> getTasksPaths() {
+            buildResult.tasks.collect { it.path }
+        }
+
         @Nullable
         TaskOutcome outcome(String taskPath) {
             buildResult.task(taskPath).outcome
