@@ -18,22 +18,6 @@ class PmdAndroidVariantIntegrationTest {
     public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
 
     @Test
-    public void shouldFailBuildWhenPmdViolationsOverThresholdInMainApplicationVariant() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 0
-                }''')
-                .withToolsConfig(DEFAULT_PMD_RULES)
-                .buildAndFail('check')
-
-        assertThat(result.logs).containsLimitExceeded(0, 1)
-        assertThat(result.logs).containsPmdViolations(0, 1,
-                result.buildFileUrl('reports/pmd/main.html'))
-    }
-
-    @Test
     public void shouldNotFailBuildWhenPmdViolationsBelowThresholdInMainApplicationVariant() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
@@ -86,30 +70,6 @@ class PmdAndroidVariantIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildWhenPmdViolationsOverThresholdInProductFlavorVariant() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
-                .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('full', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 1
-                }''')
-                .withAdditionalAndroidConfig('''
-                    productFlavors {
-                        demo
-                    }
-                ''')
-                .withToolsConfig(DEFAULT_PMD_RULES)
-                .buildAndFail('check')
-
-        assertThat(result.logs).containsLimitExceeded(1, 0)
-        assertThat(result.logs).containsPmdViolations(1, 1,
-                result.buildFileUrl('reports/pmd/main.html'),
-                result.buildFileUrl('reports/pmd/demo.html'))
-    }
-
-    @Test
     public void shouldFailBuildWhenPmdViolationsOverThresholdInActiveProductFlavorVariant() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
@@ -138,32 +98,6 @@ class PmdAndroidVariantIntegrationTest {
         assertThat(result.logs).containsPmdViolations(1, 1,
                 result.buildFileUrl('reports/pmd/main.html'),
                 result.buildFileUrl('reports/pmd/demo.html'))
-    }
-
-    @Test
-    public void shouldNotFailBuildWhenPmdViolationsOverThresholdInIgnoredVariants() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
-                .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('full', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 1
-                }''')
-                .withAdditionalAndroidConfig('''
-                    productFlavors {
-                        demo
-                        full
-                    }
-
-                    variantFilter { variant ->
-                        variant.setIgnore(true);
-                    }
-                ''')
-                .withToolsConfig(DEFAULT_PMD_RULES)
-                .build('check')
-
-        assertThat(result.logs).doesNotContainPmdViolations()
     }
 
     @Test
@@ -215,7 +149,7 @@ class PmdAndroidVariantIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenPmdViolationsBelowThresholdInIncludedVariants() {
+    public void shouldContainPmdTasksForIncludedVariantsOnly() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
                 .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
@@ -242,32 +176,6 @@ class PmdAndroidVariantIntegrationTest {
         assertThat(result.logs).containsPmdViolations(1, 1,
                 result.buildFileUrl('reports/pmd/main.html'),
                 result.buildFileUrl('reports/pmd/demo.html'))
-    }
-
-    @Test
-    public void shouldContainPmdTasksForIncludedVariantsOnly() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
-                .withSourceSet('demo', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withSourceSet('full', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 1
-                    maxWarnings = 1
-                }''')
-                .withAdditionalAndroidConfig('''
-                    productFlavors {
-                        demo
-                        full
-                    }
-                ''')
-                .withToolsConfig("""
-                    pmd {
-                        ruleSetFiles = project.files('${Fixtures.Pmd.RULES.path}')
-                        includeVariants { variant -> variant.name.equals('demoDebug') }
-                    }
-                """)
-                .build('check')
-
         def pmdTasks = result.tasksPaths.findAll { it.startsWith(':pmd') }
         Truth.assertThat(pmdTasks).containsAllIn([
                 ":pmdDebug",

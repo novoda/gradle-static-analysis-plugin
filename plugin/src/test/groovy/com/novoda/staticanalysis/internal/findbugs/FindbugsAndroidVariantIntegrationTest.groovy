@@ -18,23 +18,6 @@ class FindbugsAndroidVariantIntegrationTest {
     public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
 
     @Test
-    public void shouldFailBuildWhenFindbugsViolationsOverThresholdInDefaultApplicationVariant() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 0
-                }''')
-                .withToolsConfig(DEFAULT_FINDBUGS_CONFIG)
-                .buildAndFail('check')
-
-        assertThat(result.logs).containsLimitExceeded(0, 2)
-        assertThat(result.logs).containsFindbugsViolations(0, 2,
-                result.buildFileUrl('reports/findbugs/debug.html'),
-                result.buildFileUrl('reports/findbugs/release.html'))
-    }
-
-    @Test
     public void shouldNotFailBuildWhenFindbugsViolationsBelowThresholdInDefaultApplicationVariant() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
@@ -92,30 +75,6 @@ class FindbugsAndroidVariantIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildWhenFindbugsViolationsOverThresholdInProductFlavorVariant() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
-                .withSourceSet('demo', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
-                .withSourceSet('full', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 2
-                }''')
-                .withAdditionalAndroidConfig('''
-                    productFlavors {
-                        demo
-                    }
-                ''')
-                .withToolsConfig(DEFAULT_FINDBUGS_CONFIG)
-                .buildAndFail('check')
-
-        assertThat(result.logs).containsLimitExceeded(2, 0)
-        assertThat(result.logs).containsFindbugsViolations(2, 2,
-                result.buildFileUrl('reports/findbugs/demoDebug.html'),
-                result.buildFileUrl('reports/findbugs/demoRelease.html'))
-    }
-
-    @Test
     public void shouldFailBuildWhenFindbugsViolationsOverThresholdInActiveProductFlavorVariant() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
@@ -144,33 +103,6 @@ class FindbugsAndroidVariantIntegrationTest {
         assertThat(result.logs).containsFindbugsViolations(2, 2,
                 result.buildFileUrl('reports/findbugs/demoDebug.html'),
                 result.buildFileUrl('reports/findbugs/demoRelease.html'))
-    }
-
-    @Test
-    public void shouldNotFailBuildWhenFindbugsViolationsOverThresholdInIgnoredProductFlavorVariants() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
-                .withSourceSet('demo', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
-                .withSourceSet('full', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 2
-                }''')
-                .withAdditionalAndroidConfig('''
-                    productFlavors {
-                        demo
-                        full
-                    }
-
-                    variantFilter { variant ->
-                        variant.setIgnore(true)
-                    }
-                ''')
-                .withToolsConfig(DEFAULT_FINDBUGS_CONFIG)
-                .build('check')
-
-        assertThat(result.logs).doesNotContainLimitExceeded()
-        assertThat(result.logs).doesNotContainFindbugsViolations()
     }
 
     @Test
@@ -211,7 +143,7 @@ class FindbugsAndroidVariantIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsViolationsBelowThresholdInIncludedVariants() {
+    public void shouldContainFindbugsTasksForIncludedVariantsOnly() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
                 .withSourceSet('demo', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
@@ -236,31 +168,6 @@ class FindbugsAndroidVariantIntegrationTest {
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).containsFindbugsViolations(1, 1,
                 result.buildFileUrl('reports/findbugs/demoDebug.html'))
-    }
-
-    @Test
-    public void shouldContainFindbugsTasksForIncludedVariantsOnly() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Findbugs.SOURCES_WITH_LOW_VIOLATION)
-                .withSourceSet('demo', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
-                .withSourceSet('full', Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 1
-                    maxWarnings = 1
-                }''')
-                .withAdditionalAndroidConfig('''
-                    productFlavors {
-                        demo
-                        full
-                    }
-                ''')
-                .withToolsConfig("""
-                    findbugs {
-                        includeVariants { variant -> variant.name.equals('demoDebug') }
-                    }
-                """)
-                .build('check')
-
         def findbugsTasks = result.tasksPaths.findAll { it.startsWith(':findbugs') }
         Truth.assertThat(findbugsTasks).containsAllIn([":findbugsDemoDebug"])
         Truth.assertThat(findbugsTasks).containsNoneIn([
