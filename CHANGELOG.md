@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+[Version 0.4](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.4)
+--------------------------
+
+- Filtering for Android variants ([PR#28](https://github.com/novoda/gradle-static-analysis-plugin/pull/28))
+- Support for rules as maven artifact ([PR#27](https://github.com/novoda/gradle-static-analysis-plugin/pull/27))
+
 [Version 0.3.2](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.3.2)
 --------------------------
 
