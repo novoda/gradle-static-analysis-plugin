@@ -114,6 +114,20 @@ staticAnalysis {
 }
 ```
 
+#### Support for Android variants
+Sometimes using `exclude` filters could be not enough. When using the plugin in an Android project you may want to consider
+only one specific variant as part of the analysis. The plugin provides a way of defining which Android variant should be included
+via the `includeVariants` method added to each tool extension. Eg:
+```
+staticAnalysis {
+    findbugs {
+        includeVariants { variant ->
+            variant.name.equals('debug') // only the debug variant
+        }
+    }
+}
+```
+
 ### Current status / Roadmap
 
 The plugin is **under early development** and to be considered in pre-alpha stage.
@@ -128,5 +142,5 @@ Tool | Android | Java | Documentation |
 
 #### Support for sharable configurations
 
-We plan to add support for consuming rules (eg: configuration files for Checkstyle or PMD, default exclude filters, etc) via a
+The plugin can consume rules (eg: configuration files for Checkstyle or PMD, default exclude filters, etc) via a
 separate artifact you can share across projects. _More info to come._
