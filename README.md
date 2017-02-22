@@ -143,4 +143,4 @@ Tool | Android | Java | Documentation |
 #### Support for sharable configurations
 
 The plugin can consume rules (eg: configuration files for Checkstyle or PMD, default exclude filters, etc) via a
-separate artifact you can share across projects. _More info to come._
+separate artifact you can share across projects.
