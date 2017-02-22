@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal.findbugs
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
@@ -49,7 +50,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureAndroidProject(Object variants) {
+    protected void configureAndroidProject(NamedDomainObjectSet variants) {
         variants.all { variant ->
             FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
             List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()

@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
 import groovy.util.slurpersupport.GPathResult
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
@@ -41,7 +42,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureAndroidProject(Object variants) {
+    protected void configureAndroidProject(NamedDomainObjectSet variants) {
         project.with {
             variants.all { variant ->
                 variant.sourceSets.each { sourceSet ->
