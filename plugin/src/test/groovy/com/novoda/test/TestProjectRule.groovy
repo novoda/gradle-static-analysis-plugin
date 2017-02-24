@@ -8,19 +8,21 @@ final class TestProjectRule<T extends TestProject> implements TestRule {
 
     private final Closure<T> projectFactory
     private final Closure<String> sourceSetNameFactory
+    private final String label
     private T project
 
     static TestProjectRule<TestJavaProject> forJavaProject() {
-        new TestProjectRule({ new TestJavaProject() }, { String name -> "project.sourceSets.$name" })
+        new TestProjectRule({ new TestJavaProject() }, { String name -> "project.sourceSets.$name" }, 'Java project')
     }
 
     static TestProjectRule<TestAndroidProject> forAndroidProject() {
-        new TestProjectRule({ new TestAndroidProject() }, { String name -> "project.android.sourceSets.$name" })
+        new TestProjectRule({ new TestAndroidProject() }, { String name -> "project.android.sourceSets.$name" }, 'Android project')
     }
 
-    private TestProjectRule(Closure projectFactory, Closure sourceSetNameFactory) {
+    private TestProjectRule(Closure projectFactory, Closure sourceSetNameFactory, String label) {
         this.projectFactory = projectFactory
         this.sourceSetNameFactory = sourceSetNameFactory
+        this.label = label
     }
 
     public T newProject() {
@@ -41,6 +43,11 @@ final class TestProjectRule<T extends TestProject> implements TestRule {
                 project?.deleteDir()
             }
         }
+    }
+
+    @Override
+    String toString() {
+        label
     }
 
 }

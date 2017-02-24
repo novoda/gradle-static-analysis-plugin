@@ -15,7 +15,7 @@ public class PmdIntegrationTest {
 
     private static final String DEFAULT_RULES = "project.files('${Fixtures.Pmd.RULES.path}')"
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{0}")
     public static Iterable<TestProjectRule> rules() {
         return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }

@@ -20,7 +20,7 @@ class RulesIntegrationTest {
             resourceDirs: [Fixtures.Checkstyle.MODULES.parentFile.parentFile.parentFile],
             repoDir: new File(Fixtures.BUILD_DIR, 'rules'))
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{0}")
     public static Iterable<TestProjectRule> rules() {
         return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }

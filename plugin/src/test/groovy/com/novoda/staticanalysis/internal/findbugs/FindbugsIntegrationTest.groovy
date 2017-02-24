@@ -16,7 +16,7 @@ import static com.novoda.test.TestProjectSubject.assumeThat
 @RunWith(Parameterized.class)
 class FindbugsIntegrationTest {
 
-    @Parameterized.Parameters
+    @Parameterized.Parameters(name = "{0}")
     public static Iterable<TestProjectRule> rules() {
         return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }
