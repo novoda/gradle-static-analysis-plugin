@@ -3,7 +3,6 @@ package com.novoda.staticanalysis.internal.checkstyle
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import groovy.util.slurpersupport.GPathResult
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectSet
@@ -69,15 +68,12 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
         checkstyle.showViolations = false
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
-        checkstyle.doLast {
-            File xmlReportFile = checkstyle.reports.xml.destination
-            File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
 
-            GPathResult xml = new XmlSlurper().parse(xmlReportFile)
-            int errors = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'error' }.size()
-            int warnings = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'warning' }.size()
-            violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
+        project.tasks.create("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask) { collectTask ->
+            collectTask.xmlReportFile = checkstyle.reports.xml.destination
+            collectTask.violations = violations
+            collectTask.dependsOn checkstyle
+            evaluateViolations.dependsOn collectTask
         }
-        evaluateViolations.dependsOn checkstyle
     }
 }
