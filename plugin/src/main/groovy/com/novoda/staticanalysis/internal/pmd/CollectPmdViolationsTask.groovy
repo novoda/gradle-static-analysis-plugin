@@ -6,8 +6,7 @@ import com.novoda.staticanalysis.internal.Violations
 class CollectPmdViolationsTask extends CollectViolationsTask {
 
     @Override
-    void collectViolations(File xmlReportFile, Violations violations) {
-        File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
+    void collectViolations(File xmlReportFile, File htmlReportFile, Violations violations) {
         PmdViolationsEvaluator evaluator = new PmdViolationsEvaluator(xmlReportFile)
         int errors = 0, warnings = 0
         evaluator.collectViolations().each { PmdViolationsEvaluator.PmdViolation violation ->

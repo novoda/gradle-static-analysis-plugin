@@ -19,9 +19,13 @@ abstract class CollectViolationsTask extends DefaultTask {
     @TaskAction
     void run() {
         if (xmlReportFile?.exists()) {
-            collectViolations(xmlReportFile, violations)
+            collectViolations(xmlReportFile, htmlReportFile, violations)
         }
     }
 
-    abstract void collectViolations(File xmlReportFile, Violations violations)
+    File getHtmlReportFile() {
+        new File(xmlReportFile.absolutePath - '.xml' + '.html')
+    }
+
+    abstract void collectViolations(File xmlReportFile, File htmlReportFile, Violations violations)
 }
