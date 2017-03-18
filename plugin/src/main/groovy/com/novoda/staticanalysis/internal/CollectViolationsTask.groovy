@@ -8,6 +8,10 @@ abstract class CollectViolationsTask extends DefaultTask {
     private File xmlReportFile
     private Violations violations
 
+    CollectViolationsTask() {
+        onlyIf { xmlReportFile?.exists() }
+    }
+
     void setXmlReportFile(File xmlReportFile) {
         this.xmlReportFile = xmlReportFile
     }
@@ -17,10 +21,8 @@ abstract class CollectViolationsTask extends DefaultTask {
     }
 
     @TaskAction
-    void run() {
-        if (xmlReportFile?.exists()) {
-            collectViolations(xmlReportFile, htmlReportFile, violations)
-        }
+    final void run() {
+        collectViolations(xmlReportFile, htmlReportFile, violations)
     }
 
     File getHtmlReportFile() {
