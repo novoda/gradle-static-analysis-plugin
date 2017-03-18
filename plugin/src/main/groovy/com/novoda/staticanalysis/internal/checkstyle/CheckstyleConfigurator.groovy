@@ -4,6 +4,7 @@ import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
 import groovy.util.slurpersupport.GPathResult
+import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
@@ -64,7 +65,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureReportEvaluation(Checkstyle checkstyle) {
+    protected void configureReportEvaluation(Checkstyle checkstyle, Violations violations) {
         checkstyle.showViolations = false
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }

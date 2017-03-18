@@ -64,7 +64,7 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureReportEvaluation(Pmd pmd) {
+    protected void configureReportEvaluation(Pmd pmd, Violations violations) {
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
         pmd.doLast {

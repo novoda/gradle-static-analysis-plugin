@@ -48,7 +48,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 }
                 project.tasks.withType(taskClass) { task ->
                     task.group = 'verification'
-                    configureReportEvaluation(task)
+                    configureReportEvaluation(task, violations)
                 }
             }
         }
@@ -78,6 +78,6 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
 
     protected abstract Class<T> getTaskClass()
 
-    protected abstract void configureReportEvaluation(T task)
+    protected abstract void configureReportEvaluation(T task, Violations violations)
 
 }
