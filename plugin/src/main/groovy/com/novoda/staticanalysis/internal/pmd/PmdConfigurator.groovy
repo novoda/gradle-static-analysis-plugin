@@ -68,11 +68,16 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
 
-        project.tasks.create("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { collectTask ->
-            collectTask.xmlReportFile = pmd.reports.xml.destination
-            collectTask.violations = violations
-            collectTask.dependsOn pmd
-            evaluateViolations.dependsOn collectTask
+        def collectViolations = createViolationsCollectionTask(pmd, violations)
+
+        evaluateViolations.dependsOn collectViolations
+        collectViolations.dependsOn pmd
+    }
+
+    private CollectPmdViolationsTask createViolationsCollectionTask(Pmd pmd, Violations violations) {
+        project.tasks.create("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { collectViolations ->
+            collectViolations.xmlReportFile = pmd.reports.xml.destination
+            collectViolations.violations = violations
         }
     }
 

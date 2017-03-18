@@ -69,11 +69,16 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
 
-        project.tasks.create("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask) { collectTask ->
-            collectTask.xmlReportFile = checkstyle.reports.xml.destination
-            collectTask.violations = violations
-            collectTask.dependsOn checkstyle
-            evaluateViolations.dependsOn collectTask
+        def collectViolations = createCollectViolationsTask(checkstyle, violations)
+
+        evaluateViolations.dependsOn collectViolations
+        collectViolations.dependsOn checkstyle
+    }
+
+    private CollectCheckstyleViolationsTask createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {
+        project.tasks.create("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask) { collectViolations ->
+            collectViolations.xmlReportFile = checkstyle.reports.xml.destination
+            collectViolations.violations = violations
         }
     }
 }
