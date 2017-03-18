@@ -53,15 +53,13 @@ public class PmdIntegrationTest {
                 }''')
                 .withToolsConfig(pmd(DEFAULT_RULES))
 
-        TestProject.Result result = project
-                .buildAndFail('check')
+        TestProject.Result result = project.buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsPmdViolations(0, 1,
                 result.buildFileUrl('reports/pmd/main.html'))
 
-        result = project
-                .buildAndFail('check')
+        result = project.buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsPmdViolations(0, 1,

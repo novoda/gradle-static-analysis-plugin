@@ -159,7 +159,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withToolsConfig("findbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }" )
+                .withToolsConfig("findbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }")
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
