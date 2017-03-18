@@ -45,7 +45,7 @@ public class CheckstyleIntegrationTest {
 
     @Test
     public void shouldFailBuildAgainWhenCheckstyleWarningsStillOverTheThresholdAfterSecondRun() {
-        def x = projectRule.newProject()
+        def project = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
                     maxWarnings = 0
@@ -53,14 +53,14 @@ public class CheckstyleIntegrationTest {
                 }''')
                 .withToolsConfig(checkstyle(DEFAULT_CONFIG))
 
-        TestProject.Result result = x
+        TestProject.Result result = project
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsCheckstyleViolations(0, 1,
                 result.buildFileUrl('reports/checkstyle/main.html'))
 
-        result = x.buildAndFail('check')
+        result = project.buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsCheckstyleViolations(0, 1,

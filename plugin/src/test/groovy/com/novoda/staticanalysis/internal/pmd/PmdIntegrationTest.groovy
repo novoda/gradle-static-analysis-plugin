@@ -44,6 +44,31 @@ public class PmdIntegrationTest {
     }
 
     @Test
+    public void shouldFailBuildAgainWhenPmdWarningsStillOverTheThresholdAfterSecondRun() {
+        def project = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+                .withToolsConfig(pmd(DEFAULT_RULES))
+
+        TestProject.Result result = project
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsPmdViolations(0, 1,
+                result.buildFileUrl('reports/pmd/main.html'))
+
+        result = project
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsPmdViolations(0, 1,
+                result.buildFileUrl('reports/pmd/main.html'))
+    }
+
+    @Test
     public void shouldFailBuildWhenPmdErrorOverTheThreshold() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION, Fixtures.Pmd.SOURCES_WITH_PRIORITY_2_VIOLATION)

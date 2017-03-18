@@ -67,24 +67,13 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     protected void configureReportEvaluation(Pmd pmd, Violations violations) {
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
-        pmd.doLast {
-            File xmlReportFile = pmd.reports.xml.destination
-            File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
-            evaluateReports(xmlReportFile, htmlReportFile, violations)
+
+        project.tasks.create("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { collectTask ->
+            collectTask.xmlReportFile = pmd.reports.xml.destination
+            collectTask.violations = violations
+            collectTask.dependsOn pmd
+            evaluateViolations.dependsOn collectTask
         }
-        evaluateViolations.dependsOn pmd
     }
 
-    private static void evaluateReports(File xmlReportFile, File htmlReportFile, Violations violations) {
-        PmdViolationsEvaluator evaluator = new PmdViolationsEvaluator(xmlReportFile)
-        int errors = 0, warnings = 0
-        evaluator.collectViolations().each { PmdViolationsEvaluator.PmdViolation violation ->
-            if (violation.isError()) {
-                errors += 1
-            } else {
-                warnings += 1
-            }
-        }
-        violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
-    }
 }
