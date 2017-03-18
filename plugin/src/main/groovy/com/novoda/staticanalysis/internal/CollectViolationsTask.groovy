@@ -25,6 +25,10 @@ abstract class CollectViolationsTask extends DefaultTask {
         collectViolations(xmlReportFile, htmlReportFile, violations)
     }
 
+    File getXmlReportFile() {
+        return xmlReportFile
+    }
+
     File getHtmlReportFile() {
         new File(xmlReportFile.absolutePath - '.xml' + '.html')
     }
