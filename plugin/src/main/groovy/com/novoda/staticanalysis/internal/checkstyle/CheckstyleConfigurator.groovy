@@ -3,7 +3,7 @@ package com.novoda.staticanalysis.internal.checkstyle
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import groovy.util.slurpersupport.GPathResult
+import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
@@ -64,19 +64,21 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureReportEvaluation(Checkstyle checkstyle) {
+    protected void configureReportEvaluation(Checkstyle checkstyle, Violations violations) {
         checkstyle.showViolations = false
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
-        checkstyle.doLast {
-            File xmlReportFile = checkstyle.reports.xml.destination
-            File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
 
-            GPathResult xml = new XmlSlurper().parse(xmlReportFile)
-            int errors = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'error' }.size()
-            int warnings = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'warning' }.size()
-            violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
+        def collectViolations = createCollectViolationsTask(checkstyle, violations)
+
+        evaluateViolations.dependsOn collectViolations
+        collectViolations.dependsOn checkstyle
+    }
+
+    private CollectCheckstyleViolationsTask createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {
+        project.tasks.create("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask) { collectViolations ->
+            collectViolations.xmlReportFile = checkstyle.reports.xml.destination
+            collectViolations.violations = violations
         }
-        evaluateViolations.dependsOn checkstyle
     }
 }

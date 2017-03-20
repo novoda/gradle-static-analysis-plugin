@@ -15,7 +15,7 @@ public class CheckstyleIntegrationTest {
 
     public static final String DEFAULT_CONFIG = "configFile new File('${Fixtures.Checkstyle.MODULES.path}')"
 
-    @Parameterized.Parameters(name =  "{0}")
+    @Parameterized.Parameters(name = "{0}")
     public static Iterable<TestProjectRule> rules() {
         return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }
@@ -37,6 +37,29 @@ public class CheckstyleIntegrationTest {
                 }''')
                 .withToolsConfig(checkstyle(DEFAULT_CONFIG))
                 .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsCheckstyleViolations(0, 1,
+                result.buildFileUrl('reports/checkstyle/main.html'))
+    }
+
+    @Test
+    public void shouldFailBuildAfterSecondRunWhenCheckstyleWarningsStillOverTheThreshold() {
+        def project = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+                .withToolsConfig(checkstyle(DEFAULT_CONFIG))
+
+        TestProject.Result result = project.buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsCheckstyleViolations(0, 1,
+                result.buildFileUrl('reports/checkstyle/main.html'))
+
+        result = project.buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsCheckstyleViolations(0, 1,

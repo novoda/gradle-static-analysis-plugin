@@ -34,24 +34,48 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 config.delegate = it
                 config()
             }
-            project.afterEvaluate {
-                boolean isAndroidApp = project.plugins.hasPlugin('com.android.application')
-                boolean isAndroidLib = project.plugins.hasPlugin('com.android.library')
-                if (isAndroidApp || isAndroidLib) {
-                    NamedDomainObjectSet<Object> variants = project.container(Object)
-                    variants.addAll(isAndroidApp ? project.android.applicationVariants : project.android.libraryVariants)
-                    variants.addAll(project.android.testVariants)
-                    variants.addAll(project.android.unitTestVariants)
-                    configureAndroidProject(variants.matching { includeVariantsFilter(it) })
-                } else {
-                    configureJavaProject()
+            project.plugins.withId('com.android.application') {
+                project.afterEvaluate {
+                    configureAndroidProject(allApplicationVariants.matching { includeVariantsFilter(it) })
+                    configureToolTasks()
                 }
-                project.tasks.withType(taskClass) { task ->
-                    task.group = 'verification'
-                    configureReportEvaluation(task)
+            }
+            project.plugins.withId('com.android.library') {
+                project.afterEvaluate {
+                    configureAndroidProject(allLibraryVariants.matching { includeVariantsFilter(it) })
+                    configureToolTasks()
+                }
+            }
+            project.plugins.withId('java') {
+                project.afterEvaluate {
+                    configureJavaProject()
+                    configureToolTasks()
                 }
             }
         }
+    }
+
+    protected NamedDomainObjectSet<Object> getAllApplicationVariants() {
+        getAllVariants(project.android.applicationVariants)
+    }
+
+    protected void configureToolTasks() {
+        project.tasks.withType(taskClass) { task ->
+            task.group = 'verification'
+            configureReportEvaluation(task, violations)
+        }
+    }
+
+    protected NamedDomainObjectSet<Object> getAllLibraryVariants() {
+        getAllVariants(project.android.libraryVariants)
+    }
+
+    private NamedDomainObjectSet<Object> getAllVariants(variants1) {
+        NamedDomainObjectSet<Object> variants = project.container(Object)
+        variants.addAll(variants1)
+        variants.addAll(project.android.testVariants)
+        variants.addAll(project.android.unitTestVariants)
+        return variants
     }
 
     protected abstract String getToolName()
@@ -78,6 +102,6 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
 
     protected abstract Class<T> getTaskClass()
 
-    protected abstract void configureReportEvaluation(T task)
+    protected abstract void configureReportEvaluation(T task, Violations violations)
 
 }

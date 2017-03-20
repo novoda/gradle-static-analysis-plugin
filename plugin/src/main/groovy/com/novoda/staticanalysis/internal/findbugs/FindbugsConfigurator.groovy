@@ -2,6 +2,7 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
@@ -119,31 +120,32 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureReportEvaluation(FindBugs findBugs) {
+    protected void configureReportEvaluation(FindBugs findBugs, Violations violations) {
         findBugs.ignoreFailures = true
         findBugs.reports.xml.enabled = true
         findBugs.reports.html.enabled = false
-        File xmlReportFile = findBugs.reports.xml.destination
-        File htmlReportFile = new File(xmlReportFile.absolutePath - '.xml' + '.html')
-        findBugs.doLast {
-            evaluateReports(xmlReportFile, htmlReportFile)
+
+        def collectViolations = createViolationsCollectionTask(findBugs, violations)
+        def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
+
+        evaluateViolations.dependsOn collectViolations
+        collectViolations.dependsOn generateHtmlReport
+        generateHtmlReport.dependsOn findBugs
+    }
+
+    private CollectFindbugsViolationsTask createViolationsCollectionTask(FindBugs findBugs, Violations violations) {
+        project.tasks.create("collect${findBugs.name.capitalize()}Violations", CollectFindbugsViolationsTask) { collectViolations ->
+            collectViolations.xmlReportFile = findBugs.reports.xml.destination
+            collectViolations.violations = violations
         }
-        createHtmlReportTask(findBugs, xmlReportFile, htmlReportFile)
     }
 
-    private void evaluateReports(File xmlReportFile, File htmlReportFile) {
-        def evaluator = new FinbugsViolationsEvaluator(xmlReportFile)
-        violations.addViolations(evaluator.errorsCount(), evaluator.warningsCount(), htmlReportFile)
-    }
-
-    private GenerateHtmlReport createHtmlReportTask(FindBugs findBugs, File xmlReportFile, File htmlReportFile) {
-        project.tasks.create("generate${findBugs.name.capitalize()}HtmlReport", GenerateHtmlReport) { GenerateHtmlReport generateHtmlReport ->
+    private GenerateFindBugsHtmlReport createHtmlReportTask(FindBugs findBugs, File xmlReportFile, File htmlReportFile) {
+        project.tasks.create("generate${findBugs.name.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { generateHtmlReport ->
             generateHtmlReport.xmlReportFile = xmlReportFile
             generateHtmlReport.htmlReportFile = htmlReportFile
             generateHtmlReport.classpath = findBugs.findbugsClasspath
-            generateHtmlReport.dependsOn findBugs
             generateHtmlReport.onlyIf { xmlReportFile?.exists() }
-            evaluateViolations.dependsOn generateHtmlReport
         }
     }
 

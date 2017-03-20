@@ -45,6 +45,29 @@ class FindbugsIntegrationTest {
     }
 
     @Test
+    public void shouldFailBuildAfterSecondRunWhenFindbugsWarningsStillOverTheThreshold() {
+        def project = projectRule.newProject()
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 0
+                    maxWarnings = 1
+                }''')
+                .withToolsConfig('findbugs {}')
+
+        TestProject.Result result = project.buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsFindbugsViolations(0, 2,
+                result.buildFileUrl('reports/findbugs/debug.html'))
+
+        result = project.buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsFindbugsViolations(0, 2,
+                result.buildFileUrl('reports/findbugs/debug.html'))
+    }
+
+    @Test
     public void shouldDetectMoreWarningsWhenEffortIsMaxAndReportLevelIsLow() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
@@ -159,7 +182,7 @@ class FindbugsIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 10
                 }''')
-                .withToolsConfig("findbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }" )
+                .withToolsConfig("findbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }")
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
