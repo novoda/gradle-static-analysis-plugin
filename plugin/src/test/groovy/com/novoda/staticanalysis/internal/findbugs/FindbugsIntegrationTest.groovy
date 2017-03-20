@@ -45,7 +45,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildAgainWhenFindbugsWarningsStillOverTheThresholdAfterSecondRun() {
+    public void shouldFailBuildAfterSecondRunWhenFindbugsWarningsStillOverTheThreshold() {
         def project = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withPenalty('''{

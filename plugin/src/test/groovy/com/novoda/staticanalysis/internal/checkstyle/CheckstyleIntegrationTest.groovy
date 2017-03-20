@@ -44,7 +44,7 @@ public class CheckstyleIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildAgainWhenCheckstyleWarningsStillOverTheThresholdAfterSecondRun() {
+    public void shouldFailBuildAfterSecondRunWhenCheckstyleWarningsStillOverTheThreshold() {
         def project = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{

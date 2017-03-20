@@ -44,7 +44,7 @@ public class PmdIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildAgainWhenPmdWarningsStillOverTheThresholdAfterSecondRun() {
+    public void shouldFailBuildAfterSecondRunWhenPmdWarningsStillOverTheThreshold() {
         def project = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_3_VIOLATION)
                 .withPenalty('''{
