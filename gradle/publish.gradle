@@ -37,8 +37,10 @@ task prepareGhCredentials {
     description = 'Prepare GitHub credentials'
     group = 'release'
     doLast {
-        System.properties['org.ajoberstar.grgit.auth.username'] = buildProperties.secrets['git.username'].string
-        System.properties['org.ajoberstar.grgit.auth.password'] = buildProperties.secrets['git.password'].string
+        String username = buildProperties.env['GITHUB_USERNAME'].or(buildProperties.secrets['github.username']).string
+        String password = buildProperties.env['GITHUB_TOKEN'].or(buildProperties.secrets['github.password']).string
+        System.properties['org.ajoberstar.grgit.auth.username'] = username
+        System.properties['org.ajoberstar.grgit.auth.password'] = password
     }
 }
 
