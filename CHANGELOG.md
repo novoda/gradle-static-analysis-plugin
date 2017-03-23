@@ -1,11 +1,17 @@
 Change Log
 ==========
 
+[Version 0.4.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.4.1)
+--------------------------
+
+- Ensure invariant over multiple successive runs ([PR#30](https://github.com/novoda/gradle-static-analysis-plugin/pull/30))
+
 [Version 0.4](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.4)
 --------------------------
 
 - Filtering for Android variants ([PR#28](https://github.com/novoda/gradle-static-analysis-plugin/pull/28))
 - Support for rules as maven artifact ([PR#27](https://github.com/novoda/gradle-static-analysis-plugin/pull/27))
+- Added support for custom base url for reports in logs ([PR#25](https://github.com/novoda/gradle-static-analysis-plugin/pull/25))
 
 [Version 0.3.2](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.3.2)
 --------------------------
