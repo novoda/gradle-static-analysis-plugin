@@ -1,0 +1,18 @@
+System.setProperty('sonar.host.url', 'http://localhost:9000')
+System.setProperty('sonar.login', 'admin')
+System.setProperty('sonar.password', 'admin')
+System.setProperty('sonar.projectVersion', project.version)
+System.setProperty('sonar.projectKey', 'gradle-static-analysis-plugin')
+System.setProperty('sonar.projectName', 'Gradle Static Analysis Plugin')
+System.setProperty('sonar.projectBaseDir', rootProject.projectDir.path)
+System.setProperty('sonar.modules', 'plugin')
+
+project.apply plugin: 'org.sonarqube'
+sonarqube {
+    properties {
+        property "${project.name}.sonar.projectBaseDir", project.name
+        property "${project.name}.sonar.sources", project.sourceSets.main.groovy.srcDirs
+        property "${project.name}.sonar.tests", project.sourceSets.test.groovy.srcDirs
+        property "${project.name}.sonar.jacoco.reportPaths", "$project.buildDir/jacoco/test.exec"
+    }
+}

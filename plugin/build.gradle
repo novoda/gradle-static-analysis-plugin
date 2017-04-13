@@ -1,6 +1,8 @@
 apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
+apply plugin: 'jacoco'
 apply from: rootProject.file('gradle/publish.gradle')
+apply from: rootProject.file('gradle/sonar.gradle')
 
 sourceCompatibility = JavaVersion.VERSION_1_7
 targetCompatibility = JavaVersion.VERSION_1_7
