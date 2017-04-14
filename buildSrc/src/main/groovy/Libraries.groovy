@@ -1,7 +1,7 @@
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 
-public class Libraries {
+class Libraries {
     final junit = 'junit:junit:4.12'
     final truth = 'com.google.truth:truth:0.30'
     final guava = 'com.google.guava:guava:19.0'
