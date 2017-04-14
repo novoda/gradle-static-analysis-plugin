@@ -2,16 +2,16 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 
 public class Libraries {
+    public final String junit = 'junit:junit:4.12'
+    public final String truth = 'com.google.truth:truth:0.30'
+    public final String guava = 'com.google.guava:guava:19.0'
+    public final Findbugs findbugs = new Findbugs()
+
     private final Project project
 
     public Libraries(Project project) {
         this.project = project
     }
-
-    public final String junit = 'junit:junit:4.12'
-    public final String truth = 'com.google.truth:truth:0.30'
-    public final String guava = 'com.google.guava:guava:19.0'
-    public final Findbugs findbugs = new Findbugs()
 
     public Dependency getGradleApi() {
         project.dependencies.gradleApi()
