@@ -8,5 +8,4 @@ class DependenciesPlugin implements Plugin<Project> {
         project.extensions.create('gradlePlugins', GradlePlugins)
         project.extensions.create('libraries', Libraries, project)
     }
-
 }

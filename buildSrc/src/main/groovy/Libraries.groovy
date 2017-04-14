@@ -4,7 +4,7 @@ import org.gradle.api.artifacts.Dependency
 public class Libraries {
     private final Project project
 
-    Libraries(Project project) {
+    public Libraries(Project project) {
         this.project = project
     }
 
