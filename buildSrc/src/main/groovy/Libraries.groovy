@@ -2,10 +2,10 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 
 public class Libraries {
-    public final String junit = 'junit:junit:4.12'
-    public final String truth = 'com.google.truth:truth:0.30'
-    public final String guava = 'com.google.guava:guava:19.0'
-    public final Findbugs findbugs = new Findbugs()
+    final junit = 'junit:junit:4.12'
+    final truth = 'com.google.truth:truth:0.30'
+    final guava = 'com.google.guava:guava:19.0'
+    final findbugs = new Findbugs()
 
     private final Project project
 
@@ -13,15 +13,15 @@ public class Libraries {
         this.project = project
     }
 
-    public Dependency getGradleApi() {
+    def getGradleApi() {
         project.dependencies.gradleApi()
     }
 
-    public Dependency getGradleTestKit() {
+    def getGradleTestKit() {
         project.dependencies.gradleTestKit()
     }
 
     private static class Findbugs {
-        public final String annotations = 'com.google.code.findbugs:jsr305:3.0.0'
+        final annotations = 'com.google.code.findbugs:jsr305:3.0.0'
     }
 }
