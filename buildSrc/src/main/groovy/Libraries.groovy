@@ -1,5 +1,4 @@
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Dependency
 
 class Libraries {
     final junit = 'junit:junit:4.12'
@@ -9,7 +8,7 @@ class Libraries {
 
     private final Project project
 
-    public Libraries(Project project) {
+    Libraries(Project project) {
         this.project = project
     }
 
