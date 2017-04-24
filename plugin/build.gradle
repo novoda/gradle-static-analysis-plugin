@@ -2,9 +2,6 @@ apply plugin: 'groovy'
 apply plugin: 'java-gradle-plugin'
 apply from: rootProject.file('gradle/publish.gradle')
 
-sourceCompatibility = JavaVersion.VERSION_1_7
-targetCompatibility = JavaVersion.VERSION_1_7
-
 sourceSets {
     test {
         java {
@@ -23,13 +20,13 @@ sourceSets {
 }
 
 dependencies {
-    compile gradleApi()
+    compile libraries.gradleApi
 
-    testCompile gradleTestKit()
-    testCompile 'junit:junit:4.12'
-    testCompile 'com.google.truth:truth:0.30'
-    testCompile 'com.google.guava:guava:19.0'
-    testCompile 'com.google.code.findbugs:jsr305:3.0.0'
+    testCompile libraries.gradleTestKit
+    testCompile libraries.junit
+    testCompile libraries.truth
+    testCompile libraries.guava
+    testCompile libraries.findbugs.annotations
 
     testRuntime files(pluginUnderTestMetadata)
 }

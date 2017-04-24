@@ -1,16 +1,25 @@
+apply plugin: DependenciesPlugin
+
 subprojects {
     buildscript {
         repositories {
             jcenter()
         }
         dependencies {
-            classpath 'com.novoda:bintray-release:0.4.0'
-            classpath 'com.novoda:gradle-build-properties-plugin:0.2'
-            classpath 'org.ajoberstar:gradle-git:1.6.0'
+            classpath gradlePlugins.bintrayRelease
+            classpath gradlePlugins.buildProperties
+            classpath gradlePlugins.gradleGit
         }
     }
 
     repositories {
         jcenter()
+    }
+
+    project.plugins.withType(JavaBasePlugin) {
+        project.with {
+            sourceCompatibility = JavaVersion.VERSION_1_7
+            targetCompatibility = JavaVersion.VERSION_1_7
+        }
     }
 }
