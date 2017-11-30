@@ -5,5 +5,5 @@ repositories {
 apply plugin: 'groovy'
 
 dependencies {
-    compile gradleApi()
+    implementation gradleApi()
 }
