@@ -4,29 +4,31 @@ class TestAndroidProject extends TestProject<TestAndroidProject> {
     private static final Closure<String> TEMPLATE = { TestAndroidProject project ->
         """
 buildscript {
-    repositories {
+    repositories { 
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 plugins {
     id 'com.novoda.static-analysis'
 }
-repositories {
+repositories { 
+    google()
     jcenter()
 }
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 27
+    buildToolsVersion '27.0.0'
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionCode 1
-        versionName "1.0"
+        versionName '1.0'
     }
     sourceSets {
         ${formatSourceSets(project)}
