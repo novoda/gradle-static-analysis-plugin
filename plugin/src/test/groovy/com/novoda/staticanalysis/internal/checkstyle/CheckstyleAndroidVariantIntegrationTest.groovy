@@ -81,10 +81,12 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxErrors = 0
                     maxWarnings = 1
                 }''')
-                .withAdditionalAndroidConfig('''
+                .withAdditionalAndroidConfig('''    
+                    flavorDimensions 'tier'
+
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
 
                     variantFilter { variant ->
@@ -113,9 +115,11 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier\'
+
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
                 ''')
                 .withToolsConfig(DEFAULT_CHECKSTYLE_CONFIG)
@@ -161,9 +165,11 @@ class CheckstyleAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier\'
+
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
                 ''')
                 .withToolsConfig("""
