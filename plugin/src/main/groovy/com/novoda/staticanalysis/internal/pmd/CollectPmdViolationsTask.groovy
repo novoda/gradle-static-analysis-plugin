@@ -17,7 +17,7 @@ class CollectPmdViolationsTask extends CollectViolationsTask {
                 warnings += 1
             }
         }
-        violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
+        violations.plus(errors, warnings, htmlReportFile ?: xmlReportFile)
     }
 
 }
