@@ -1,13 +1,13 @@
 package com.novoda.staticanalysis
 
 import org.gradle.api.Project
-
 /**
  * This extension can be used to change the rendering of the logs printed by the plugin.
  */
 class LogsExtension {
 
-    private ReportUrlRenderer reportUrlRenderer = ReportUrlRenderer.DEFAULT
+    private ReportUrlRenderer reportUrlRenderer = ReportUrlRenderer.Default.INSTANCE
+
     final Project project
 
     LogsExtension(Project project) {

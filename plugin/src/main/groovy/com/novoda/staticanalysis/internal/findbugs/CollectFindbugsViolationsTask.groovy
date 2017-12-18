@@ -8,6 +8,6 @@ class CollectFindbugsViolationsTask extends CollectViolationsTask {
     @Override
     void collectViolations(File xmlReportFile, File htmlReportFile, Violations violations) {
         def evaluator = new FinbugsViolationsEvaluator(xmlReportFile)
-        violations.addViolations(evaluator.errorsCount(), evaluator.warningsCount(), htmlReportFile)
+        violations.plus(evaluator.errorsCount(), evaluator.warningsCount(), htmlReportFile)
     }
 }

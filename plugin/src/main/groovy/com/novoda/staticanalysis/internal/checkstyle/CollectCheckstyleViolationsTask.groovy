@@ -11,7 +11,7 @@ class CollectCheckstyleViolationsTask extends CollectViolationsTask {
         GPathResult xml = new XmlSlurper().parse(xmlReportFile)
         int errors = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'error' }.size()
         int warnings = xml.'**'.findAll { node -> node.name() == 'error' && node.@severity == 'warning' }.size()
-        violations.addViolations(errors, warnings, htmlReportFile ?: xmlReportFile)
+        violations.plus(errors, warnings, htmlReportFile ?: xmlReportFile)
     }
 
 }

@@ -21,6 +21,7 @@ sourceSets {
 
 dependencies {
     implementation libraries.gradleApi
+    implementation project(':plugin-kotlin')
 
     testCompile libraries.gradleTestKit
     testCompile libraries.junit
