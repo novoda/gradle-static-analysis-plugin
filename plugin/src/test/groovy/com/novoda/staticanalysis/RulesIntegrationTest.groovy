@@ -17,7 +17,7 @@ class RulesIntegrationTest {
 
     @ClassRule
     public static final DeployRulesTestRule DEPLOY_RULES = new DeployRulesTestRule(
-            resourceDirs: [Fixtures.Checkstyle.MODULES.parentFile.parentFile.parentFile],
+            resourceDirs: [Fixtures.RULES_DIR],
             repoDir: new File(Fixtures.BUILD_DIR, 'rules'))
 
     @Parameterized.Parameters(name = "{0}")
