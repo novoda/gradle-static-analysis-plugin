@@ -20,7 +20,7 @@ sourceSets {
 }
 
 dependencies {
-    compile libraries.gradleApi
+    implementation libraries.gradleApi
 
     testCompile libraries.gradleTestKit
     testCompile libraries.junit

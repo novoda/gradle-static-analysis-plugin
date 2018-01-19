@@ -85,9 +85,10 @@ class FindbugsAndroidVariantIntegrationTest {
                     maxWarnings = 2
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier'
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
 
                     variantFilter { variant ->
@@ -116,9 +117,10 @@ class FindbugsAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier'
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
                 ''')
                 .withToolsConfig(DEFAULT_FINDBUGS_CONFIG)
@@ -153,9 +155,10 @@ class FindbugsAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier'
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
                 ''')
                 .withToolsConfig("""

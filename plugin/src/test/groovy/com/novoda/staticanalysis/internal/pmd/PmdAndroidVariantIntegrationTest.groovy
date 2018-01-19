@@ -80,9 +80,10 @@ class PmdAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier'
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
 
                     variantFilter { variant ->
@@ -111,9 +112,10 @@ class PmdAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier'
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
                 ''')
                 .withToolsConfig(DEFAULT_PMD_RULES)
@@ -159,9 +161,10 @@ class PmdAndroidVariantIntegrationTest {
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
+                    flavorDimensions 'tier'
                     productFlavors {
-                        demo
-                        full
+                        demo { dimension 'tier' }
+                        full { dimension 'tier' }
                     }
                 ''')
                 .withToolsConfig("""

@@ -30,7 +30,6 @@ ${project.additionalConfiguration}
         this.projectDir = createProjectDir("${System.currentTimeMillis()}")
         this.gradleRunner = GradleRunner.create()
                 .withProjectDir(projectDir)
-                .withDebug(true)
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
