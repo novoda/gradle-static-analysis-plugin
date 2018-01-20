@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Pmd
@@ -12,8 +13,15 @@ import org.gradle.api.plugins.quality.PmdExtension
 
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
-    PmdConfigurator(Project project, EvaluateViolationsTask evaluateViolations) {
-        super(project, evaluateViolations.maybeCreate('PMD'), evaluateViolations)
+    static PmdConfigurator create(Project project,
+                                  NamedDomainObjectContainer<Violations> violationsContainer,
+                                  EvaluateViolationsTask evaluateViolationsTask) {
+        Violations violations = violationsContainer.maybeCreate('PMD')
+        return new PmdConfigurator(project, violations, evaluateViolationsTask)
+    }
+
+    private PmdConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolationsTask) {
+        super(project, violations, evaluateViolationsTask)
     }
 
     @Override
