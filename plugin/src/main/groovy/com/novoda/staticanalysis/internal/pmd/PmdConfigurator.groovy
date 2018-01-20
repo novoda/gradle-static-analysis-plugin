@@ -20,7 +20,9 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
         return new PmdConfigurator(project, violations, evaluateViolationsTask)
     }
 
-    private PmdConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolationsTask) {
+    private PmdConfigurator(Project project,
+                            Violations violations,
+                            EvaluateViolationsTask evaluateViolationsTask) {
         super(project, violations, evaluateViolationsTask)
     }
 

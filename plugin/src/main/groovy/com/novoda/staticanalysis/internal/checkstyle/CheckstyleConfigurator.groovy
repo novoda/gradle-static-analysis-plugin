@@ -20,7 +20,9 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
         return new CheckstyleConfigurator(project, violations, evaluateViolationsTask)
     }
 
-    private CheckstyleConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolationsTask) {
+    private CheckstyleConfigurator(Project project,
+                                   Violations violations,
+                                   EvaluateViolationsTask evaluateViolationsTask) {
         super(project, violations, evaluateViolationsTask)
     }
 

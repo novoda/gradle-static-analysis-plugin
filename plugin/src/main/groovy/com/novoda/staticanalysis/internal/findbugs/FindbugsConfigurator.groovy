@@ -4,6 +4,7 @@ import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.file.ConfigurableFileTree
@@ -16,8 +17,17 @@ import java.nio.file.Path
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
-    FindbugsConfigurator(Project project, EvaluateViolationsTask evaluateViolations) {
-        super(project, evaluateViolations.maybeCreate('Findbugs'), evaluateViolations)
+    static FindbugsConfigurator create(Project project,
+                                       NamedDomainObjectContainer<Violations> violationsContainer,
+                                       EvaluateViolationsTask evaluateViolationsTask) {
+        Violations violations = violationsContainer.maybeCreate('Findbugs')
+        return new FindbugsConfigurator(project, violations, evaluateViolationsTask)
+    }
+
+    private FindbugsConfigurator(Project project,
+                                 Violations violations,
+                                 EvaluateViolationsTask evaluateViolationsTask) {
+        super(project, violations, evaluateViolationsTask)
     }
 
     @Override

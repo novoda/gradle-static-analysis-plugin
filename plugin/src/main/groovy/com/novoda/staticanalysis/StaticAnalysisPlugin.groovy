@@ -37,7 +37,7 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         [
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolationsTask),
                 PmdConfigurator.create(project, violationsContainer, evaluateViolationsTask),
-                new FindbugsConfigurator(project, evaluateViolationsTask)
+                FindbugsConfigurator.create(project, violationsContainer, evaluateViolationsTask)
         ]
     }
 }
