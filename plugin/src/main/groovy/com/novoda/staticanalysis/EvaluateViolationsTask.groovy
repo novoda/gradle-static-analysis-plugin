@@ -24,10 +24,6 @@ class EvaluateViolationsTask extends DefaultTask {
         this.violationsContainer = allViolations
     }
 
-    Violations maybeCreate(String name) {
-        violationsContainer.maybeCreate(name)
-    }
-
     ReportUrlRenderer getReportUrlRenderer() {
         reportUrlRenderer
     }
