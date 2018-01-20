@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.plugins.quality.Checkstyle
@@ -12,8 +13,15 @@ import org.gradle.api.plugins.quality.CheckstyleExtension
 
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
-    CheckstyleConfigurator(Project project, EvaluateViolationsTask evaluateViolationsTask) {
-        super(project, evaluateViolationsTask.maybeCreate('Checkstyle'), evaluateViolationsTask)
+    static CheckstyleConfigurator create(Project project,
+                                         NamedDomainObjectContainer<Violations> violationsContainer,
+                                         EvaluateViolationsTask evaluateViolationsTask) {
+        Violations violations = violationsContainer.maybeCreate('Checkstyle')
+        return new CheckstyleConfigurator(project, violations, evaluateViolationsTask)
+    }
+
+    private CheckstyleConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolationsTask) {
+        super(project, violations, evaluateViolationsTask)
     }
 
     @Override
