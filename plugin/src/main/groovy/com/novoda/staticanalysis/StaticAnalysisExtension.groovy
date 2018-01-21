@@ -5,7 +5,6 @@ import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
-import org.gradle.api.logging.Logger
 
 class StaticAnalysisExtension {
 
@@ -66,11 +65,11 @@ class StaticAnalysisExtension {
         rules
     }
 
-    Logger getLogger() {
-        project.logger
-    }
-
     NamedDomainObjectContainer<Violations> getAllViolations() {
         allViolations
+    }
+
+    ViolationsEvaluator getEvaluator() {
+        new DefaultViolationsEvaluator(reportUrlRenderer, project.logger)
     }
 }
