@@ -27,6 +27,7 @@ dependencies {
     testCompile libraries.truth
     testCompile libraries.guava
     testCompile libraries.findbugs.annotations
+    testCompile libraries.mockito
 
     testRuntime files(pluginUnderTestMetadata)
 }
