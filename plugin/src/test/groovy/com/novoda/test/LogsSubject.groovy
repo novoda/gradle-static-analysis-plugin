@@ -13,9 +13,9 @@ import static com.novoda.test.TestProject.Result.Logs;
 
 class LogsSubject extends Subject<LogsSubject, Logs> {
     private static final String VIOLATIONS_LIMIT_EXCEEDED = "Violations limit exceeded"
-    private static final String CHECKSTYLE_VIOLATIONS_FOUND = "Checkstyle rule violations were found"
-    private static final String PMD_VIOLATIONS_FOUND = "PMD rule violations were found"
-    private static final String FINDBUGS_VIOLATIONS_FOUND = "Findbugs rule violations were found"
+    private static final String CHECKSTYLE_VIOLATIONS_FOUND = "Checkstyle violations found"
+    private static final String PMD_VIOLATIONS_FOUND = "PMD violations found"
+    private static final String FINDBUGS_VIOLATIONS_FOUND = "Findbugs violations found"
     private static final SubjectFactory<LogsSubject, Logs> FACTORY = new SubjectFactory<LogsSubject, Logs>() {
         @Override
         LogsSubject getSubject(FailureStrategy failureStrategy, Logs logs) {
