@@ -30,7 +30,7 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
     }
 
     private static String getViolationsMessage(Violations violations, ReportUrlRenderer reportUrlRenderer) {
-        "$violations.name rule allViolations were found ($violations.errors errors, $violations.warnings warnings). See the reports at:\n" +
+        "$violations.name violations found ($violations.errors errors, $violations.warnings warnings). See the reports at:\n" +
                 "${violations.reports.collect { "- ${reportUrlRenderer.render(it)}" }.join('\n')}"
     }
 }
