@@ -25,9 +25,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
     private static Task createEvaluateViolationsTask(Project project,
                                                      StaticAnalysisExtension extension) {
         project.tasks.create('evaluateViolations', EvaluateViolationsTask) { task ->
-            task.violations = { extension.allViolations as Violations[] }
             task.evaluator = { extension.evaluator }
-            task.penalty = { extension.penalty }
+            task.input = { new ViolationsEvaluator.Input(extension.penalty, extension.allViolations as Violations[]) }
         }
     }
 
