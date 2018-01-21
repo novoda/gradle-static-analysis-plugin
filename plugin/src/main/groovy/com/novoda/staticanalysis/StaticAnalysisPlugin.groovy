@@ -8,21 +8,22 @@ import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 class StaticAnalysisPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
         StaticAnalysisExtension pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
-        EvaluateViolationsTask evaluateViolationsTask = createEvaluateViolationsTask(project, pluginExtension)
-        createConfigurators(project, pluginExtension, evaluateViolationsTask).each { configurator -> configurator.execute() }
+        Task evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
+        createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
         project.afterEvaluate {
-            project.tasks['check'].dependsOn evaluateViolationsTask
+            project.tasks['check'].dependsOn evaluateViolations
         }
     }
 
-    private static EvaluateViolationsTask createEvaluateViolationsTask(Project project,
-                                                                       StaticAnalysisExtension extension) {
+    private static Task createEvaluateViolationsTask(Project project,
+                                                     StaticAnalysisExtension extension) {
         project.tasks.create('evaluateViolations', EvaluateViolationsTask) { task ->
             task.penaltyExtension = extension.penalty
             task.violationsContainer = extension.allViolations
@@ -32,12 +33,12 @@ class StaticAnalysisPlugin implements Plugin<Project> {
 
     private static List<CodeQualityConfigurator> createConfigurators(Project project,
                                                                      StaticAnalysisExtension pluginExtension,
-                                                                     EvaluateViolationsTask evaluateViolationsTask) {
+                                                                     Task evaluateViolations) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
         [
-                CheckstyleConfigurator.create(project, violationsContainer, evaluateViolationsTask),
-                PmdConfigurator.create(project, violationsContainer, evaluateViolationsTask),
-                FindbugsConfigurator.create(project, violationsContainer, evaluateViolationsTask)
+                CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),
+                PmdConfigurator.create(project, violationsContainer, evaluateViolations),
+                FindbugsConfigurator.create(project, violationsContainer, evaluateViolations)
         ]
     }
 }
