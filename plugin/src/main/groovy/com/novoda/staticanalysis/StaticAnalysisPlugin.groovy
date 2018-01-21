@@ -13,27 +13,27 @@ class StaticAnalysisPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        NamedDomainObjectContainer<Violations> violationsContainer = project.container(Violations)
-        EvaluateViolationsTask evaluateViolations = createEvaluateViolationsTask(project, violationsContainer)
-        createConfigurators(project, violationsContainer, evaluateViolations).each { configurator -> configurator.execute() }
+        StaticAnalysisExtension pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
+        EvaluateViolationsTask evaluateViolationsTask = createEvaluateViolationsTask(project, pluginExtension)
+        createConfigurators(project, pluginExtension, evaluateViolationsTask).each { configurator -> configurator.execute() }
         project.afterEvaluate {
-            project.tasks['check'].dependsOn evaluateViolations
+            project.tasks['check'].dependsOn evaluateViolationsTask
         }
     }
 
     private static EvaluateViolationsTask createEvaluateViolationsTask(Project project,
-                                                                       NamedDomainObjectContainer<Violations> violationsContainer) {
-        StaticAnalysisExtension extension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
+                                                                       StaticAnalysisExtension extension) {
         project.tasks.create('evaluateViolations', EvaluateViolationsTask) { task ->
             task.penaltyExtension = extension.penalty
-            task.violationsContainer = violationsContainer
+            task.violationsContainer = extension.allViolations
             task.conventionMapping.putAt('reportUrlRenderer', { extension.reportUrlRenderer })
         }
     }
 
     private static List<CodeQualityConfigurator> createConfigurators(Project project,
-                                                                     NamedDomainObjectContainer<Violations> violationsContainer,
+                                                                     StaticAnalysisExtension pluginExtension,
                                                                      EvaluateViolationsTask evaluateViolationsTask) {
+        NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
         [
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolationsTask),
                 PmdConfigurator.create(project, violationsContainer, evaluateViolationsTask),
