@@ -24,10 +24,10 @@ class DefaultViolationsEvaluatorTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder()
 
     private Project project
-    private StaticAnalysisExtension extension
-    private Logger logger = mock(Logger)
+    private PenaltyExtension penalty
     private Violations violations
     private File reportFile
+    private Logger logger = mock(Logger)
 
     private DefaultViolationsEvaluator evaluator
 
@@ -36,26 +36,19 @@ class DefaultViolationsEvaluatorTest {
         project = ProjectBuilder.builder()
                 .withProjectDir(temporaryFolder.newFolder())
                 .build()
-        extension = new StaticAnalysisExtension(project) {
-            @Override
-            Logger getLogger() {
-                DefaultViolationsEvaluatorTest.this.logger
-            }
-        }
-        extension.penalty {
-            it.maxErrors = 1
-            it.maxWarnings = 1
-        }
-        violations = extension.allViolations.create(TOOL_NAME)
+        penalty = new PenaltyExtension()
+        penalty.maxErrors = 1
+        penalty.maxWarnings = 1
+        violations = new Violations(TOOL_NAME)
         reportFile = temporaryFolder.newFile('report.xml')
-        evaluator = new DefaultViolationsEvaluator()
+        evaluator = new DefaultViolationsEvaluator(ReportUrlRenderer.DEFAULT, logger)
     }
 
     @Test
     void shouldLogViolationsNumberWhenBelowThreshold() {
         violations.addViolations(1, 0, reportFile)
 
-        evaluator.evaluate(extension)
+        evaluator.evaluate(penalty, violations)
 
         assertThat(warningLog).contains("$TOOL_NAME violations found (1 errors, 0 warnings).")
     }
@@ -64,7 +57,7 @@ class DefaultViolationsEvaluatorTest {
     void shouldNotLogViolationsNumberWhenNoViolations() {
         violations.addViolations(0, 0, reportFile)
 
-        evaluator.evaluate(extension)
+        evaluator.evaluate(penalty, violations)
 
         assertThat(warningLog).doesNotContain("$TOOL_NAME violations found")
     }
@@ -74,7 +67,7 @@ class DefaultViolationsEvaluatorTest {
         violations.addViolations(1, 2, reportFile)
 
         try {
-            evaluator.evaluate(extension)
+            evaluator.evaluate(penalty, violations)
             fail('Exception expected but not thrown')
         } catch (GradleException e) {
             assertThat(e.message).contains('Violations limit exceeded by 0 errors, 1 warnings.')

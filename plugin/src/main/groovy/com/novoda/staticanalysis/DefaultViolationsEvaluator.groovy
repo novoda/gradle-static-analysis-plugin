@@ -2,16 +2,23 @@ package com.novoda.staticanalysis
 
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.GradleException
+import org.gradle.api.logging.Logger
 
 class DefaultViolationsEvaluator implements ViolationsEvaluator {
 
+    private final ReportUrlRenderer reportUrlRenderer
+    private final Logger logger
+
+    DefaultViolationsEvaluator(ReportUrlRenderer reportUrlRenderer, Logger logger) {
+        this.reportUrlRenderer = reportUrlRenderer
+        this.logger = logger
+    }
+
     @Override
-    void evaluate(StaticAnalysisExtension pluginExtension) {
-        PenaltyExtension penaltyExtension = pluginExtension.penalty
-        ReportUrlRenderer reportUrlRenderer = pluginExtension.reportUrlRenderer
+    void evaluate(PenaltyExtension penaltyExtension, Violations... allViolations) {
         Map<String, Integer> total = [errors: 0, warnings: 0]
         String fullMessage = '\n'
-        pluginExtension.allViolations.each { Violations violations ->
+        allViolations.each { Violations violations ->
             int errors = violations.errors
             int warnings = violations.warnings
             if (errors > 0 || warnings > 0) {
@@ -25,7 +32,7 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
         if (errorsDiff > 0 || warningsDiff > 0) {
             throw new GradleException("Violations limit exceeded by $errorsDiff errors, $warningsDiff warnings.\n$fullMessage")
         } else {
-            pluginExtension.logger.warn fullMessage
+            logger.warn fullMessage
         }
     }
 
