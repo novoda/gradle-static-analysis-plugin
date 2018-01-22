@@ -8,16 +8,21 @@ interface ViolationsEvaluator {
 
     static class Input {
 
-        private final PenaltyExtension penaltyExtension
+        private final PenaltyExtension penalty
         private final Violations[] allViolations
 
-        Input(PenaltyExtension penaltyExtension, Violations... allViolations) {
-            this.penaltyExtension = penaltyExtension
+        Input(PenaltyExtension penalty, Set<Violations> allViolations) {
+            this.penalty = penalty
+            this.allViolations = allViolations as List
+        }
+
+        Input(PenaltyExtension penalty, Violations... allViolations) {
+            this.penalty = penalty
             this.allViolations = allViolations
         }
 
-        PenaltyExtension getPenaltyExtension() {
-            penaltyExtension
+        PenaltyExtension getPenalty() {
+            penalty
         }
 
         Violations[] getAllViolations() {

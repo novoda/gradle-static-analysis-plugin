@@ -28,8 +28,8 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
                 total['warnings'] += warnings
             }
         }
-        int errorsDiff = Math.max(0, total['errors'] - input.penaltyExtension.maxErrors)
-        int warningsDiff = Math.max(0, total['warnings'] - input.penaltyExtension.maxWarnings)
+        int errorsDiff = Math.max(0, total['errors'] - input.penalty.maxErrors)
+        int warningsDiff = Math.max(0, total['warnings'] - input.penalty.maxWarnings)
         if (errorsDiff > 0 || warningsDiff > 0) {
             throw new GradleException("Violations limit exceeded by $errorsDiff errors, $warningsDiff warnings.\n$fullMessage")
         } else {
