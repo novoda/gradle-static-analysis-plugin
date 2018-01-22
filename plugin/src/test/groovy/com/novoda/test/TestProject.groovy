@@ -120,6 +120,10 @@ ${project.additionalConfiguration}
         projectDir.deleteDir()
     }
 
+    String projectDir(){
+        return projectDir
+    }
+
     protected static String formatExtension(TestProject project) {
         EXTENSION_TEMPLATE.call(project)
     }
