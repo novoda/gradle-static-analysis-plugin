@@ -5,7 +5,7 @@ final class TestKotlinProject extends TestProject<TestKotlinProject> {
     private static final Closure<String> TEMPLATE = { TestProject project ->
         """
 plugins {
-    id 'com.novoda.static-analysis'
+    ${formatPlugins(project)}
 }
 repositories {
     jcenter()

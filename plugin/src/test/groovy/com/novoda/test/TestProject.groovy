@@ -22,6 +22,7 @@ ${project.additionalConfiguration}
     private final Closure<String> template
     String additionalConfiguration = ''
     Map<String, List<File>> sourceSets = [main: []]
+    List<String> additionalPlugins = []
     String penalty
     String toolsConfig = ''
 
@@ -33,6 +34,7 @@ ${project.additionalConfiguration}
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
+        withPlugins('com.novoda.static-analysis')
     }
 
     private static File createProjectDir(String path) {
@@ -82,6 +84,15 @@ ${project.additionalConfiguration}
         return this
     }
 
+    public T withPlugins(String... plugins) {
+        def formattedPlugins = plugins.collect { plugin ->
+            "id '$plugin'"
+        }.asList()
+
+        additionalPlugins.addAll(formattedPlugins)
+        return this
+    }
+
     public Result build(String... arguments) {
         BuildResult buildResult = newRunner(arguments).build()
         createResult(buildResult)
@@ -111,6 +122,10 @@ ${project.additionalConfiguration}
 
     protected static String formatExtension(TestProject project) {
         EXTENSION_TEMPLATE.call(project)
+    }
+
+    protected static String formatPlugins(TestProject project) {
+        "${project.additionalPlugins.join(',\n')}"
     }
 
     public static class Result {
