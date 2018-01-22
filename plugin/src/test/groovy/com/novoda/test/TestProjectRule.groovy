@@ -19,6 +19,10 @@ final class TestProjectRule<T extends TestProject> implements TestRule {
         new TestProjectRule({ new TestAndroidProject() }, { String name -> "project.android.sourceSets.$name" }, 'Android project')
     }
 
+    static TestProjectRule<TestJavaProject> forKotlinProject() {
+        new TestProjectRule({ new TestKotlinProject() }, { String name -> "project.sourceSets.$name" }, 'Kotlin project')
+    }
+
     private TestProjectRule(Closure projectFactory, Closure sourceSetNameFactory, String label) {
         this.projectFactory = projectFactory
         this.sourceSetNameFactory = sourceSetNameFactory
