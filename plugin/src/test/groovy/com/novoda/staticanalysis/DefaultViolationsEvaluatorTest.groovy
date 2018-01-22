@@ -3,9 +3,7 @@ package com.novoda.staticanalysis
 import com.novoda.staticanalysis.ViolationsEvaluator.Input
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.api.logging.Logger
-import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -24,7 +22,6 @@ class DefaultViolationsEvaluatorTest {
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder()
 
-    private Project project
     private PenaltyExtension penalty
     private Violations violations
     private File reportFile
@@ -34,9 +31,6 @@ class DefaultViolationsEvaluatorTest {
 
     @Before
     void setUp() {
-        project = ProjectBuilder.builder()
-                .withProjectDir(temporaryFolder.newFolder())
-                .build()
         penalty = new PenaltyExtension()
         penalty.maxErrors = 1
         penalty.maxWarnings = 1
