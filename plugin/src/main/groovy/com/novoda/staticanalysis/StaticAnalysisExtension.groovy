@@ -5,6 +5,7 @@ import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectFactory
 import org.gradle.api.Project
+import org.gradle.api.logging.Logger
 
 class StaticAnalysisExtension {
 
@@ -24,7 +25,6 @@ class StaticAnalysisExtension {
     }
 
     private final Project project
-    private final PenaltyExtension currentPenalty
     private final LogsExtension logs
     private final NamedDomainObjectContainer<Violations> allViolations
     private final NamedDomainObjectContainer<RulesExtension> rules
@@ -32,7 +32,6 @@ class StaticAnalysisExtension {
 
     StaticAnalysisExtension(Project project) {
         this.project = project
-        this.currentPenalty = new PenaltyExtension()
         this.logs = new LogsExtension(project)
         this.allViolations = project.container(Violations)
         this.rules = project.container(RulesExtension, new NamedDomainObjectFactory<RulesExtension>() {
@@ -42,12 +41,16 @@ class StaticAnalysisExtension {
             }
         })
         this.createEvaluator = {
-            new DefaultViolationsEvaluator(reportUrlRenderer, project.logger, currentPenalty)
+            new DefaultViolationsEvaluator(reportUrlRenderer, logger, new PenaltyExtension())
         }
     }
 
     void penalty(Action<? super PenaltyExtension> action) {
-        action.execute(currentPenalty)
+        this.createEvaluator = {
+            PenaltyExtension penalty = new PenaltyExtension()
+            action.execute(penalty)
+            new DefaultViolationsEvaluator(reportUrlRenderer, logger, penalty)
+        }
     }
 
     void logs(Action<? super LogsExtension> action) {
@@ -56,10 +59,6 @@ class StaticAnalysisExtension {
 
     void rules(Action<? super NamedDomainObjectContainer<RulesExtension>> action) {
         action.execute(rules)
-    }
-
-    PenaltyExtension getPenalty() {
-        currentPenalty
     }
 
     ReportUrlRenderer getReportUrlRenderer() {
@@ -76,6 +75,10 @@ class StaticAnalysisExtension {
 
     ViolationsEvaluator getEvaluator() {
         createEvaluator()
+    }
+
+    Logger getLogger() {
+        project.logger
     }
 
     void evaluator(Action<? super Set<Violations>> action) {
