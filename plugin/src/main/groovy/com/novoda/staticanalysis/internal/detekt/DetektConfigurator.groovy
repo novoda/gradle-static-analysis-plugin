@@ -20,6 +20,12 @@ public class DetektConfigurator {
 
             project.apply plugin: 'io.gitlab.arturbosch.detekt'
 
+            project.extensions.findByName('detekt').with {
+                // apply configuration closure to detekt extension
+                config.delegate = it
+                config()
+            }
+
             if (project.tasks.findByName('detektCheck')) {
                 def detektTask = project.tasks.findByName('detektCheck')
                 project.tasks.findByName('check').dependsOn(detektTask)

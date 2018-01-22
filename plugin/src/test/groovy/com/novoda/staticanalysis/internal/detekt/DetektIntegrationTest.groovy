@@ -47,6 +47,7 @@ class DetektIntegrationTest {
             profile('main') { 
                 config = "${Fixtures.Detekt.RULES}" 
                 output = "${testProject.projectDir()}/build/reports"
+                input = "${Fixtures.Detekt.SOURCES_WITH_WARNINGS}"
             }
         }
         """
