@@ -42,7 +42,7 @@ class StaticAnalysisExtension {
             }
         })
         this.createEvaluator = {
-            new DefaultViolationsEvaluator(reportUrlRenderer, project.logger)
+            new DefaultViolationsEvaluator(reportUrlRenderer, project.logger, currentPenalty)
         }
     }
 
@@ -78,16 +78,12 @@ class StaticAnalysisExtension {
         createEvaluator()
     }
 
-    ViolationsEvaluator.Input getEvaluatorInput() {
-        new ViolationsEvaluator.Input(penalty, allViolations)
-    }
-
-    void evaluator(Action<? super ViolationsEvaluator.Input> action) {
+    void evaluator(Action<? super Set<Violations>> action) {
         createEvaluator = {
             new ViolationsEvaluator() {
                 @Override
-                void evaluate(ViolationsEvaluator.Input input) {
-                    action.execute(input)
+                void evaluate(Set<Violations> allViolations) {
+                    action.execute(allViolations)
                 }
             }
         }

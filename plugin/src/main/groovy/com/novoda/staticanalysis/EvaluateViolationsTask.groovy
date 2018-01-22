@@ -1,12 +1,13 @@
 package com.novoda.staticanalysis
 
+import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 class EvaluateViolationsTask extends DefaultTask {
 
     Closure<ViolationsEvaluator> evaluator
-    Closure<ViolationsEvaluator.Input> input
+    Closure<Set<Violations>> allViolations
 
     EvaluateViolationsTask() {
         group = 'verification'
@@ -16,6 +17,6 @@ class EvaluateViolationsTask extends DefaultTask {
 
     @TaskAction
     void run() {
-        evaluator().evaluate(input())
+        evaluator().evaluate(allViolations())
     }
 }

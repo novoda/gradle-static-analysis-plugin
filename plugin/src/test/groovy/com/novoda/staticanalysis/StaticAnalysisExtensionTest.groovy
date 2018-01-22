@@ -1,6 +1,6 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.ViolationsEvaluator.Input
+import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -38,7 +38,7 @@ class StaticAnalysisExtensionTest {
         extension.evaluator { throw e }
 
         try {
-            extension.evaluator.evaluate(extension.evaluatorInput)
+            extension.evaluator.evaluate(extension.allViolations)
 
             fail('Exception expected but not thrown')
         } catch (Exception thrown) {
@@ -47,26 +47,14 @@ class StaticAnalysisExtensionTest {
     }
 
     @Test
-    void shouldProvidePenaltyFromExtensionToDefineCustomEvaluator() {
-        Input capturedInput = null
-        extension.evaluator { input ->
-            capturedInput = input
-        }
-
-        extension.evaluator.evaluate(extension.evaluatorInput)
-
-        assertThat(capturedInput.penalty).isEqualTo(extension.penalty)
-    }
-
-    @Test
     void shouldProvideViolationsFromExtensionToDefineCustomEvaluator() {
-        Input capturedInput = null
-        extension.evaluator { input ->
-            capturedInput = input
+        Set<Violations> capturedViolations = null
+        extension.evaluator { allViolations ->
+            capturedViolations = allViolations
         }
 
-        extension.evaluator.evaluate(extension.evaluatorInput)
+        extension.evaluator.evaluate(extension.allViolations)
 
-        assertThat(capturedInput.allViolations).containsAllIn(extension.allViolations)
+        assertThat(capturedViolations).containsAllIn(extension.allViolations)
     }
 }

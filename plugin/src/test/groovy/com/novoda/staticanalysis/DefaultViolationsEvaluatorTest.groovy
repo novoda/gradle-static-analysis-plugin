@@ -1,6 +1,5 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.ViolationsEvaluator.Input
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
@@ -36,14 +35,14 @@ class DefaultViolationsEvaluatorTest {
         penalty.maxWarnings = 1
         violations = new Violations(TOOL_NAME)
         reportFile = temporaryFolder.newFile('report.xml')
-        evaluator = new DefaultViolationsEvaluator(ReportUrlRenderer.DEFAULT, logger)
+        evaluator = new DefaultViolationsEvaluator(ReportUrlRenderer.DEFAULT, logger, penalty)
     }
 
     @Test
     void shouldLogViolationsNumberWhenBelowThreshold() {
         violations.addViolations(1, 0, reportFile)
 
-        evaluator.evaluate(input)
+        evaluator.evaluate(allViolations)
 
         assertThat(warningLog).contains("$TOOL_NAME violations found (1 errors, 0 warnings).")
     }
@@ -52,7 +51,7 @@ class DefaultViolationsEvaluatorTest {
     void shouldNotLogViolationsNumberWhenNoViolations() {
         violations.addViolations(0, 0, reportFile)
 
-        evaluator.evaluate(input)
+        evaluator.evaluate(allViolations)
 
         assertThat(warningLog).doesNotContain("$TOOL_NAME violations found")
     }
@@ -62,15 +61,15 @@ class DefaultViolationsEvaluatorTest {
         violations.addViolations(1, 2, reportFile)
 
         try {
-            evaluator.evaluate(input)
+            evaluator.evaluate(allViolations)
             fail('Exception expected but not thrown')
         } catch (GradleException e) {
             assertThat(e.message).contains('Violations limit exceeded by 0 errors, 1 warnings.')
         }
     }
 
-    private Input getInput() {
-        new Input(penalty, violations)
+    private Set<Violations> getAllViolations() {
+        [violations] as Set<Violations>
     }
 
     private String getWarningLog() {
