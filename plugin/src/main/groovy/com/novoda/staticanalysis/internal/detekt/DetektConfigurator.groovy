@@ -18,6 +18,8 @@ public class DetektConfigurator {
                 return
             }
 
+            project.apply plugin: 'io.gitlab.arturbosch.detekt'
+
             if (project.tasks.findByName('detektCheck')) {
                 def detektTask = project.tasks.findByName('detektCheck')
                 project.tasks.findByName('check').dependsOn(detektTask)
