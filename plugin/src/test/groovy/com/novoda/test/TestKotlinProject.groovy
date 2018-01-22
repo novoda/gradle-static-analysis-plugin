@@ -4,12 +4,20 @@ final class TestKotlinProject extends TestProject<TestKotlinProject> {
 
     private static final Closure<String> TEMPLATE = { TestProject project ->
         """
+buildscript {
+    repositories { 
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.1.4-3'
+    }
+}
+
 plugins {
     ${formatPlugins(project)}
 }
-repositories {
-    jcenter()
-}
+
 apply plugin: 'kotlin'
 sourceSets {
     ${formatSourceSets(project)}
