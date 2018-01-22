@@ -3,6 +3,7 @@ package com.novoda.staticanalysis
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.Violations
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
+import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
 import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
 import org.gradle.api.NamedDomainObjectContainer
@@ -17,6 +18,9 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         StaticAnalysisExtension pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
         Task evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
         createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
+
+        new DetektConfigurator(project).execute()
+
         project.afterEvaluate {
             project.tasks['check'].dependsOn evaluateViolations
         }

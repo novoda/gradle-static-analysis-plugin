@@ -1,107 +1,37 @@
-package com.novoda.staticanalysis.internal
+package com.novoda.staticanalysis.internal.detekt
 
 import com.novoda.staticanalysis.StaticAnalysisExtension
-import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
-import org.gradle.api.Task
-import org.gradle.api.plugins.quality.CodeQualityExtension
-import org.gradle.api.tasks.SourceTask
 
-abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> {
+public class DetektConfigurator {
 
     protected final Project project
-    protected final Violations violations
-    protected final Task evaluateViolations
-    protected final SourceFilter sourceFilter
-    protected Closure<Boolean> includeVariantsFilter
 
-    protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    protected DetektConfigurator(Project project) {
         this.project = project
-        this.violations = violations
-        this.evaluateViolations = evaluateViolations
-        this.sourceFilter = new SourceFilter(project)
-        this.includeVariantsFilter = { true }
     }
 
     void execute() {
-        project.extensions.findByType(StaticAnalysisExtension).ext."$toolName" = { Closure config ->
-            project.apply plugin: toolPlugin
-            project.extensions.findByType(extensionClass).with {
-                defaultConfiguration.execute(it)
-                ext.exclude = { Object rule -> sourceFilter.exclude(rule) }
-                ext.includeVariants = { Closure<Boolean> filter -> includeVariantsFilter = filter }
-                config.delegate = it
-                config()
+        project.extensions.findByType(StaticAnalysisExtension).ext."detekt" = { Closure config ->
+
+            if (!isKotlinProject(project)) {
+                return
             }
-            project.plugins.withId('com.android.application') {
-                project.afterEvaluate {
-                    configureAndroidProject(allApplicationVariants.matching { includeVariantsFilter(it) })
-                    configureToolTasks()
-                }
-            }
-            project.plugins.withId('com.android.library') {
-                project.afterEvaluate {
-                    configureAndroidProject(allLibraryVariants.matching { includeVariantsFilter(it) })
-                    configureToolTasks()
-                }
-            }
-            project.plugins.withId('java') {
-                project.afterEvaluate {
-                    configureJavaProject()
-                    configureToolTasks()
-                }
+
+            if (project.tasks.findByName('detektCheck')) {
+                def detektTask = project.tasks.findByName('detektCheck')
+                project.tasks.findByName('check').dependsOn(detektTask)
+
             }
         }
     }
 
-    protected NamedDomainObjectSet<Object> getAllApplicationVariants() {
-        getAllVariants(project.android.applicationVariants)
+    private static boolean isKotlinProject(final Project project) {
+        final boolean isKotlin = project.plugins.hasPlugin('kotlin')
+        final boolean isKotlinAndroid = project.plugins.hasPlugin('kotlin-android')
+        final boolean isKotlinPlatformCommon = project.plugins.hasPlugin('kotlin-platform-common')
+        final boolean isKotlinPlatformJvm = project.plugins.hasPlugin('kotlin-platform-jvm')
+        final boolean isKotlinPlatformJs = project.plugins.hasPlugin('kotlin-platform-js')
+        return isKotlin || isKotlinAndroid || isKotlinPlatformCommon || isKotlinPlatformJvm || isKotlinPlatformJs
     }
-
-    protected void configureToolTasks() {
-        project.tasks.withType(taskClass) { task ->
-            task.group = 'verification'
-            configureReportEvaluation(task, violations)
-        }
-    }
-
-    protected NamedDomainObjectSet<Object> getAllLibraryVariants() {
-        getAllVariants(project.android.libraryVariants)
-    }
-
-    private NamedDomainObjectSet<Object> getAllVariants(variants1) {
-        NamedDomainObjectSet<Object> variants = project.container(Object)
-        variants.addAll(variants1)
-        variants.addAll(project.android.testVariants)
-        variants.addAll(project.android.unitTestVariants)
-        return variants
-    }
-
-    protected abstract String getToolName()
-
-    protected Object getToolPlugin() {
-        toolName
-    }
-
-    protected abstract Class<E> getExtensionClass()
-
-    protected Action<E> getDefaultConfiguration() {
-        new Action<E>() {
-            void execute(E ignored) {
-                // no op
-            }
-        }
-    }
-
-    protected abstract void configureAndroidProject(NamedDomainObjectSet variants)
-
-    protected void configureJavaProject() {
-        project.tasks.withType(taskClass) { task -> sourceFilter.applyTo(task) }
-    }
-
-    protected abstract Class<T> getTaskClass()
-
-    protected abstract void configureReportEvaluation(T task, Violations violations)
-
 }
