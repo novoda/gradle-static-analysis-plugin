@@ -9,23 +9,23 @@ interface ViolationsEvaluator {
     static class Input {
 
         private final PenaltyExtension penalty
-        private final Violations[] allViolations
+        private final Set<Violations> allViolations
 
         Input(PenaltyExtension penalty, Set<Violations> allViolations) {
             this.penalty = penalty
-            this.allViolations = allViolations as List
+            this.allViolations = allViolations
         }
 
         Input(PenaltyExtension penalty, Violations... allViolations) {
             this.penalty = penalty
-            this.allViolations = allViolations
+            this.allViolations = allViolations as Set
         }
 
         PenaltyExtension getPenalty() {
             penalty
         }
 
-        Violations[] getAllViolations() {
+        Set<Violations> getAllViolations() {
             allViolations
         }
     }

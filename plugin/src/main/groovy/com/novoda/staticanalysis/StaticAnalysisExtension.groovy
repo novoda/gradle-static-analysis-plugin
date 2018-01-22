@@ -23,14 +23,16 @@ class StaticAnalysisExtension {
         it.maxErrors = 0
     }
 
-    private PenaltyExtension currentPenalty = new PenaltyExtension()
     private final Project project
+    private final PenaltyExtension currentPenalty
     private final LogsExtension logs
     private final NamedDomainObjectContainer<Violations> allViolations
     private final NamedDomainObjectContainer<RulesExtension> rules
+    private Closure<ViolationsEvaluator> createEvaluator
 
     StaticAnalysisExtension(Project project) {
         this.project = project
+        this.currentPenalty = new PenaltyExtension()
         this.logs = new LogsExtension(project)
         this.allViolations = project.container(Violations)
         this.rules = project.container(RulesExtension, new NamedDomainObjectFactory<RulesExtension>() {
@@ -39,6 +41,9 @@ class StaticAnalysisExtension {
                 new RulesExtension(name, project)
             }
         })
+        this.createEvaluator = {
+            new DefaultViolationsEvaluator(reportUrlRenderer, project.logger)
+        }
     }
 
     void penalty(Action<? super PenaltyExtension> action) {
@@ -70,6 +75,21 @@ class StaticAnalysisExtension {
     }
 
     ViolationsEvaluator getEvaluator() {
-        new DefaultViolationsEvaluator(reportUrlRenderer, project.logger)
+        createEvaluator()
+    }
+
+    ViolationsEvaluator.Input getEvaluatorInput() {
+        new ViolationsEvaluator.Input(penalty, allViolations)
+    }
+
+    void evaluator(Action<? super ViolationsEvaluator.Input> action) {
+        createEvaluator = {
+            new ViolationsEvaluator() {
+                @Override
+                void evaluate(ViolationsEvaluator.Input input) {
+                    action.execute(input)
+                }
+            }
+        }
     }
 }
