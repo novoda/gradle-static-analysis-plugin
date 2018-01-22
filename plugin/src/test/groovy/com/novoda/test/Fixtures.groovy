@@ -44,4 +44,9 @@ public final class Fixtures {
         public static final File SAMPLE_REPORT = new File(REPORTS_DIR, 'findbugs/reports/sample.xml')
     }
 
+    final static class Detekt{
+        public static final File SOURCES_WITH_WARNINGS = new File(SOURCES_DIR, 'detekt/warnings')
+        public static final File RULES = new File(RULES_DIR, 'detekt/detekt.yml')
+    }
+
 }
