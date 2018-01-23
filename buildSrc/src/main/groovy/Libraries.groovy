@@ -4,6 +4,7 @@ class Libraries {
     final junit = 'junit:junit:4.12'
     final truth = 'com.google.truth:truth:0.30'
     final guava = 'com.google.guava:guava:19.0'
+    final mockito = 'org.mockito:mockito-core:2.13.0'
     final findbugs = new Findbugs()
 
     private final Project project

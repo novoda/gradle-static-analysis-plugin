@@ -26,7 +26,7 @@ class Violations {
         return reports
     }
 
-    public void addViolations(int errors, int warnings, File report) {
+    void addViolations(int errors, int warnings, File report) {
         this.errors += errors
         this.warnings += warnings
         if (errors > 0 || warnings > 0) {
@@ -34,4 +34,7 @@ class Violations {
         }
     }
 
+    boolean isEmpty() {
+        errors == 0 && warnings == 0
+    }
 }
