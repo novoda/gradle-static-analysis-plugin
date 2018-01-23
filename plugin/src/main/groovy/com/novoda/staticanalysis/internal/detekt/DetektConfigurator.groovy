@@ -5,13 +5,13 @@ import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-public class DetektConfigurator {
+class DetektConfigurator {
 
     private final Project project
     private final Violations violations
     private final Task evaluateViolations
 
-    public DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
