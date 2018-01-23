@@ -1,11 +1,12 @@
 package com.novoda.staticanalysis.internal.detekt
 
 import com.novoda.staticanalysis.StaticAnalysisExtension
+import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-class DetektConfigurator {
+class DetektConfigurator implements Configurator{
 
     private final Project project
     private final Violations violations
@@ -17,6 +18,7 @@ class DetektConfigurator {
         this.evaluateViolations = evaluateViolations
     }
 
+    @Override
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext."detekt" = { Closure config ->
 

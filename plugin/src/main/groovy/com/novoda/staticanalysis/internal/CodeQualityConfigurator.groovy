@@ -8,7 +8,7 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
 
-abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> {
+abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> implements Configurator {
 
     protected final Project project
     protected final Violations violations
@@ -24,6 +24,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         this.includeVariantsFilter = { true }
     }
 
+    @Override
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext."$toolName" = { Closure config ->
             project.apply plugin: toolPlugin
