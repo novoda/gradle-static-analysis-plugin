@@ -21,14 +21,13 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
         Map<String, Integer> total = [errors: 0, warnings: 0]
         String fullMessage = '\n'
         allViolations.each { Violations violations ->
-            int errors = violations.errors
-            int warnings = violations.warnings
-            if (errors > 0 || warnings > 0) {
+            if (!violations.isEmpty()) {
                 fullMessage += "> ${getViolationsMessage(violations, reportUrlRenderer)}\n"
-                total['errors'] += errors
-                total['warnings'] += warnings
             }
         }
+        total['errors'] = allViolations.collect { it.errors }.sum() as int
+        total['warnings'] = allViolations.collect { it.warnings }.sum() as int
+
         int errorsDiff = Math.max(0, total['errors'] - penalty.maxErrors)
         int warningsDiff = Math.max(0, total['warnings'] - penalty.maxWarnings)
         if (errorsDiff > 0 || warningsDiff > 0) {
