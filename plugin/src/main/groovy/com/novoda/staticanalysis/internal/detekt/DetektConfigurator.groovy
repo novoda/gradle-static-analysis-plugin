@@ -49,9 +49,9 @@ class DetektConfigurator implements Configurator {
     }
 
     private void configureToolTask() {
-        def detektTask = project.tasks.findByName('detektCheck')
+        def detektTask = project.tasks['detektCheck']
         // run detekt as part of check
-        project.tasks.findByName('check').dependsOn(detektTask)
+        project.tasks['check'].dependsOn(detektTask)
 
         // evaluate violations after detekt
         detektTask.group = 'verification'
