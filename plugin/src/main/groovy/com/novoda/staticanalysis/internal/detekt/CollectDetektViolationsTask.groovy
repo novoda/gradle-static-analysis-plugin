@@ -1,10 +1,10 @@
-package com.novoda.staticanalysis.internal.checkstyle
+package com.novoda.staticanalysis.internal.detekt
 
 import com.novoda.staticanalysis.internal.CollectViolationsTask
 import com.novoda.staticanalysis.internal.Violations
 import groovy.util.slurpersupport.GPathResult
 
-class CollectCheckstyleViolationsTask extends CollectViolationsTask {
+class CollectDetektViolationsTask extends CollectViolationsTask {
 
     @Override
     void collectViolations(File xmlReportFile, File htmlReportFile, Violations violations) {
