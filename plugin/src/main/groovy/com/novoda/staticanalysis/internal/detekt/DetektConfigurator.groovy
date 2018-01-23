@@ -1,14 +1,20 @@
 package com.novoda.staticanalysis.internal.detekt
 
 import com.novoda.staticanalysis.StaticAnalysisExtension
+import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 public class DetektConfigurator {
 
-    protected final Project project
+    private final Project project
+    private final Violations violations
+    private final Task evaluateViolations
 
-    protected DetektConfigurator(Project project) {
+    public DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
+        this.violations = violations
+        this.evaluateViolations = evaluateViolations
     }
 
     void execute() {
@@ -20,6 +26,7 @@ public class DetektConfigurator {
 
             project.apply plugin: 'io.gitlab.arturbosch.detekt'
 
+
             project.extensions.findByName('detekt').with {
                 // apply configuration closure to detekt extension
                 config.delegate = it
@@ -27,10 +34,28 @@ public class DetektConfigurator {
             }
 
             if (project.tasks.findByName('detektCheck')) {
-                def detektTask = project.tasks.findByName('detektCheck')
-                project.tasks.findByName('check').dependsOn(detektTask)
-
+                configureToolTask()
             }
+        }
+    }
+
+    private void configureToolTask() {
+        def detektTask = project.tasks.findByName('detektCheck')
+        // run detekt as part of check
+        project.tasks.findByName('check').dependsOn(detektTask)
+
+        // evaluate violations after detekt
+        detektTask.group = 'verification'
+        def collectViolations = createCollectViolationsTask(violations)
+        evaluateViolations.dependsOn collectViolations
+        collectViolations.dependsOn detektTask
+    }
+
+    private CollectDetektViolationsTask createCollectViolationsTask(Violations violations) {
+        project.tasks.create("collectDetektViolations", CollectDetektViolationsTask) { collectViolations ->
+            //TODO: resolve path to report file
+            collectViolations.xmlReportFile = null
+            collectViolations.violations = violations
         }
     }
 
