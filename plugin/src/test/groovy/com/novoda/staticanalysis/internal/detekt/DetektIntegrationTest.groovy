@@ -47,6 +47,9 @@ class DetektIntegrationTest {
             profile('main') { 
                 config = "${Fixtures.Detekt.RULES}" 
                 output = "${testProject.projectDir()}/build/reports"
+                // The input just needs to be configured for the tests. 
+                // Probably detekt doesn't pick up the changed source sets. 
+                // In a example project it was not needed.
                 input = "${Fixtures.Detekt.SOURCES_WITH_WARNINGS}"
             }
         }
