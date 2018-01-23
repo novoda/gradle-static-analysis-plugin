@@ -3,16 +3,24 @@ package com.novoda.staticanalysis.internal.detekt
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.Violations
+import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-class DetektConfigurator implements Configurator{
+class DetektConfigurator implements Configurator {
 
     private final Project project
     private final Violations violations
     private final Task evaluateViolations
 
-    DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    static DetektConfigurator create(Project project,
+                                     NamedDomainObjectContainer<Violations> violationsContainer,
+                                     Task evaluateViolations) {
+        Violations violations = violationsContainer.maybeCreate('Detekt')
+        return new DetektConfigurator(project, violations, evaluateViolations)
+    }
+
+    private DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations

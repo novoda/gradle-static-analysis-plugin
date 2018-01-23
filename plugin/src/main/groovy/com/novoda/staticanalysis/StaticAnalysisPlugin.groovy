@@ -19,8 +19,6 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         Task evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
         createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
 
-        new DetektConfigurator(project, pluginExtension.allViolations.maybeCreate("Detekt"), evaluateViolations).execute()
-
         project.afterEvaluate {
             project.tasks['check'].dependsOn evaluateViolations
         }
@@ -41,7 +39,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         [
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),
                 PmdConfigurator.create(project, violationsContainer, evaluateViolations),
-                FindbugsConfigurator.create(project, violationsContainer, evaluateViolations)
+                FindbugsConfigurator.create(project, violationsContainer, evaluateViolations),
+                DetektConfigurator.create(project, violationsContainer, evaluateViolations)
         ]
     }
 }
