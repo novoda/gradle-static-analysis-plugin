@@ -26,7 +26,6 @@ public class DetektConfigurator {
 
             project.apply plugin: 'io.gitlab.arturbosch.detekt'
 
-
             project.extensions.findByName('detekt').with {
                 // apply configuration closure to detekt extension
                 config.delegate = it
@@ -52,9 +51,10 @@ public class DetektConfigurator {
     }
 
     private CollectDetektViolationsTask createCollectViolationsTask(Violations violations) {
+        def reportFilePath = "${project.extensions.findByName('detekt').systemOrDefaultProfile().output}/detekt-checkstyle.xml"
+
         project.tasks.create("collectDetektViolations", CollectDetektViolationsTask) { collectViolations ->
-            //TODO: resolve path to report file
-            collectViolations.xmlReportFile = null
+            collectViolations.xmlReportFile = new File(reportFilePath)
             collectViolations.violations = violations
         }
     }
