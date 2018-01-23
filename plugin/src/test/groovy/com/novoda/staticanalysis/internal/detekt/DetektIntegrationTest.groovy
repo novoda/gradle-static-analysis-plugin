@@ -60,5 +60,32 @@ class DetektIntegrationTest {
         assertThat(result.logs).containsLimitExceeded(0, 1)
     }
 
+    @Test
+    void shouldFailBuildWhenDetektErrorsOverTheThreshold() {
+        def testProject = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+
+        def detektConfiguration = """
+        detekt { 
+            profile('main') { 
+                config = "${Fixtures.Detekt.RULES}" 
+                output = "${testProject.projectDir()}/build/reports"
+                input = "${Fixtures.Detekt.SOURCES_WITH_ERRORS}"
+            }
+        }
+        """
+
+        testProject = testProject.withToolsConfig(detektConfiguration)
+
+        TestProject.Result result = testProject
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLimitExceeded(1, 0)
+    }
+
 }
 
