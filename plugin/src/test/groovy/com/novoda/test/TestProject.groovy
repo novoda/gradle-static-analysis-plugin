@@ -22,7 +22,7 @@ ${project.additionalConfiguration}
     private final Closure<String> template
     String additionalConfiguration = ''
     Map<String, List<File>> sourceSets = [main: []]
-    List<String> additionalPlugins = []
+    List<String> plugins = []
     String penalty
     String toolsConfig = ''
 
@@ -89,7 +89,7 @@ ${project.additionalConfiguration}
             "id '$plugin'"
         }.asList()
 
-        additionalPlugins.addAll(formattedPlugins)
+        this.plugins.addAll(formattedPlugins)
         return this
     }
 
@@ -129,7 +129,7 @@ ${project.additionalConfiguration}
     }
 
     protected static String formatPlugins(TestProject project) {
-        "${project.additionalPlugins.join(',\n')}"
+        "${project.plugins.join(',\n')}"
     }
 
     public static class Result {
