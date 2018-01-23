@@ -161,5 +161,31 @@ class DetektIntegrationTest {
         assertThat(result.logs).containsDetektViolations(1, 0,
                 result.buildFileUrl('reports/detekt-checkstyle.html'))
     }
+
+    @Test
+    void shouldNotFailBuildWhenNoDetektWarningsOrErrorsEncounteredAndNoThresholdTrespassed() {
+        def testProject = projectRule.newProject()
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+
+        def detektConfiguration = """
+        detekt { 
+            profile('main') { 
+                config = "${Fixtures.Detekt.RULES}" 
+                output = "${testProject.projectDir()}/build/reports"
+            }
+        }
+        """
+
+        testProject = testProject.withToolsConfig(detektConfiguration)
+
+        TestProject.Result result = testProject
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+        assertThat(result.logs).doesNotContainDetektViolations()
+    }
 }
 
