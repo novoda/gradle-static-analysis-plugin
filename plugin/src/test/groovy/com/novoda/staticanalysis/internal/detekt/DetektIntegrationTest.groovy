@@ -58,6 +58,8 @@ class DetektIntegrationTest {
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
+        assertThat(result.logs).containsDetektViolations(0, 1,
+                result.buildFileUrl('reports/detekt-checkstyle.html'))
     }
 
     @Test
@@ -85,7 +87,79 @@ class DetektIntegrationTest {
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
+        assertThat(result.logs).containsDetektViolations(1, 0,
+                result.buildFileUrl('reports/detekt-checkstyle.html'))
     }
 
+    @Test
+    void shouldNotFailWhenDetektIsNotConfigured() throws Exception {
+        def testProject = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+                .build('check')
+
+        TestProject.Result result = testProject
+
+        assertThat(result.logs).doesNotContainDetektViolations()
+    }
+
+    @Test
+    void shouldNotFailWhenWarningsAreBelowThreshold() throws Exception {
+        def testProject = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxWarnings = 1
+                    maxErrors = 0
+                }''')
+
+        def detektConfiguration = """
+        detekt { 
+            profile('main') { 
+                config = "${Fixtures.Detekt.RULES}" 
+                output = "${testProject.projectDir()}/build/reports"
+                input = "${Fixtures.Detekt.SOURCES_WITH_WARNINGS}"
+            }
+        }
+        """
+
+        testProject = testProject.withToolsConfig(detektConfiguration)
+
+        TestProject.Result result = testProject
+                .build('check')
+
+        assertThat(result.logs).containsDetektViolations(0, 1,
+                result.buildFileUrl('reports/detekt-checkstyle.html'))
+    }
+
+    @Test
+    void shouldNotFailWhenErrorsAreBelowThreshold() throws Exception {
+        def testProject = projectRule.newProject()
+                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 1
+                }''')
+
+        def detektConfiguration = """
+        detekt { 
+            profile('main') { 
+                config = "${Fixtures.Detekt.RULES}" 
+                output = "${testProject.projectDir()}/build/reports"
+                input = "${Fixtures.Detekt.SOURCES_WITH_ERRORS}"
+            }
+        }
+        """
+
+        testProject = testProject.withToolsConfig(detektConfiguration)
+
+        TestProject.Result result = testProject
+                .build('check')
+
+        assertThat(result.logs).containsDetektViolations(1, 0,
+                result.buildFileUrl('reports/detekt-checkstyle.html'))
+    }
 }
 
