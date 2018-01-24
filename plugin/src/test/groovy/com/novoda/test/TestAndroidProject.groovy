@@ -13,7 +13,7 @@ buildscript {
     }
 }
 plugins {
-    id 'com.novoda.static-analysis'
+    ${formatPlugins(project)}
 }
 repositories { 
     google()

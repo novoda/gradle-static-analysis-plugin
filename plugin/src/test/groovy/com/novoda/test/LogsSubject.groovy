@@ -16,6 +16,7 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
     private static final String CHECKSTYLE_VIOLATIONS_FOUND = "Checkstyle violations found"
     private static final String PMD_VIOLATIONS_FOUND = "PMD violations found"
     private static final String FINDBUGS_VIOLATIONS_FOUND = "Findbugs violations found"
+    private static final String DETEKT_VIOLATIONS_FOUND = "Detekt violations found"
     private static final SubjectFactory<LogsSubject, Logs> FACTORY = new SubjectFactory<LogsSubject, Logs>() {
         @Override
         LogsSubject getSubject(FailureStrategy failureStrategy, Logs logs) {
@@ -59,6 +60,10 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
         outputSubject.doesNotContain(FINDBUGS_VIOLATIONS_FOUND)
     }
 
+    public void doesNotContainDetektViolations() {
+        outputSubject.doesNotContain(DETEKT_VIOLATIONS_FOUND)
+    }
+
     public void containsCheckstyleViolations(int errors, int warnings, String... reportUrls) {
         containsToolViolations(CHECKSTYLE_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
@@ -69,6 +74,10 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
 
     public void containsFindbugsViolations(int errors, int warnings, String... reportUrls) {
         containsToolViolations(FINDBUGS_VIOLATIONS_FOUND, errors, warnings, reportUrls)
+    }
+
+    public void containsDetektViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(DETEKT_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
     private void containsToolViolations(String template, int errors, int warnings, String... reportUrls) {

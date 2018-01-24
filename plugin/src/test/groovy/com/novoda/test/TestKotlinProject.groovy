@@ -1,16 +1,27 @@
 package com.novoda.test
 
-final class TestJavaProject extends TestProject<TestJavaProject> {
+final class TestKotlinProject extends TestProject<TestKotlinProject> {
 
     private static final Closure<String> TEMPLATE = { TestProject project ->
         """
+buildscript {
+    repositories { 
+        jcenter()
+         maven {
+            url "https://plugins.gradle.org/m2/"
+         }
+    }
+    dependencies {
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.10'
+        classpath 'gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC6-2'
+    }
+}
+
 plugins {
     ${formatPlugins(project)}
 }
-repositories {
-    jcenter()
-}
-apply plugin: 'java'
+
+apply plugin: 'kotlin'
 sourceSets {
     ${formatSourceSets(project)}
 }
@@ -18,7 +29,7 @@ ${formatExtension(project)}
 """
     }
 
-    TestJavaProject() {
+    TestKotlinProject() {
         super(TEMPLATE)
     }
 
@@ -27,7 +38,7 @@ ${formatExtension(project)}
                 .entrySet()
                 .collect { Map.Entry<String, List<String>> entry ->
             """$entry.key {
-        java {
+        kotlin {
             ${entry.value.collect { "srcDir '$it'" }.join('\n\t\t\t\t')}
         }
     }"""
