@@ -191,4 +191,3 @@ class DetektIntegrationTest {
         assertThat(result.logs).doesNotContainDetektViolations()
     }
 }
-
