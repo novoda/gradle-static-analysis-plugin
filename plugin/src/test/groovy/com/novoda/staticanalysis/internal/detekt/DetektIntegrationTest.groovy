@@ -110,7 +110,7 @@ class DetektIntegrationTest {
     }
 
     @Test
-    void shouldNotFailWhenWarningsAreBelowThreshold() throws Exception {
+    void shouldNotFailWhenWarningsAreWithinThreshold() throws Exception {
         def testProject = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
@@ -138,7 +138,7 @@ class DetektIntegrationTest {
     }
 
     @Test
-    void shouldNotFailWhenErrorsAreBelowThreshold() throws Exception {
+    void shouldNotFailWhenErrorsAreWithinThreshold() throws Exception {
         def testProject = projectRule.newProject()
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
