@@ -22,7 +22,7 @@ class DetektIntegrationTest {
 
     @Parameterized.Parameters(name = "{0}")
     static Iterable<TestProjectRule> rules() {
-        return [TestProjectRule.forKotlinProject()]
+        return [TestProjectRule.forKotlinProject(), TestProjectRule.forAndroidKotlinProject()]
     }
 
     @Rule
