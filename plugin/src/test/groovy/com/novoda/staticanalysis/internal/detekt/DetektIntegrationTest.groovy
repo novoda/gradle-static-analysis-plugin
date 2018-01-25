@@ -10,7 +10,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
-import static com.novoda.test.Fixtures.Findbugs.SOURCES_WITH_HIGH_VIOLATION
 import static com.novoda.test.LogsSubject.assertThat
 
 @RunWith(Parameterized.class)
@@ -36,6 +35,7 @@ class DetektIntegrationTest {
     @Test
     void shouldFailBuildWhenDetektWarningsOverTheThreshold() {
         def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
                     maxWarnings = 0
@@ -68,6 +68,7 @@ class DetektIntegrationTest {
     @Test
     void shouldFailBuildWhenDetektErrorsOverTheThreshold() {
         def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
                     maxWarnings = 0
@@ -97,6 +98,7 @@ class DetektIntegrationTest {
     @Test
     void shouldNotFailWhenDetektIsNotConfigured() throws Exception {
         def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
                     maxWarnings = 0
@@ -112,6 +114,7 @@ class DetektIntegrationTest {
     @Test
     void shouldNotFailWhenWarningsAreWithinThreshold() throws Exception {
         def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
                     maxWarnings = 1
@@ -140,6 +143,7 @@ class DetektIntegrationTest {
     @Test
     void shouldNotFailWhenErrorsAreWithinThreshold() throws Exception {
         def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
                     maxWarnings = 0
@@ -168,6 +172,7 @@ class DetektIntegrationTest {
     @Test
     void shouldNotFailBuildWhenNoDetektWarningsOrErrorsEncounteredAndNoThresholdTrespassed() {
         def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withPenalty('''{
                     maxWarnings = 0
                     maxErrors = 0
