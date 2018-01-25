@@ -10,6 +10,9 @@ import org.gradle.api.Task
 
 class DetektConfigurator implements Configurator {
 
+    private static final String DETEKT_PLUGIN = 'io.gitlab.arturbosch.detekt'
+    private static final String DETEKT_NOT_APPLIED = 'The detekt plugin is configured but not applied. Please apply the plugin in your build script.'
+
     private final Project project
     private final Violations violations
     private final Task evaluateViolations
@@ -35,8 +38,8 @@ class DetektConfigurator implements Configurator {
                 return
             }
 
-            if (!project.tasks.findByName('detektCheck')) {
-                throw new GradleException('The detekt plugin is configured but not applied. Please apply the plugin in your build script.')
+            if (!project.plugins.hasPlugin(DETEKT_PLUGIN)) {
+                throw new GradleException(DETEKT_NOT_APPLIED)
             }
 
             project.extensions.findByName('detekt').with {
