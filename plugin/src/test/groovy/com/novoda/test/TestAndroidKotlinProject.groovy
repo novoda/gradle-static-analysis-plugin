@@ -58,7 +58,7 @@ ${formatExtension(project)}
                 .collect { Map.Entry<String, List<String>> entry ->
             """$entry.key {
             manifest.srcFile '${Fixtures.ANDROID_MANIFEST}'
-            java {
+            kotlin {
                 ${entry.value.collect { "srcDir '$it'" }.join('\n\t\t\t\t')}
             }
         }"""
