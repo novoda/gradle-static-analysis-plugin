@@ -7,13 +7,9 @@ final class TestKotlinProject extends TestProject<TestKotlinProject> {
 buildscript {
     repositories { 
         jcenter()
-         maven {
-            url "https://plugins.gradle.org/m2/"
-         }
     }
     dependencies {
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.10'
-        classpath 'gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC6-2'
     }
 }
 

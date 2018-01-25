@@ -34,7 +34,7 @@ ${project.additionalConfiguration}
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
-        withPlugins('com.novoda.static-analysis')
+        withPlugin('com.novoda.static-analysis')
     }
 
     private static File createProjectDir(String path) {
@@ -84,14 +84,11 @@ ${project.additionalConfiguration}
         return this
     }
 
-    public T withPlugins(String... plugins) {
-        def formattedPlugins = plugins.collect { plugin ->
-            "id '$plugin'"
-        }.asList()
-
-        this.plugins.addAll(formattedPlugins)
+    public T withPlugin(String plugin, String version = null) {
+        this.plugins.add("id '$plugin' ${version ? "version '$version'" : ""}")
         return this
     }
+
 
     public Result build(String... arguments) {
         BuildResult buildResult = newRunner(arguments).build()
@@ -120,7 +117,7 @@ ${project.additionalConfiguration}
         projectDir.deleteDir()
     }
 
-    String projectDir(){
+    String projectDir() {
         return projectDir
     }
 
@@ -129,7 +126,7 @@ ${project.additionalConfiguration}
     }
 
     protected static String formatPlugins(TestProject project) {
-        "${project.plugins.join(',\n')}"
+        "${project.plugins.join('\n')}"
     }
 
     public static class Result {
