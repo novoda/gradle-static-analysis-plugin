@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal.detekt
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.Violations
+import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -34,15 +35,17 @@ class DetektConfigurator implements Configurator {
                 return
             }
 
+            if (!project.tasks.findByName('detektCheck')) {
+                throw new GradleException('The Detekt plugin is configured but not applied. Please apply the plugin in your build script.')
+            }
+
             project.extensions.findByName('detekt').with {
                 // apply configuration closure to detekt extension
                 config.delegate = it
                 config()
             }
 
-            if (project.tasks.findByName('detektCheck')) {
-                configureToolTask()
-            }
+            configureToolTask()
         }
     }
 
