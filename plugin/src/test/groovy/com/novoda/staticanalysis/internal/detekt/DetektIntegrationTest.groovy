@@ -195,4 +195,29 @@ class DetektIntegrationTest {
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).doesNotContainDetektViolations()
     }
+
+    @Test
+    void shouldFailBuildWhenNoDetektConfiguredButNotApplied() {
+        def testProject = projectRule.newProject()
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
+
+        def detektConfiguration = """
+        detekt { 
+            profile('main') { 
+                config = "${Fixtures.Detekt.RULES}" 
+                output = "${testProject.projectDir()}/build/reports"
+            }
+        }
+        """
+
+        testProject = testProject.withToolsConfig(detektConfiguration)
+
+        TestProject.Result result = testProject
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsDetektNotApplied()
+    }
 }
