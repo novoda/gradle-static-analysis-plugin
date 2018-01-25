@@ -42,20 +42,7 @@ class DetektIntegrationTest {
                     maxErrors = 0
                 }''')
 
-        def detektConfiguration = """
-        detekt { 
-            profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
-                // The input just needs to be configured for the tests. 
-                // Probably detekt doesn't pick up the changed source sets. 
-                // In a example project it was not needed.
-                input = "${Fixtures.Detekt.SOURCES_WITH_WARNINGS}"
-            }
-        }
-        """
-
-        testProject = testProject.withToolsConfig(detektConfiguration)
+        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_WARNINGS))
 
         TestProject.Result result = testProject
                 .buildAndFail('check')
@@ -75,17 +62,7 @@ class DetektIntegrationTest {
                     maxErrors = 0
                 }''')
 
-        def detektConfiguration = """
-        detekt { 
-            profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
-                input = "${Fixtures.Detekt.SOURCES_WITH_ERRORS}"
-            }
-        }
-        """
-
-        testProject = testProject.withToolsConfig(detektConfiguration)
+        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_ERRORS))
 
         TestProject.Result result = testProject
                 .buildAndFail('check')
@@ -121,17 +98,7 @@ class DetektIntegrationTest {
                     maxErrors = 0
                 }''')
 
-        def detektConfiguration = """
-        detekt { 
-            profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
-                input = "${Fixtures.Detekt.SOURCES_WITH_WARNINGS}"
-            }
-        }
-        """
-
-        testProject = testProject.withToolsConfig(detektConfiguration)
+        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_WARNINGS))
 
         TestProject.Result result = testProject
                 .build('check')
@@ -150,17 +117,7 @@ class DetektIntegrationTest {
                     maxErrors = 1
                 }''')
 
-        def detektConfiguration = """
-        detekt { 
-            profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
-                input = "${Fixtures.Detekt.SOURCES_WITH_ERRORS}"
-            }
-        }
-        """
-
-        testProject = testProject.withToolsConfig(detektConfiguration)
+        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_ERRORS))
 
         TestProject.Result result = testProject
                 .build('check')
@@ -177,17 +134,7 @@ class DetektIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-
-        def detektConfiguration = """
-        detekt { 
-            profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
-            }
-        }
-        """
-
-        testProject = testProject.withToolsConfig(detektConfiguration)
+        testProject = testProject.withToolsConfig(detektConfigurationWithoutInput(testProject))
 
         TestProject.Result result = testProject
                 .build('check')
@@ -204,7 +151,31 @@ class DetektIntegrationTest {
                     maxErrors = 0
                 }''')
 
-        def detektConfiguration = """
+        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_ERRORS))
+
+        TestProject.Result result = testProject
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsDetektNotApplied()
+    }
+
+    private static GString detektConfiguration(TestProject testProject, File input) {
+        """
+        detekt { 
+            profile('main') { 
+                config = "${Fixtures.Detekt.RULES}" 
+                output = "${testProject.projectDir()}/build/reports"
+                // The input just needs to be configured for the tests. 
+                // Probably detekt doesn't pick up the changed source sets. 
+                // In a example project it was not needed.
+                input = "${input}"
+            }
+        }
+        """
+    }
+
+    private static GString detektConfigurationWithoutInput(TestProject testProject) {
+        """
         detekt { 
             profile('main') { 
                 config = "${Fixtures.Detekt.RULES}" 
@@ -212,12 +183,5 @@ class DetektIntegrationTest {
             }
         }
         """
-
-        testProject = testProject.withToolsConfig(detektConfiguration)
-
-        TestProject.Result result = testProject
-                .buildAndFail('check')
-
-        assertThat(result.logs).containsDetektNotApplied()
     }
 }
