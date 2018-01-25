@@ -34,7 +34,7 @@ ${project.additionalConfiguration}
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
-        withPlugin('com.novoda.static-analysis', null)
+        withPlugin('com.novoda.static-analysis')
     }
 
     private static File createProjectDir(String path) {
@@ -84,7 +84,7 @@ ${project.additionalConfiguration}
         return this
     }
 
-    public T withPlugin(String plugin, String version) {
+    public T withPlugin(String plugin, String version = null) {
         this.plugins.add("id \"$plugin\" ${optionalVersionFrom(version)}")
         return this
     }
