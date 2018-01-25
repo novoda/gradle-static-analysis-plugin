@@ -34,8 +34,6 @@ class DetektConfigurator implements Configurator {
                 return
             }
 
-            project.apply plugin: 'io.gitlab.arturbosch.detekt'
-
             project.extensions.findByName('detekt').with {
                 // apply configuration closure to detekt extension
                 config.delegate = it
