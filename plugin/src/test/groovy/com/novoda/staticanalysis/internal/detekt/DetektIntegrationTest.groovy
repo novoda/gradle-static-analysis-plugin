@@ -34,17 +34,7 @@ class DetektIntegrationTest {
 
     @Test
     void shouldFailBuildWhenDetektWarningsOverTheThreshold() {
-        def testProject = projectRule.newProject()
-                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
-                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxWarnings = 0
-                    maxErrors = 0
-                }''')
-
-        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_WARNINGS))
-
-        TestProject.Result result = testProject
+        def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
@@ -54,17 +44,7 @@ class DetektIntegrationTest {
 
     @Test
     void shouldFailBuildWhenDetektErrorsOverTheThreshold() {
-        def testProject = projectRule.newProject()
-                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
-                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxWarnings = 0
-                    maxErrors = 0
-                }''')
-
-        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_ERRORS))
-
-        TestProject.Result result = testProject
+        def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_ERRORS)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -74,33 +54,15 @@ class DetektIntegrationTest {
 
     @Test
     void shouldNotFailWhenDetektIsNotConfigured() throws Exception {
-        def testProject = projectRule.newProject()
-                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
-                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxWarnings = 0
-                    maxErrors = 0
-                }''')
+        def result = createProjectWithoutDetekt()
                 .build('check')
-
-        TestProject.Result result = testProject
 
         assertThat(result.logs).doesNotContainDetektViolations()
     }
 
     @Test
     void shouldNotFailWhenWarningsAreWithinThreshold() throws Exception {
-        def testProject = projectRule.newProject()
-                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
-                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxWarnings = 1
-                    maxErrors = 0
-                }''')
-
-        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_WARNINGS))
-
-        TestProject.Result result = testProject
+        def result = createProjectWith(Fixtures.Detekt.SOURCES_WITH_WARNINGS, 1, 0)
                 .build('check')
 
         assertThat(result.logs).containsDetektViolations(0, 1,
@@ -109,17 +71,7 @@ class DetektIntegrationTest {
 
     @Test
     void shouldNotFailWhenErrorsAreWithinThreshold() throws Exception {
-        def testProject = projectRule.newProject()
-                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
-                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxWarnings = 0
-                    maxErrors = 1
-                }''')
-
-        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_ERRORS))
-
-        TestProject.Result result = testProject
+        def result = createProjectWith(Fixtures.Detekt.SOURCES_WITH_ERRORS, 0, 1)
                 .build('check')
 
         assertThat(result.logs).containsDetektViolations(1, 0,
@@ -157,6 +109,32 @@ class DetektIntegrationTest {
                 .buildAndFail('check')
 
         assertThat(result.logs).containsDetektNotApplied()
+    }
+
+    private TestProject createProjectWithZeroThreshold(File sources) {
+        createProjectWith(sources)
+    }
+
+    private TestProject createProjectWith(File sources, int maxWarnings = 0, int maxErrors = 0) {
+        def testProject = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
+                .withSourceSet('main', sources)
+                .withPenalty("""{
+                    maxWarnings = ${maxWarnings}
+                    maxErrors = ${maxErrors}
+                }""")
+
+        testProject.withToolsConfig(detektConfiguration(testProject, sources))
+    }
+
+    private TestProject createProjectWithoutDetekt() {
+        projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
+                .withSourceSet('main', Fixtures.Detekt.SOURCES_WITH_WARNINGS)
+                .withPenalty('''{
+                    maxWarnings = 0
+                    maxErrors = 0
+                }''')
     }
 
     private static GString detektConfiguration(TestProject testProject, File input) {
