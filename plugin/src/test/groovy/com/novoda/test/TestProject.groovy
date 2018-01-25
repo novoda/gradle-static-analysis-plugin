@@ -85,15 +85,8 @@ ${project.additionalConfiguration}
     }
 
     public T withPlugin(String plugin, String version = null) {
-        this.plugins.add("id \"$plugin\" ${optionalVersionFrom(version)}")
+        this.plugins.add("id '$plugin' ${version ? "version '$version'" : ""}")
         return this
-    }
-
-    private static String optionalVersionFrom(String version) {
-        if (version == null) {
-            return ""
-        }
-        "version \"$version\""
     }
 
 
