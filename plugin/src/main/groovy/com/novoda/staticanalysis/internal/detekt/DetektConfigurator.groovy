@@ -36,7 +36,7 @@ class DetektConfigurator implements Configurator {
             }
 
             if (!project.tasks.findByName('detektCheck')) {
-                throw new GradleException('The Detekt plugin is configured but not applied. Please apply the plugin in your build script.')
+                throw new GradleException('The detekt plugin is configured but not applied. Please apply the plugin in your build script.')
             }
 
             project.extensions.findByName('detekt').with {

@@ -197,7 +197,7 @@ class DetektIntegrationTest {
     }
 
     @Test
-    void shouldFailBuildWhenNoDetektConfiguredButNotApplied() {
+    void shouldFailBuildWhenDetektConfiguredButNotApplied() {
         def testProject = projectRule.newProject()
                 .withPenalty('''{
                     maxWarnings = 0
