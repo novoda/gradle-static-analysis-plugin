@@ -4,23 +4,23 @@ class TestAndroidKotlinProject extends TestProject<TestAndroidKotlinProject> {
     private static final Closure<String> TEMPLATE = { TestAndroidKotlinProject project ->
         """
 buildscript {
-    repositories { 
+    repositories {
         google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'  
+        classpath 'com.android.tools.build:gradle:3.0.1'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20'
     }
 }
 plugins {
     ${formatPlugins(project)}
 }
-repositories { 
+repositories {
     google()
     jcenter()
 }
-apply plugin: 'com.android.library'  
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
