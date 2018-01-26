@@ -66,9 +66,8 @@ class DetektConfigurator implements Configurator {
 
     private CollectDetektViolationsTask createCollectViolationsTask(Violations violations) {
         def reportFilePath = "${project.extensions.findByName('detekt').systemOrDefaultProfile().output}/detekt-checkstyle.xml"
-
         project.tasks.create("collectDetektViolations", CollectDetektViolationsTask) { collectViolations ->
-            collectViolations.xmlReportFile = new File(reportFilePath)
+            collectViolations.xmlReportFile = project.file(reportFilePath)
             collectViolations.violations = violations
         }
     }
