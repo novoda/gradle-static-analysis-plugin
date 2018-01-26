@@ -39,7 +39,7 @@ class DetektIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsDetektViolations(0, 1,
-                result.buildFileUrl('reports/detekt-checkstyle.html'))
+                result.buildFileUrl('reports/detekt-report.html'))
     }
 
     @Test
@@ -49,7 +49,7 @@ class DetektIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsDetektViolations(1, 0,
-                result.buildFileUrl('reports/detekt-checkstyle.html'))
+                result.buildFileUrl('reports/detekt-report.html'))
     }
 
     @Test
@@ -66,7 +66,7 @@ class DetektIntegrationTest {
                 .build('check')
 
         assertThat(result.logs).containsDetektViolations(0, 1,
-                result.buildFileUrl('reports/detekt-checkstyle.html'))
+                result.buildFileUrl('reports/detekt-report.html'))
     }
 
     @Test
@@ -75,7 +75,7 @@ class DetektIntegrationTest {
                 .build('check')
 
         assertThat(result.logs).containsDetektViolations(1, 0,
-                result.buildFileUrl('reports/detekt-checkstyle.html'))
+                result.buildFileUrl('reports/detekt-report.html'))
     }
 
     @Test
