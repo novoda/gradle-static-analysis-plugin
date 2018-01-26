@@ -6,6 +6,7 @@ import org.gradle.api.tasks.TaskAction
 abstract class CollectViolationsTask extends DefaultTask {
 
     private File xmlReportFile
+    private File htmlReportFile
     private Violations violations
 
     CollectViolationsTask() {
@@ -14,6 +15,10 @@ abstract class CollectViolationsTask extends DefaultTask {
 
     void setXmlReportFile(File xmlReportFile) {
         this.xmlReportFile = xmlReportFile
+    }
+
+    void setHtmlReportFile(File htmlReportFile) {
+        this.htmlReportFile = htmlReportFile
     }
 
     void setViolations(Violations violations) {
@@ -30,7 +35,7 @@ abstract class CollectViolationsTask extends DefaultTask {
     }
 
     File getHtmlReportFile() {
-        new File(xmlReportFile.absolutePath - '.xml' + '.html')
+        htmlReportFile ?: new File(xmlReportFile.absolutePath - '.xml' + '.html')
     }
 
     abstract void collectViolations(File xmlReportFile, File htmlReportFile, Violations violations)
