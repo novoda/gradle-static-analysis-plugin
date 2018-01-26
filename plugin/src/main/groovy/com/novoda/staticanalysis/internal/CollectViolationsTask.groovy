@@ -27,7 +27,7 @@ abstract class CollectViolationsTask extends DefaultTask {
 
     @TaskAction
     final void run() {
-        collectViolations(xmlReportFile, htmlReportFile, violations)
+        collectViolations(getXmlReportFile(), getHtmlReportFile(), violations)
     }
 
     File getXmlReportFile() {
