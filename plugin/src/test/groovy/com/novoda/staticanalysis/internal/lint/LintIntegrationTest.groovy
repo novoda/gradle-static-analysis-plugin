@@ -14,7 +14,7 @@ class LintIntegrationTest {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 0, 0)
                 .buildAndFail('check')
 
-        assertThat(result.logs).containsLintViolations(0, 1)
+        assertThat(result.logs).containsLintViolations(0, 1, 'reports/lint-results.html')
     }
 
     @Test
