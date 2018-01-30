@@ -20,12 +20,20 @@ For additional informations and tips on how to obtain advanced behaviours with t
 ## Table of contents
  * [Enable and disable tools](#enable-and-disable-tools)
  * [Checkstyle](#checkstyle)
+   * [Configure Checkstyle](#configure-checkstyle)
    * [Checkstyle in mixed-language projects](#checkstyle-in-mixed-language-projects)
- * [PMD](#pmd) _TODO_
- * [Findbugs](#findbugs) _TODO_
- * [Detekt](#detekt) _TODO_
- * KtLint _COMING SOON_
- * Android Lint _COMING SOON_
+ * [PMD](#pmd)
+   * [Configure PMD](#configure-pmd)
+   * [PMD in mixed-language projects](#pmd-in-mixed-language-projects)
+ * [Findbugs](#findbugs)
+   * [Configure Findbugs](#configure-findbugs)
+   * [Findbugs in mixed-language projects](#findbugs-in-mixed-language-projects)
+ * [Detekt](#detekt)
+   * [IMPORTANT: setup Detekt](#important-setup-detekt)
+   * [Configure Detekt](#configure-detekt)
+   * [Detekt in mixed-language projects](#detekt-in-mixed-language-projects)
+ * KtLint — _COMING SOON_
+ * Android Lint — _COMING SOON_
  * [Example configurations](#example-configurations)
 
 ---
@@ -61,21 +69,25 @@ staticAnalysis {
 but it does not support Kotlin nor Kotlin Android projects. It then only makes sense to have Checkstyle enabled if you have Java code in your project. The
 plugin only runs Checkstyle on projects that contain the Java or the Android plugin.
 
+### Configure Checkstyle
 Enabling and configuring Checkstyle for a project is done through the `checkstyle` closure:
 
 ```gradle
 checkstyle {
     toolVersion // A string, as per http://checkstyle.sourceforge.net/releasenotes.html, e.g., '8.8'
     exclude // A fileTree, such as project.fileTree('src/test/java') to exclude Java unit tests
-    configFile // A string pointing to a Checkstyle config file, e.g., 'config/checkstyle-modules.xml'
+    configFile // A file containing the Checkstyle config, e.g., teamPropsFile('static-analysis/checkstyle-modules.xml')
     includeVariants { variant -> ... } // A closure to determine which variants (for Android) to include
 }
 ```
 
+You can have multiple `exclude` statements.
+
 For more informations about Checkstyle rules, refer to the [official website](http://checkstyle.sourceforge.net/checks.html).
 
 ### Checkstyle in mixed-language projects
-If your project mixes Java and Kotlin code, you most likely want to have an exclusion in place for all `*.kt` files. You can do so by adding a suppressions file:
+If your project mixes Java and Kotlin code, you most likely want to have an exclusion in place for all `*.kt` files. You can use the `exclude`
+in the configuration closure, or you can do so by adding a suppressions file:
 
 `checkstyle-suppressions.xml`
 ```xml
@@ -116,6 +128,141 @@ You then need to reference this file from the Checkstyle configuration file:
 [PMD](https://pmd.github.io/) is an extensible cross-language static code analyser. It supports Java and [several other languages](https://pmd.github.io/#about),
 but not Kotlin. It can be used in both pure Java, and Android Java projects. It then only makes sense to have PMD enabled if you have Java code in your project.
 The plugin only runs PMD on projects that contain the Java or the Android plugin.
+
+### Configure PMD
+Enabling and configuring PMD for a project is done through the `pmd` closure:
+
+```gradle
+pmd {
+    toolVersion // A string, as per https://pmd.github.io/pmd-6.0.1/pmd_release_notes.html, e.g., '6.0.1'
+    exclude // A fileTree, such as project.fileTree('src/test/java') to exclude Java unit tests
+    ruleSetFiles // A set of files containing PMD rulesets, e.g., rootProject.files('team-props/static-analysis/pmd-rules.xml')
+    ruleSets = []   // Note: this is a workaround to make the <exclude-pattern>s in pmd-rules.xml actually work
+    includeVariants { variant -> ... } // A closure to determine which variants (for Android) to include
+}
+```
+
+You can have multiple `exclude` statements.
+
+For more informations about PMD Java rules, refer to the [official website](https://pmd.github.io/pmd-6.0.1/pmd_rules_java.html).
+
+### PMD in mixed-language projects
+If your project mixes Java and Kotlin code, you most likely want to have an exclusion in place for all `*.kt` files. You can use the `exclude`
+in the configuration closure, or you can do so by adding a suppressions file:
+
+`pmd-rules.xml`
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  name="Novoda PMD rules"
+  xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+  ...
+
+  <!--region File exclusions-->
+  <exclude-pattern>.*\.kt</exclude-pattern>
+  <!--endregion-->
+
+  ...
+
+</ruleset>
+```
+
+## Findbugs
+[Findbugs](http://findbugs.sourceforge.net/) is a static analysis tool that looks for potential bugs in Java code. It does not support Kotlin.
+It can be used in both pure Java, and Android Java projects. It then only makes sense to have Findbugs enabled if you have Java code in your project.
+The plugin only runs Findbugs on projects that contain the Java or the Android plugin.
+
+### Configure Findbugs
+Enabling and configuring Findbugs for a project is done through the `findbugs` closure:
+
+```gradle
+findbugs {
+    toolVersion // A string, most likely '3.0.1' — the latest Findbugs release (for a long time)
+    exclude // A fileTree, such as project.fileTree('src/test/java') to exclude Java unit tests
+    excludeFilter // A file containing the Findbugs exclusions, e.g., teamPropsFile('static-analysis/findbugs-excludes.xml')
+    includeVariants { variant -> ... } // A closure to determine which variants (for Android) to include
+}
+```
+
+You can have multiple `exclude` statements.
+
+For more informations about Findbugs rules, refer to the [official website](http://findbugs.sourceforge.net/bugDescriptions.html).
+
+### Findbugs in mixed-language projects
+If your project mixes Java and Kotlin code, you most likely want to have an exclusion in place for all `*.kt` files. You can use the `exclude`
+in the configuration closure, or you can do so by adding a suppression to the filter file:
+
+`findbugs-excludes.xml`
+```xml
+<FindBugsFilter>
+
+  ...
+
+  <Match>
+    <Source name="~.*\.kt" />
+  </Match>
+
+  ...
+
+</FindBugsFilter>
+```
+
+## Detekt
+[Detekt](https://github.com/arturbosch/detekt) is a static analysis tool that looks for potential bugs and style violations in Kotlin code. It
+does not support Java. It can be used in both pure Kotlin, and Android Kotlin projects. It then only makes sense to have Detekt enabled if you
+have Kotlin code in your project. The plugin only runs Detekt on projects that contain the Kotlin or the Kotlin-Android plugin.
+
+### IMPORTANT: setup Detekt
+Unlike the other tools, the plugin **won't automatically add Detekt** to your project. If you forget to do it, the plugin will fail the build
+with an error like:
+
+```
+The detekt plugin is configured but not applied. Please apply the plugin in your build script.
+For more information see https://github.com/arturbosch/detekt.
+```
+
+In order to use Detekt in your project, you need to:
+
+ 1. Add this statement to your root `build.gradle` project (change the version according to your needs):
+    ```gradle
+    plugins {
+        id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC6-2'
+        // ...
+    }
+    ```
+ 2. Add this statement to each Kotlin project's `build.gradle`s:
+    ```gradle
+    plugins {
+        id 'io.gitlab.arturbosch.detekt'
+        // ...
+    }
+    ```
+
+### Configure Detekt
+Enabling and configuring Detekt for a project is done through the `detekt` closure. The closure behaves exactly like the
+[standard Detekt plugin](https://github.com/arturbosch/detekt#using-the-detekt-gradle-plugin) does in Gradle, which is to say, quite differently
+from how the other tools' configurations closures work. For example:
+
+```gradle
+detekt {
+    profile('main') {
+        input = "$projectDir/src/main/java"
+        config = teamPropsFile('static-analysis/detekt-config.yml')
+        filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
+        output = "$projectDir/build/reports/detekt"
+    }
+}
+```
+
+You need to provide **at a minimum** the `config` and `output` values.
+
+For more informations about Detekt rules, refer to the [official website](https://github.com/arturbosch/detekt/tree/master/detekt-generator/documentation).
+
+### Detekt in mixed-language projects
+If your project mixes Java and Kotlin code, you don't need to have an exclusion in place for all `*.java` files. Detekt itself only looks for
+`*.kt` files, so no further configuration is required.
 
 ## Example configurations
 If you want, you can use the Novoda [`team-props` scaffolding system](https://github.com/novoda/novoda/tree/master/team-props) as a starting point for setting
