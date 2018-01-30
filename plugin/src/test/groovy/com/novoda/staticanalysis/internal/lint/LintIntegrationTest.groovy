@@ -25,14 +25,13 @@ class LintIntegrationTest {
                     maxErrors = ${maxErrors}
                 }""")
 
-        testProject.withToolsConfig(lintConfiguration(testProject, sources))
+        testProject.withToolsConfig(lintConfiguration())
     }
 
-    private static GString lintConfiguration(TestProject testProject, File input) {
+    private static GString lintConfiguration() {
         """
         lintOptions { 
             lintConfig = file("${Fixtures.Lint.RULES}") 
-            //xmlOutput = file("${testProject.projectDir()}/build/reports")
         }
         """
     }
