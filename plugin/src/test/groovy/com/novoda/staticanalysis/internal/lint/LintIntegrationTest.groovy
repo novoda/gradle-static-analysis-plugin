@@ -32,7 +32,7 @@ class LintIntegrationTest {
         """
         lintOptions { 
             //lintConfig = file("${Fixtures.Detekt.RULES}") 
-            xmlOutput = "${testProject.projectDir()}/build/reports"
+            xmlOutput = file("${testProject.projectDir()}/build/reports")
         }
         """
     }
