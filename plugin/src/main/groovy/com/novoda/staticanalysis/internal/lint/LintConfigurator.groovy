@@ -29,7 +29,6 @@ class LintConfigurator implements Configurator {
     @Override
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext."lintOptions" = { Closure config ->
-
             if (!isAndroidProject(project)) {
                 return
             }
