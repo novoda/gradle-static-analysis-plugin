@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="4" by="lint 3.0.1">
+
+    <issue
+        id="MissingSuperCall"
+        severity="Error"
+        message="Overriding method should call `super.onDetachedFromWindow`"
+        category="Correctness"
+        priority="9"
+        summary="Missing Super Call"
+        explanation="Some methods, such as `View#onDetachedFromWindow`, require that you also call the super&#xA;implementation as part of your method."
+        errorLine1="    protected void onDetachedFromWindow() {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="/Users/tobiasheine/Documents/repos/gradle-static-analysis-plugin/plugin/src/test/fixtures/sources/lint/errors/MyView.java"
+            line="13"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="Assert"
+        severity="Warning"
+        message="Assertions are unreliable in Dalvik and unimplemented in ART. Use `BuildConfig.DEBUG` conditional checks instead."
+        category="Correctness"
+        priority="6"
+        summary="Assertions"
+        explanation="Assertions are not checked at runtime. There are ways to request that they be used by Dalvik \&#xA;(`adb shell setprop debug.assert 1`), but note that this is not implemented in ART (the newer \&#xA;runtime), and even in Dalvik the property is ignored in many places and can not be relied upon. \&#xA;Instead, perform conditional checking inside `if (BuildConfig.DEBUG) { }` blocks. That constant \&#xA;is a static final boolean which is true in debug builds and false in release builds, and the \&#xA;Java compiler completely removes all code inside the if-body from the app.&#xA;&#xA;For example, you can replace `assert speed > 0` with `if (BuildConfig.DEBUG &amp;&amp; !(speed > 0)) { \&#xA;throw new AssertionError() }`.&#xA;&#xA;(Note: This lint check does not flag assertions purely asserting nullness or non-nullness; these \&#xA;are typically more intended for tools usage than runtime checks.)"
+        url="https://code.google.com/p/android/issues/detail?id=65183"
+        urls="https://code.google.com/p/android/issues/detail?id=65183"
+        errorLine1="        assert false;"
+        errorLine2="        ~~~~~~">
+        <location
+            file="/Users/tobiasheine/Documents/repos/gradle-static-analysis-plugin/plugin/src/test/fixtures/sources/lint/warnings/Warning.java"
+            line="6"
+            column="9"/>
+    </issue>
+</issues>
