@@ -10,7 +10,7 @@ import static com.novoda.test.LogsSubject.assertThat
 class LintIntegrationTest {
 
     @Test
-    void shouldFailBuildWhenLintErrorsOverTheThreshold() throws Exception {
+    void shouldFailBuildWhenLintErrorsOverTheThresholds() throws Exception {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_ERRORS, 0, 0)
                 .buildAndFail('check')
 
@@ -18,7 +18,15 @@ class LintIntegrationTest {
     }
 
     @Test
-    void shouldFailBuildWhenLintWarningsOverTheThreshold() throws Exception {
+    void shouldNotFailBuildWhenLintErrorsWithinTheThresholds() throws Exception {
+        def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_ERRORS, 0, 1)
+                .build('check')
+
+        assertThat(result.logs).doesNotContainLimitExceeded()
+    }
+
+    @Test
+    void shouldFailBuildWhenLintWarningsOverTheThresholds() throws Exception {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 0, 0)
                 .buildAndFail('check')
 
@@ -26,7 +34,7 @@ class LintIntegrationTest {
     }
 
     @Test
-    void shouldNotFailBuildWhenLintWarningsWithinTheThreshold() throws Exception {
+    void shouldNotFailBuildWhenLintWarningsWithinTheThresholds() throws Exception {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 1, 0)
                 .build('check')
 
