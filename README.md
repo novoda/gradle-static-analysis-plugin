@@ -14,18 +14,21 @@ The `gradle-static-analysis-plugin` aims to provide:
 - convenient way of sharing same setup across different projects
 - healthy, versionable and configurable defaults
 
-### Suported static analysis tools
+### Supported static analysis tools
+The plugin supports various static analysis tools for Java, Kotlin and Android projects:
 
-Tool | Java | Android (Java) | Kotlin and<br/>Android (Kotlin)
----- | -------- | -------- | -----
-[`Checkstyle`](https://checkstyle.sourceforge.net) | :white_check_mark: | :white_check_mark: | —
-[`PMD`](https://pmd.github.io) | :white_check_mark: | :white_check_mark: | —
-[`FindBugs`](http://findbugs.sourceforge.net/) | :white_check_mark: | :white_check_mark: | —
-[`Detekt`](https://github.com/arturbosch/detekt) | — | — | :white_check_mark:
-[`KtLint`\*](https://github.com/shyiko/ktlint) | — | — | ✖️
-[`Android Lint`\*](https://developer.android.com/studio/write/lint.html) | ✖️ | ✖️ | ✖️
+ * [`Checkstyle`](https://checkstyle.sourceforge.net)
+ * [`PMD`](https://pmd.github.io)
+ * [`FindBugs`](http://findbugs.sourceforge.net/)
+ * [`Detekt`](https://github.com/arturbosch/detekt)
 
-_\* Not supported [yet](https://github.com/novoda/gradle-static-analysis-plugin/issues?q=is%3Aopen+is%3Aissue+label%3A%22new+tool%22)_
+Support for additional tools is planned but not available yet:
+
+ * [`KtLint`](https://github.com/shyiko/ktlint)
+ * [`Android Lint`](https://developer.android.com/studio/write/lint.html)
+
+Please note that the tools availability depends on the project the plugin is applied to. For more details please refer to the
+[supported tools](docs/supported-tools.md) page.
 
 ### Out-of-the-box support for Android and Kotlin projects
 Android projects use a Gradle model that is not compatible with the Java one, supported by the built-in static analysis tools plugins.
@@ -72,6 +75,8 @@ staticAnalysis {
     }
 }
 ```
+
+For more advanced configurations, please refer to the [advanced usage](docs/advanced-usage.md) page.
 
 ## Roadmap
 The plugin is under active development and to be considered in **beta stage**. It is routinely used by many Novoda projects and
