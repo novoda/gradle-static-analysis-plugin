@@ -1,10 +1,8 @@
 package com.novoda.staticanalysis.internal.detekt
 
-import com.novoda.test.DeployRulesTestRule
 import com.novoda.test.Fixtures
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
-import org.junit.ClassRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -14,11 +12,6 @@ import static com.novoda.test.LogsSubject.assertThat
 
 @RunWith(Parameterized.class)
 class DetektIntegrationTest {
-
-    @ClassRule
-    public static final DeployRulesTestRule DEPLOY_RULES = new DeployRulesTestRule(
-            resourceDirs: [Fixtures.RULES_DIR],
-            repoDir: new File(Fixtures.BUILD_DIR, 'rules'))
 
     @Parameterized.Parameters(name = "{0}")
     static Iterable<TestProjectRule> rules() {
