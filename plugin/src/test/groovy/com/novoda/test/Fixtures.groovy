@@ -54,6 +54,7 @@ public final class Fixtures {
         public static final File SOURCES_WITH_WARNINGS = new File(SOURCES_DIR, 'lint/warnings')
         public static final File SOURCES_WITH_ERRORS = new File(SOURCES_DIR, 'lint/errors')
         public static final File SAMPLE_REPORT = new File(REPORTS_DIR, 'lint/lint-results.xml')
+        public static final File RULES = new File(RULES_DIR, 'lint/lint.xml')
     }
 
 }
