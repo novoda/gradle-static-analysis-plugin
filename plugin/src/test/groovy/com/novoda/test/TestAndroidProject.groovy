@@ -63,11 +63,6 @@ ${formatExtension(project)}
         .join('\n\t\t')
     }
 
-    @Override
-    List<String> defaultArguments() {
-        ['-x', 'lint'] + super.defaultArguments()
-    }
-
     TestAndroidProject withAdditionalAndroidConfig(String additionalAndroidConfig) {
         this.additionalAndroidConfig = additionalAndroidConfig
         return this
