@@ -9,6 +9,14 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class LintIntegrationTest {
 
+    private static GString LINT_CONFIGURATION =
+            """
+        lintOptions {              
+            abortOnError false
+            lintConfig = file("${Fixtures.Lint.RULES}") 
+        }
+        """
+
     @Test
     void shouldFailBuildWhenLintErrorsOverTheThresholds() throws Exception {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_ERRORS, 0, 0)
@@ -49,15 +57,7 @@ class LintIntegrationTest {
                     maxErrors = ${maxErrors}
                 }""")
 
-        testProject.withToolsConfig(lintConfiguration())
+        testProject.withToolsConfig(LINT_CONFIGURATION)
     }
 
-    private static GString lintConfiguration() {
-        """
-        lintOptions {              
-            abortOnError false
-            lintConfig = file("${Fixtures.Lint.RULES}") 
-        }
-        """
-    }
 }
