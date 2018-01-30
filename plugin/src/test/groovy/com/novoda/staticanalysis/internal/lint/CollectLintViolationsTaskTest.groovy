@@ -15,7 +15,7 @@ class CollectLintViolationsTaskTest {
         Project project = ProjectBuilder.builder().build()
         def task = project.task('collectLintViolationsTask', type: CollectLintViolationsTask)
 
-        Violations violations = new Violations("Android Lint")
+        Violations violations = new Violations('Android Lint')
         task.collectViolations(Fixtures.Lint.SAMPLE_REPORT, null, violations)
 
         assertThat(violations.getErrors()).isEqualTo(1)
