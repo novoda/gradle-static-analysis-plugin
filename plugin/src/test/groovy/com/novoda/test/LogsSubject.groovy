@@ -19,6 +19,7 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
     private static final String PMD_VIOLATIONS_FOUND = 'PMD violations found'
     private static final String FINDBUGS_VIOLATIONS_FOUND = 'Findbugs violations found'
     private static final String DETEKT_VIOLATIONS_FOUND = 'Detekt violations found'
+    private static final String LINT_VIOLATIONS_FOUND = 'Lint violations found'
 
     private static final SubjectFactory<LogsSubject, Logs> FACTORY = new SubjectFactory<LogsSubject, Logs>() {
         @Override
@@ -85,6 +86,10 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
 
     public void containsDetektViolations(int errors, int warnings, String... reportUrls) {
         containsToolViolations(DETEKT_VIOLATIONS_FOUND, errors, warnings, reportUrls)
+    }
+
+    public void containsLintViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(LINT_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
     private void containsToolViolations(String template, int errors, int warnings, String... reportUrls) {
