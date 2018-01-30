@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.internal.Violations
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
+import com.novoda.staticanalysis.internal.lint.LintConfigurator
 import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
@@ -39,7 +40,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),
                 PmdConfigurator.create(project, violationsContainer, evaluateViolations),
                 FindbugsConfigurator.create(project, violationsContainer, evaluateViolations),
-                DetektConfigurator.create(project, violationsContainer, evaluateViolations)
+                DetektConfigurator.create(project, violationsContainer, evaluateViolations),
+                LintConfigurator.create(project, violationsContainer, evaluateViolations)
         ]
     }
 }
