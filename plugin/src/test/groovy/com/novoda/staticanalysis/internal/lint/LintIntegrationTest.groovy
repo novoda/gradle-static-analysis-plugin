@@ -31,8 +31,8 @@ class LintIntegrationTest {
     private static GString lintConfiguration(TestProject testProject, File input) {
         """
         lintOptions { 
-            //lintConfig = file("${Fixtures.Detekt.RULES}") 
-            xmlOutput = file("${testProject.projectDir()}/build/reports")
+            lintConfig = file("${Fixtures.Lint.RULES}") 
+            //xmlOutput = file("${testProject.projectDir()}/build/reports")
         }
         """
     }
