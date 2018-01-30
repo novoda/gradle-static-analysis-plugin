@@ -48,7 +48,7 @@ class LintConfigurator implements Configurator {
 
     private CollectLintViolationsTask createCollectViolationsTask(Violations violations) {
         def outputFolder = new File(project.projectDir, 'build/reports')
-        project.tasks.create("collectLintViolations", CollectLintViolationsTask) { collectViolations ->
+        project.tasks.create('collectLintViolations', CollectLintViolationsTask) { collectViolations ->
             collectViolations.xmlReportFile = new File(outputFolder, 'lint-results.xml')
             collectViolations.htmlReportFile = new File(outputFolder, 'lint-results.html')
             collectViolations.violations = violations
