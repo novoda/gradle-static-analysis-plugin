@@ -18,6 +18,7 @@ For additional informations and tips on how to obtain advanced behaviours with t
 [advanced usage](advanced-usage.md) page.
 
 ## Table of contents
+ * [Enable and disable tools](#enable-and-disable-tools)
  * [Checkstyle](#checkstyle)
    * [Checkstyle in mixed-language projects](#checkstyle-in-mixed-language-projects)
  * [PMD](#pmd) _TODO_
@@ -29,9 +30,36 @@ For additional informations and tips on how to obtain advanced behaviours with t
 
 ---
 
+## Enable and disable tools
+In order to enable a tool, you just need to add it to the `staticAnalysis` closure. To enable all supported tools with their default configurations:
+
+```gradle
+staticAnalysis {
+    penalty {
+        // ... (optional)
+    }
+
+    checkstyle {}
+    pmd {}
+    findbugs {}
+    detekt {}
+}
+```
+
+To disable a tool, simply omit its closure from `staticAnalysis`. This means that, for example, this will not run any tools:
+
+```gradle
+staticAnalysis {
+    penalty {
+        // ...
+    }
+}
+```
+
 ## Checkstyle
 [Checkstyle](http://checkstyle.sourceforge.net/) is a code style static analysis tool for Java. It is supported for both pure Java and Java Android projects,
-but it does not support Kotlin nor Kotlin Android projects. It then only makes sense to have Checkstyle enabled if you have Java code in your project.
+but it does not support Kotlin nor Kotlin Android projects. It then only makes sense to have Checkstyle enabled if you have Java code in your project. The
+plugin only runs Checkstyle on projects that contain the Java or the Android plugin.
 
 Enabling and configuring Checkstyle for a project is done through the `checkstyle` closure:
 
@@ -83,6 +111,11 @@ You then need to reference this file from the Checkstyle configuration file:
 ```
 
 (assuming you're using the Novoda scaffolding system, see [Example configurations](#example-configurations) for more details)
+
+## PMD
+[PMD](https://pmd.github.io/) is an extensible cross-language static code analyser. It supports Java and [several other languages](https://pmd.github.io/#about),
+but not Kotlin. It can be used in both pure Java, and Android Java projects. It then only makes sense to have PMD enabled if you have Java code in your project.
+The plugin only runs PMD on projects that contain the Java or the Android plugin.
 
 ## Example configurations
 If you want, you can use the Novoda [`team-props` scaffolding system](https://github.com/novoda/novoda/tree/master/team-props) as a starting point for setting
