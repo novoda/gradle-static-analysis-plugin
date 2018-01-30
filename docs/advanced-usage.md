@@ -1,6 +1,17 @@
 # Advanced configuration
 
-## Configurable thresholds
+The plugin supports a number of advanced behaviours. For example, it can be used to set a baseline of warnings and errors below which
+the build will not fail, which is very useful for legacy projects.
+
+## Table of contents
+ * [Configurable failure thresholds](#configurable-failure-thresholds)
+ * [Improve the report with a base URL](#improve-the-report-with-a-base-URL)
+ * [Add exclusions with `exclude` filters](#add-exclusions-with-exclude-filters)
+ * [Add exclusions with Android build variants](#add-exclusions-with-Android-build-variants)
+
+---
+
+## Configurable failure thresholds
 Users can define maximum amount of warnings and errors tolerated in a build via the Gradle configuration:
 
 ```gradle
@@ -52,7 +63,7 @@ And that will make them easier to follow them to the respective reports. More in
 [`LogsExtension`](blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/LogsExtension.groovy)
 Groovydocs.
 
-## Support for `exclude` filters
+## Add exclusions with `exclude` filters
 You can specify custom patterns to exclude specific files from the static analysis. All you have to do is to specify `exclude`
 in the configuration of your tool of choice:
 
@@ -67,7 +78,7 @@ staticAnalysis {
 }
 ```
 
-## Support for Android variants
+## Add exclusions with Android build variants
 Sometimes using `exclude` filters could be not enough. When using the plugin in an Android project you may want to consider
 only one specific variant as part of the analysis. The plugin provides a way of defining which Android variants should be included
 via the `includeVariants` method added to each tool extension. E.g.,
