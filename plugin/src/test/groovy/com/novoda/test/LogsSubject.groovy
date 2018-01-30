@@ -70,6 +70,10 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
         outputSubject.doesNotContain(DETEKT_VIOLATIONS_FOUND)
     }
 
+    public void doesNotContainLintViolations() {
+        outputSubject.doesNotContain(LINT_VIOLATIONS_FOUND)
+    }
+
     public void containsCheckstyleViolations(int errors, int warnings, String... reportUrls) {
         containsToolViolations(CHECKSTYLE_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
