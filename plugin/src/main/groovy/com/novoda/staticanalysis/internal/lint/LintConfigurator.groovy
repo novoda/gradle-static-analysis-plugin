@@ -34,7 +34,7 @@ class LintConfigurator implements Configurator {
                 return
             }
 
-            project.extensions.findByName('android').lintOptions(config)
+            project.android.lintOptions(config)
 
             configureToolTask()
         }
