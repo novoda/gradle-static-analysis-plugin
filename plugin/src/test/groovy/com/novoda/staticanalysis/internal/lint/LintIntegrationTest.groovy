@@ -10,6 +10,14 @@ import static com.novoda.test.LogsSubject.assertThat
 class LintIntegrationTest {
 
     @Test
+    void shouldFailBuildWhenLintErrorsOverTheThreshold() throws Exception {
+        def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_ERRORS, 0, 0)
+                .buildAndFail('check')
+
+        assertThat(result.logs).containsLintViolations(1, 0, 'reports/lint-results.html')
+    }
+
+    @Test
     void shouldFailBuildWhenLintWarningsOverTheThreshold() throws Exception {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 0, 0)
                 .buildAndFail('check')
@@ -38,7 +46,8 @@ class LintIntegrationTest {
 
     private static GString lintConfiguration() {
         """
-        lintOptions { 
+        lintOptions {              
+            abortOnError false
             lintConfig = file("${Fixtures.Lint.RULES}") 
         }
         """
