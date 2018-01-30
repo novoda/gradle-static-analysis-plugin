@@ -48,7 +48,6 @@ class LintConfigurator implements Configurator {
     }
 
     private CollectLintViolationsTask createCollectViolationsTask(Violations violations) {
-//        def outputFolder = project.file(project.extensions.findByName('android').lintOptions.xmlOutput.parent)
         def outputFolder = new File(project.projectDir, 'build/reports')
         project.tasks.create("collectLintViolations", CollectLintViolationsTask) { collectViolations ->
             collectViolations.xmlReportFile = new File(outputFolder, 'lint-report.xml')
