@@ -256,7 +256,9 @@ detekt {
 }
 ```
 
-You need to provide **at a minimum** the `config` and `output` values.
+You need to provide **at a minimum** the `config` and `output` values. It's important that you do _not_ specify a `warningThreshold` nor a `failThreshold`
+in the Detekt configuration file as it will interfere with the functioning of the Static Analysis plugin's threshold counting. For the same reason, make
+sure that `failFast` is set to `false` in the Detekt configuration.
 
 For more informations about Detekt rules, refer to the [official website](https://github.com/arturbosch/detekt/tree/master/detekt-generator/documentation).
 
