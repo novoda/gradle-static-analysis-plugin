@@ -32,10 +32,16 @@ class LintConfigurator implements Configurator {
             if (!isAndroidProject(project)) {
                 return
             }
-
-            project.android.lintOptions(config)
-
+            configureLint(config)
             configureToolTask()
+        }
+    }
+
+    private void configureLint(Closure config) {
+        project.android.lintOptions(config)
+        project.android.lintOptions {
+            xmlReport = true
+            abortOnError false
         }
     }
 
