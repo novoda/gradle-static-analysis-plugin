@@ -217,14 +217,14 @@ have Kotlin code in your project. The plugin only runs Detekt on projects that c
 
 ### IMPORTANT: setup Detekt
 Unlike the other tools, the plugin **won't automatically add Detekt** to your project. If you forget to do it, the plugin will fail the build
-with an error like:
+with an error.
 
-```
-The detekt plugin is configured but not applied. Please apply the plugin in your build script.
-For more information see https://github.com/arturbosch/detekt.
-```
+In order to use Detekt, you need to manually add it to **all** your Kotlin projects. You can refer to the
+[official documentation](https://github.com/arturbosch/detekt/#gradlegroovy) for further details. Note that you should _not_ add the `detekt`
+closure to your `build.gradle`s, unlike what the official documentation says. The `detekt` closure in the `staticAnalysis` configuration gets
+applied to all Kotlin modules automatically.
 
-In order to use Detekt in your project, you need to:
+In most common cases, adding Detekt to a project boils down to three simple steps:
 
  1. Add this statement to your root `build.gradle` project (change the version according to your needs):
     ```gradle
