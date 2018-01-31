@@ -11,7 +11,7 @@ import org.gradle.api.Task
 class DetektConfigurator implements Configurator {
 
     private static final String DETEKT_PLUGIN = 'io.gitlab.arturbosch.detekt'
-    private static final String DETEKT_NOT_APPLIED = 'The detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more informations see https://github.com/arturbosch/detekt.'
+    private static final String DETEKT_NOT_APPLIED = 'The detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/arturbosch/detekt.'
 
     private final Project project
     private final Violations violations
