@@ -14,7 +14,7 @@ The `gradle-static-analysis-plugin` aims to provide:
 - convenient way of sharing same setup across different projects
 - healthy, versionable and configurable defaults
 
-### Supported static analysis tools
+### Supported tools
 The plugin supports various static analysis tools for Java, Kotlin and Android projects:
 
  * [`Checkstyle`](https://checkstyle.sourceforge.net)
