@@ -12,7 +12,6 @@ class LintIntegrationTest {
     private static GString LINT_CONFIGURATION =
             """
         lintOptions {              
-            abortOnError false
             lintConfig = file("${Fixtures.Lint.RULES}") 
         }
         """
