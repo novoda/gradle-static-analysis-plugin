@@ -54,12 +54,19 @@ class LintConfigurator implements Configurator {
     }
 
     private CollectLintViolationsTask createCollectViolationsTask(Violations violations) {
-        def outputFolder = new File(project.projectDir, 'build/reports')
         project.tasks.create('collectLintViolations', CollectLintViolationsTask) { collectViolations ->
-            collectViolations.xmlReportFile = new File(outputFolder, 'lint-results.xml')
-            collectViolations.htmlReportFile = new File(outputFolder, 'lint-results.html')
+            collectViolations.xmlReportFile = xmlOutputFile()
+            collectViolations.htmlReportFile = new File(defaultOutputFolder(), 'lint-results.html')
             collectViolations.violations = violations
         }
+    }
+
+    private File xmlOutputFile() {
+        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder(), 'lint-results.xml')
+    }
+
+    private File defaultOutputFolder() {
+        new File(project.projectDir, 'build/reports')
     }
 
     private static boolean isAndroidProject(final Project project) {
