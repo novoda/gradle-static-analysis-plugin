@@ -12,12 +12,14 @@ import javax.annotation.Nullable
 import static com.novoda.test.TestProject.Result.Logs;
 
 class LogsSubject extends Subject<LogsSubject, Logs> {
+
     private static final String VIOLATIONS_LIMIT_EXCEEDED = "Violations limit exceeded"
-    private static final String DETEKT_NOT_APPLIED = "The detekt plugin is configured but not applied. Please apply the plugin in your build script For more information see https://github.com/arturbosch/detekt."
+    private static final String DETEKT_NOT_APPLIED = "The detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more informations see https://github.com/arturbosch/detekt."
     private static final String CHECKSTYLE_VIOLATIONS_FOUND = "Checkstyle violations found"
     private static final String PMD_VIOLATIONS_FOUND = "PMD violations found"
     private static final String FINDBUGS_VIOLATIONS_FOUND = "Findbugs violations found"
     private static final String DETEKT_VIOLATIONS_FOUND = "Detekt violations found"
+
     private static final SubjectFactory<LogsSubject, Logs> FACTORY = new SubjectFactory<LogsSubject, Logs>() {
         @Override
         LogsSubject getSubject(FailureStrategy failureStrategy, Logs logs) {
