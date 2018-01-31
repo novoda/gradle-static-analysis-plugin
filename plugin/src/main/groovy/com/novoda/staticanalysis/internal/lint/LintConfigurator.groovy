@@ -66,7 +66,7 @@ class LintConfigurator implements Configurator {
     }
 
     private File getDefaultOutputFolder() {
-        new File(project.projectDir, 'build/reports')
+        new File(project.buildDir, 'reports')
     }
 
     private static boolean isAndroidProject(final Project project) {
