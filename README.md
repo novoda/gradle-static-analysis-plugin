@@ -30,7 +30,7 @@ Support for additional tools is planned but not available yet:
 Please note that the tools availability depends on the project the plugin is applied to. For more details please refer to the
 [supported tools](docs/supported-tools.md) page.
 
-### Out-of-the-box support for Android and Kotlin projects
+### Out-of-the-box support for Android projects
 Android projects use a Gradle model that is not compatible with the Java one, supported by the built-in static analysis tools plugins.
 Applying `gradle-static-analysis-plugin` to your Android project will make sure all the necessary tasks are created and correctly configured
 without any additional hassle.
