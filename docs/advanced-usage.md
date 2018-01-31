@@ -79,7 +79,7 @@ staticAnalysis {
 ```
 
 Please note that this is not supported for Detekt. To exclude files in Detekt, please refer to the specific tool documentation
-in the [supported tools](supported-tools.md#exclude-files-from-detekt-analysis) page.
+in the [Detekt](tools/detekt.md#exclude-files-from-detekt-analysis) page.
 
 ## Add exclusions with Android build variants
 Sometimes using `exclude` filters could be not enough. When using the plugin in an Android project you may want to consider
