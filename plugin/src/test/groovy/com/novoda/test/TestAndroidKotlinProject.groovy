@@ -1,25 +1,28 @@
 package com.novoda.test
 
-class TestAndroidProject extends TestProject<TestAndroidProject> {
-    private static final Closure<String> TEMPLATE = { TestAndroidProject project ->
+class TestAndroidKotlinProject extends TestProject<TestAndroidKotlinProject> {
+    private static final Closure<String> TEMPLATE = { TestAndroidKotlinProject project ->
         """
 buildscript {
-    repositories { 
+    repositories {
         google()
         jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20'
     }
 }
 plugins {
     ${formatPlugins(project)}
 }
-repositories { 
+repositories {
     google()
     jcenter()
 }
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.0'
@@ -41,7 +44,7 @@ ${formatExtension(project)}
 
     private String additionalAndroidConfig = ''
 
-    TestAndroidProject() {
+    TestAndroidKotlinProject() {
         super(TEMPLATE)
         File localProperties = Fixtures.LOCAL_PROPERTIES
         if (localProperties.exists()) {
@@ -55,7 +58,7 @@ ${formatExtension(project)}
                 .collect { Map.Entry<String, List<String>> entry ->
             """$entry.key {
             manifest.srcFile '${Fixtures.ANDROID_MANIFEST}'
-            java {
+            kotlin {
                 ${entry.value.collect { "srcDir '$it'" }.join('\n\t\t\t\t')}
             }
         }"""
@@ -68,7 +71,7 @@ ${formatExtension(project)}
         ['-x', 'lint'] + super.defaultArguments()
     }
 
-    TestAndroidProject withAdditionalAndroidConfig(String additionalAndroidConfig) {
+    TestAndroidKotlinProject withAdditionalAndroidConfig(String additionalAndroidConfig) {
         this.additionalAndroidConfig = additionalAndroidConfig
         return this
     }
