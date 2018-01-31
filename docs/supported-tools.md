@@ -31,6 +31,7 @@ For additional informations and tips on how to obtain advanced behaviours with t
  * [Detekt](#detekt)
    * [IMPORTANT: setup Detekt](#important-setup-detekt)
    * [Configure Detekt](#configure-detekt)
+   * [Exclude files from Detekt analysis](#exclude-files-from-detekt-analysis)
    * [Detekt in mixed-language projects](#detekt-in-mixed-language-projects)
  * KtLint — _COMING SOON_
  * Android Lint — _COMING SOON_
@@ -248,10 +249,10 @@ from how the other tools' configurations closures work. For example:
 ```gradle
 detekt {
     profile('main') {
-        input = "$projectDir/src/main/java"
-        config = teamPropsFile('static-analysis/detekt-config.yml')
-        filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-        output = "$projectDir/build/reports/detekt"
+        input = // A string pointing to a project's sources. E.g., "$projectDir/src/main/java"
+        config = // A file containing the Detekt configuration, e.g., teamPropsFile('static-analysis/detekt-config.yml')
+        filters = // A comma-separated list of regex exclusions, e.g., '.*test.*,.*/resources/.*,.*/tmp/.*'
+        output = // A string pointing to the output directory for the reports, e.g., "$projectDir/build/reports/detekt"
     }
 }
 ```
@@ -261,6 +262,14 @@ in the Detekt configuration file as it will interfere with the functioning of th
 sure that `failFast` is set to `false` in the Detekt configuration.
 
 For more informations about Detekt rules, refer to the [official website](https://github.com/arturbosch/detekt/tree/master/detekt-generator/documentation).
+
+### Exclude files from Detekt analysis
+
+In order to exclude files from Detekt analysis, you have to use the facilities provided by the Detekt plugin in the `detekt` configuration closure. This means,
+you have to provide a value to the `filters` property that contains the exclusion pattern(s) you wish Detekt to ignore.
+
+The `filters` property expects a string consisting in a comma-separated list of regular expression patterns, e.g., `'.*test.*,.*/resources/.*,.*/tmp/.*'`
+(which would exclude any path containing the word `test`, or any path containing a directory called `resources` or `tmp`).
 
 ### Detekt in mixed-language projects
 If your project mixes Java and Kotlin code, you don't need to have an exclusion in place for all `*.java` files. Detekt itself only looks for
