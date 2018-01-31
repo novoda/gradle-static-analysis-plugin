@@ -41,6 +41,7 @@ class LintConfigurator implements Configurator {
         project.android.lintOptions(config)
         project.android.lintOptions {
             xmlReport = true
+            htmlReport = true
             abortOnError false
         }
     }
