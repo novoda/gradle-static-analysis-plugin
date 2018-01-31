@@ -32,8 +32,7 @@ class DetektConfigurator implements Configurator {
 
     @Override
     void execute() {
-        project.extensions.findByType(StaticAnalysisExtension).ext."detekt" = { Closure config ->
-
+        project.extensions.findByType(StaticAnalysisExtension).ext.'detekt' = { Closure config ->
             if (!isKotlinProject(project)) {
                 return
             }
@@ -66,7 +65,7 @@ class DetektConfigurator implements Configurator {
 
     private CollectDetektViolationsTask createCollectViolationsTask(Violations violations) {
         def outputFolder = project.file(project.extensions.findByName('detekt').systemOrDefaultProfile().output)
-        project.tasks.create("collectDetektViolations", CollectDetektViolationsTask) { collectViolations ->
+        project.tasks.create('collectDetektViolations', CollectDetektViolationsTask) { collectViolations ->
             collectViolations.xmlReportFile = new File(outputFolder, 'detekt-checkstyle.xml')
             collectViolations.htmlReportFile = new File(outputFolder, 'detekt-report.html')
             collectViolations.violations = violations
