@@ -1,6 +1,5 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.NamedDomainObjectFactory

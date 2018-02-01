@@ -1,8 +1,8 @@
 package com.novoda.staticanalysis.internal.checkstyle
 
+import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.*
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
