@@ -96,4 +96,4 @@ staticAnalysis {
 }
 ```
 
-Please note that this is not supported for Detekt yet.
+Please note that this is not supported for Detekt & Android Lint yet.
