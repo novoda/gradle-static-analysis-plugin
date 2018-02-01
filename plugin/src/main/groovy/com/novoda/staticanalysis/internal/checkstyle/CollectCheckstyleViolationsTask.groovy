@@ -1,7 +1,7 @@
 package com.novoda.staticanalysis.internal.checkstyle
 
+import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CollectViolationsTask
-import com.novoda.staticanalysis.internal.Violations
 import groovy.util.slurpersupport.GPathResult
 
 class CollectCheckstyleViolationsTask extends CollectViolationsTask {

@@ -1,4 +1,4 @@
-package com.novoda.staticanalysis.internal;
+package com.novoda.staticanalysis;
 
 class Violations {
     private final String toolName

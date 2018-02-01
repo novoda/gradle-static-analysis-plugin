@@ -1,6 +1,5 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
 import org.junit.Before
