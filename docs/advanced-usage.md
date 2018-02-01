@@ -100,6 +100,6 @@ staticAnalysis {
 }
 ```
 
-Please note that this is not supported for Detekt yet.
+Please note that this is not supported for Detekt & Android Lint yet.
 
 [penaltyextensioncode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/PenaltyExtension.groovy

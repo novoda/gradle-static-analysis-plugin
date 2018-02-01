@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+[Version 0.5](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.5)
+--------------------------
+
+- Integrate [detekt](https://github.com/arturbosch/detekt), a static analysis tool for Kotlin ([PR#58](https://github.com/novoda/gradle-static-analysis-plugin/pull/58))
+- Integrate [Android Lint](https://developer.android.com/studio/write/lint.html), a linter and static analysis tool for Android projects ([PR#62](https://github.com/novoda/gradle-static-analysis-plugin/pull/62))
+
 [Version 0.4.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.4.1)
 --------------------------
 
