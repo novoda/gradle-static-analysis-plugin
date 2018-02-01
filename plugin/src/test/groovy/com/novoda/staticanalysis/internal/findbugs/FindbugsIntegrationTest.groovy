@@ -270,7 +270,7 @@ class FindbugsIntegrationTest {
 
         Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.SUCCESS)
         Truth.assertThat(result.outcome(':generateFindbugsDebugHtmlReport')).isEqualTo(TaskOutcome.SUCCESS)
-        Truth.assertThat(result.outcome(':findbugsTest')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':findbugsTest')).isEqualTo(TaskOutcome.NO_SOURCE)
         Truth.assertThat(result.outcome(':generateFindbugsTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
     }
 
@@ -293,13 +293,13 @@ class FindbugsIntegrationTest {
                 }''')
                 .build('check')
 
-        Truth.assertThat(result.outcome(':findbugsDebugAndroidTest')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':findbugsDebugAndroidTest')).isEqualTo(TaskOutcome.NO_SOURCE)
         Truth.assertThat(result.outcome(':generateFindbugsDebugAndroidTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
         Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.SUCCESS)
         Truth.assertThat(result.outcome(':generateFindbugsDebugHtmlReport')).isEqualTo(TaskOutcome.SUCCESS)
-        Truth.assertThat(result.outcome(':findbugsDebugUnitTest')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':findbugsDebugUnitTest')).isEqualTo(TaskOutcome.NO_SOURCE)
         Truth.assertThat(result.outcome(':generateFindbugsDebugUnitTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
-        Truth.assertThat(result.outcome(':findbugsRelease')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':findbugsRelease')).isEqualTo(TaskOutcome.NO_SOURCE)
         Truth.assertThat(result.outcome(':generateFindbugsReleaseHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
     }
 

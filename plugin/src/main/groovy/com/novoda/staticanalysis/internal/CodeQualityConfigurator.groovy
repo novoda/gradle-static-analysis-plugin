@@ -1,22 +1,22 @@
 package com.novoda.staticanalysis.internal
 
-import com.novoda.staticanalysis.EvaluateViolationsTask
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
 
-abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> {
+abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> implements Configurator {
 
     protected final Project project
     protected final Violations violations
-    protected final EvaluateViolationsTask evaluateViolations
+    protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
     protected Closure<Boolean> includeVariantsFilter
 
-    protected CodeQualityConfigurator(Project project, Violations violations, EvaluateViolationsTask evaluateViolations) {
+    protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
@@ -24,6 +24,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         this.includeVariantsFilter = { true }
     }
 
+    @Override
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext."$toolName" = { Closure config ->
             project.apply plugin: toolPlugin

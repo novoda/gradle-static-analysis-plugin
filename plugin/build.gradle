@@ -20,13 +20,14 @@ sourceSets {
 }
 
 dependencies {
-    compile libraries.gradleApi
+    implementation libraries.gradleApi
 
     testCompile libraries.gradleTestKit
     testCompile libraries.junit
     testCompile libraries.truth
     testCompile libraries.guava
     testCompile libraries.findbugs.annotations
+    testCompile libraries.mockito
 
     testRuntime files(pluginUnderTestMetadata)
 }
