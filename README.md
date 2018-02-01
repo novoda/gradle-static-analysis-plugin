@@ -21,12 +21,12 @@ The plugin supports various static analysis tools for Java, Kotlin and Android p
  * [`PMD`](https://pmd.github.io)
  * [`FindBugs`](http://findbugs.sourceforge.net/)
  * [`Detekt`](https://github.com/arturbosch/detekt)
+ * [`Android Lint`](https://developer.android.com/studio/write/lint.html)
 
 Support for additional tools is planned but not available yet:
 
  * [`KtLint`](https://github.com/shyiko/ktlint)
- * [`Android Lint`](https://developer.android.com/studio/write/lint.html)
-
+ 
 Please note that the tools availability depends on the project the plugin is applied to. For more details please refer to the
 [supported tools](docs/supported-tools.md) page.
 
@@ -68,6 +68,7 @@ staticAnalysis {
     pmd { }
     findbugs { }
     detekt { }
+    lintOptions { }
 }
 ```
 
