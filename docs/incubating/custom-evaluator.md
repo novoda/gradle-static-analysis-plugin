@@ -58,7 +58,7 @@ The evaluation logic can be any arbitrary function that respects this contract:
 Anything that respect such contract is valid. For example, a custom evaluator might:
  * Collect all the report files and upload them somewhere, or send them to Slack or an email address
  * Use the GitHub API to report the issues on the PR that the build is running on, à la [GNAG](https://github.com/btkelly/gnag)
- * Only break the build if there's errors or warnings in one specific report
+ * Only break the build if there are errors or warnings in one specific report
  * Or anything else that you can think of
 
 Please note that the presence of an `evaluator` property will make the plugin ignore the `penalty` closure and its thresholds. If you
