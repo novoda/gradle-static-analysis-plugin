@@ -17,11 +17,11 @@ customised by providing an implementation of the [`ViolationsEvaluator`][violati
 
 ## The `DefaultViolationsEvaluator`
 The plugin has a default mechanism to decide whether to consider a build as passing or failed. The mechanism is manifesting itself
-as the `penalties` closure:
+as the `penalty` closure:
 
 ```gradle
 staticAnalysis {
-    penalties {
+    penalty {
         maxErrors = 0
         maxWarnings = 10
     }
@@ -61,7 +61,7 @@ Anything that respect such contract is valid. For example, a custom evaluator mi
  * Only break the build if there's errors or warnings in one specific report
  * Or anything else that you can think of
 
-Please note that the presence of an `evaluator` property will make the plugin ignore the `penalties` closure and its thresholds. If you
+Please note that the presence of an `evaluator` property will make the plugin ignore the `penalty` closure and its thresholds. If you
 want to provide behaviour on top of the default [`DefaultViolationsEvaluator`][defaultviolationsevaluatorcode], you can have your own
 evaluator run its logic and then delegate the thresholds counting to an instance of `DefaultViolationsEvaluator` you create.
 
