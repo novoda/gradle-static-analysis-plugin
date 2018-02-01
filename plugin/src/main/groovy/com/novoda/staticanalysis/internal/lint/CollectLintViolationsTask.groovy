@@ -1,7 +1,7 @@
 package com.novoda.staticanalysis.internal.lint
 
-import com.novoda.staticanalysis.internal.CollectViolationsTask
 import com.novoda.staticanalysis.Violations
+import com.novoda.staticanalysis.internal.CollectViolationsTask
 import groovy.util.slurpersupport.GPathResult
 
 class CollectLintViolationsTask extends CollectViolationsTask {

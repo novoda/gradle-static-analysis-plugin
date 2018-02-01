@@ -1,7 +1,7 @@
 package com.novoda.staticanalysis.internal.pmd
 
-import com.novoda.staticanalysis.internal.CollectViolationsTask
 import com.novoda.staticanalysis.Violations
+import com.novoda.staticanalysis.internal.CollectViolationsTask
 
 class CollectPmdViolationsTask extends CollectViolationsTask {
 

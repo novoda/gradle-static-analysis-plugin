@@ -1,7 +1,7 @@
 package com.novoda.staticanalysis.internal.findbugs
 
-import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.Violations
+import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.*
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
