@@ -1,7 +1,7 @@
 package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.internal.CollectViolationsTask
-import com.novoda.staticanalysis.internal.Violations
+import com.novoda.staticanalysis.Violations
 
 class CollectFindbugsViolationsTask extends CollectViolationsTask {
 

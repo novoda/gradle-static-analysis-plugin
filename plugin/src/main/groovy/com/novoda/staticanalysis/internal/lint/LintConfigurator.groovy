@@ -2,7 +2,7 @@ package com.novoda.staticanalysis.internal.lint
 
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.Violations
+import com.novoda.staticanalysis.Violations
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task

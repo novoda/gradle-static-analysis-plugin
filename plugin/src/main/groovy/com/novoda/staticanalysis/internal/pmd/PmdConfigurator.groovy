@@ -2,7 +2,7 @@ package com.novoda.staticanalysis.internal.pmd
 
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import com.novoda.staticanalysis.internal.Violations
+import com.novoda.staticanalysis.Violations
 import org.gradle.api.*
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
