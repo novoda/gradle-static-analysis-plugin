@@ -51,7 +51,7 @@ buildscript {
 apply plugin: 'com.novoda.static-analysis'
 ```
         
-Apply the plugin from the [Gradle Plugin Repository](https://plugins.gradle.org/):
+Apply the plugin from the [Gradle Plugins Repository](https://plugins.gradle.org/):
 
 ```gradle
 plugins {
