@@ -38,7 +38,7 @@ githubPages {
 pluginBundle {
     website = 'https://github.com/novoda/gradle-static-analysis-plugin'
     vcsUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
-    description = 'A Gradle plugin to easily apply the same setup of static analysis tools across different Android or Java projects.'
+    description = 'A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.'
     tags = ['java', 'kotlin', 'android', 'static analysis', 'code quality']
 
     plugins {
