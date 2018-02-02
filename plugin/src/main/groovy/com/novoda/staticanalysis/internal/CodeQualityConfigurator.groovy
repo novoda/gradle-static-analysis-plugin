@@ -1,6 +1,7 @@
 package com.novoda.staticanalysis.internal
 
 import com.novoda.staticanalysis.StaticAnalysisExtension
+import com.novoda.staticanalysis.Violations
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectSet
 import org.gradle.api.Project

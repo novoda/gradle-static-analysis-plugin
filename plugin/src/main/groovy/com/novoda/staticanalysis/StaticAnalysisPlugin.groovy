@@ -1,7 +1,6 @@
 package com.novoda.staticanalysis
 
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.Violations
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator

@@ -1,8 +1,8 @@
 package com.novoda.staticanalysis.internal.detekt
 
 import com.novoda.staticanalysis.StaticAnalysisExtension
+import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.Violations
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project

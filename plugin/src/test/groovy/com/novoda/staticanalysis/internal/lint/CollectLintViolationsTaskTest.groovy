@@ -1,6 +1,6 @@
 package com.novoda.staticanalysis.internal.lint
 
-import com.novoda.staticanalysis.internal.Violations
+import com.novoda.staticanalysis.Violations
 import com.novoda.test.Fixtures
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder

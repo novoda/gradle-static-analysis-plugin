@@ -8,6 +8,7 @@ the build will not fail, which is very useful for legacy projects.
  * [Improve the report with a base URL](#improve-the-report-with-a-base-URL)
  * [Add exclusions with `exclude` filters](#add-exclusions-with-exclude-filters)
  * [Add exclusions with Android build variants](#add-exclusions-with-Android-build-variants)
+ * [Custom violations evaluator (**incubating**)](incubating/custom-evaluator.md#custom-violations-evaluator-incubating)
 
 ---
 
@@ -26,6 +27,9 @@ staticAnalysis {
 Violations are then collected while running all the static analysis tools enabled in the project and split between errors and warnings.
 Only in the end they are cumulatively evaluated against the thresholds provided in the configuration to decide whether the build should
 fail or not.
+
+If you don't specify a `penalty` configuration, the plugin will use the [default threshold values][penaltyextensioncode], which are to
+allow any warning, but break the build on any error.
 
 ## Improve the report with a base URL
 Build logs will show an overall report of how many violations have been found during the analysis and the links to
@@ -97,3 +101,5 @@ staticAnalysis {
 ```
 
 Please note that this is not supported for Detekt & Android Lint yet.
+
+[penaltyextensioncode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/PenaltyExtension.groovy
