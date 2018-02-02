@@ -4,11 +4,15 @@ subprojects {
     buildscript {
         repositories {
             jcenter()
+            maven {
+                url "https://plugins.gradle.org/m2/"
+            }
         }
         dependencies {
             classpath gradlePlugins.bintrayRelease
             classpath gradlePlugins.buildProperties
             classpath gradlePlugins.gradleGit
+            classpath gradlePlugins.gradlePluginRepoPublish
         }
     }
 
