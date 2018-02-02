@@ -1,7 +1,9 @@
 version = '0.5.1'
+group = 'com.novoda.gradle-static-analysis-plugin'
 String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
+apply plugin: "com.gradle.plugin-publish"
 apply plugin: 'com.novoda.bintray-release'
 publish {
     userOrg = 'novoda'
@@ -30,6 +32,20 @@ githubPages {
     pages {
         from groovydoc.destinationDir
         into "docs/${project.version}"
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/novoda/gradle-static-analysis-plugin'
+    vcsUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
+    description = 'A Gradle plugin to easily apply the same setup of static analysis tools across different Android or Java projects.'
+    tags = ['java', 'kotlin', 'android', 'static analysis', 'code quality']
+
+    plugins {
+        gradleStaticAnalysisPlugin {
+            id = 'com.novoda.gradle-static-analysis-plugin'
+            displayName = 'Gradle static analysis plugin'
+        }
     }
 }
 
