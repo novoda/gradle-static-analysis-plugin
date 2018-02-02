@@ -12,7 +12,7 @@ subprojects {
             classpath gradlePlugins.bintrayRelease
             classpath gradlePlugins.buildProperties
             classpath gradlePlugins.gradleGit
-            classpath gradlePlugins.gradlePluginRepoPublish
+            classpath gradlePlugins.gradlePublish
         }
     }
 
