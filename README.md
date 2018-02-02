@@ -36,7 +36,7 @@ Applying `gradle-static-analysis-plugin` to your Android project will make sure 
 without any additional hassle.
 
 ## Add the plugin to your project
-The plugin is available on jCenter and can be included as a classpath dependency:
+Apply the plugin from jCenter as a classpath dependency:
 
 ```gradle
 buildscript {
@@ -47,12 +47,17 @@ buildscript {
         classpath 'com.novoda:gradle-static-analysis-plugin:0.5.1'
     }
 }
-```
 
-You can then apply the plugin via:
+apply plugin: 'com.novoda.static-analysis'
+```
+        
+Apply the plugin from the [Gradle Plugin Repository](https://plugins.gradle.org/):
 
 ```gradle
-apply plugin: 'com.novoda.static-analysis'
+plugins {
+    id 'com.novoda:gradle-static-analysis-plugin' version ''
+}
+
 ```
 
 ## Simple usage
