@@ -1,6 +1,12 @@
 Change Log
 ==========
 
+[Version 0.5.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.5.1)
+--------------------------
+
+- Add `Violations` to public API ([PR#69](https://github.com/novoda/gradle-static-analysis-plugin/pull/69))
+- Custom violations evaluators ([PR#68](https://github.com/novoda/gradle-static-analysis-plugin/pull/68))
+
 [Version 0.5](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.5)
 --------------------------
 
