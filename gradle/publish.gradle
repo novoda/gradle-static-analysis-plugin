@@ -1,7 +1,5 @@
 ext {
-    GROUP_ID = 'com.novoda'
-    ARTIFACT_ID = 'gradle-static-analysis-plugin'
-    WEBSITE = 'https://github.com/novoda/gradle-static-analysis-plugin'
+    websiteUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
 version = '0.5.1'
@@ -12,10 +10,10 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.novoda.bintray-release'
 publish {
     userOrg = 'novoda'
-    groupId = GROUP_ID
-    artifactId = ARTIFACT_ID
+    groupId = 'com.novoda'
+    artifactId = 'gradle-static-analysis-plugin'
     publishVersion = project.version
-    website = WEBSITE
+    website = websiteUrl
 }
 
 apply plugin: 'com.novoda.build-properties'
@@ -41,8 +39,8 @@ githubPages {
 }
 
 pluginBundle {
-    website = WEBSITE
-    vcsUrl = WEBSITE
+    website = websiteUrl
+    vcsUrl = websiteUrl
     description = 'A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.'
     tags = ['java', 'kotlin', 'android', 'static analysis', 'code quality']
 
