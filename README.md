@@ -55,7 +55,7 @@ or from the [Gradle Plugins Repository](https://plugins.gradle.org/):
 
 ```gradle
 plugins {
-    id 'com.novoda:gradle-static-analysis-plugin' version '0.5.1'
+    id 'com.novoda.static-analysis' version '0.5.1'
 }
 
 ```

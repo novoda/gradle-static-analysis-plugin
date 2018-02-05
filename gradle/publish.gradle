@@ -49,7 +49,7 @@ pluginBundle {
 
     plugins {
         gradleStaticAnalysisPlugin {
-            id = "$GROUP_ID.$ARTIFACT_ID"
+            id = 'com.novoda.static-analysis'
             displayName = 'Gradle static analysis plugin'
         }
     }
