@@ -4,9 +4,7 @@ subprojects {
     buildscript {
         repositories {
             jcenter()
-            maven {
-                url "https://plugins.gradle.org/m2/"
-            }
+            gradlePluginPortal()
         }
         dependencies {
             classpath gradlePlugins.bintrayRelease
