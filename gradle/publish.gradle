@@ -5,7 +5,6 @@ ext {
 }
 
 version = '0.5.1'
-group = "$GROUP_ID.$ARTIFACT_ID"
 String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
