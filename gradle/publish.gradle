@@ -84,11 +84,11 @@ private static void validateSecrets(File secretsProperties) {
     def props = new Properties()
     secretsProperties.withInputStream { props.load(it) }
 
-    if (!props.hasProperty('gradle.publish.key')) {
+    if (!props.containsKey('gradle.publish.key')) {
         throw new GradleException('Could not find find gradle.publish.key in secrets.properties')
     }
 
-    if (!props.hasProperty('gradle.publish.secret')) {
+    if (!props.containsKey('gradle.publish.secret')) {
         throw new GradleException('Could not find find gradle.publish.secret in secrets.properties')
     }
 }
