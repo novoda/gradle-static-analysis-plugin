@@ -68,10 +68,35 @@ task prepareGhCredentials {
 prepareGhPages.dependsOn groovydoc
 publishGhPages.dependsOn prepareGhCredentials
 
+task prepareGradlePluginsRepoRelease {
+    description = "Prepares the release to the Gradle Plugins Repository"
+    group = 'release'
+    doLast {
+        def secretsProperties = project.file('secrets.properties')
+        if (secretsProperties.exists()) {
+            validateSecrets(secretsProperties)
+            System.properties['com.gradle.login.properties.file'] = secretsProperties.absolutePath
+        }
+    }
+}
+
+private static void validateSecrets(File secretsProperties) {
+    def props = new Properties()
+    secretsProperties.withInputStream { props.load(it) }
+
+    if (!props.hasProperty('gradle.publish.key')) {
+        throw new GradleException('Could not find find gradle.publish.key in secrets.properties')
+    }
+
+    if (!props.hasProperty('gradle.publish.secret')) {
+        throw new GradleException('Could not find find gradle.publish.secret in secrets.properties')
+    }
+}
+
 task prepareRelease {
     description = 'Prepare changelog and tag for release'
     group = 'release'
-    dependsOn prepareGhPages, prepareGhCredentials
+    dependsOn prepareGhPages, prepareGhCredentials, prepareGradlePluginsRepoRelease
     doLast {
         String changelog = extractChangelog()
         grgit.tag.add {
@@ -117,36 +142,10 @@ task publishGroovydoc {
     mustRunAfter publishArtifact
 }
 
-task prepareGradlePluginsRepoRelease {
-    description = "Prepares the release to the Gradle Plugins Repository"
-    group = 'release'
-    doLast {
-        def secretsProperties = project.file('secrets.properties')
-        if (secretsProperties.exists()) {
-            validateSecrets(secretsProperties)
-            System.properties['com.gradle.login.properties.file'] = secretsProperties.absolutePath
-        }
-    }
-}
-
-private static void validateSecrets(File secretsProperties) {
-    def props = new Properties()
-    secretsProperties.withInputStream { props.load(it) }
-
-    if (!props.hasProperty('gradle.publish.key')) {
-        throw new GradleException('Could not find find gradle.publish.key in secrets.properties')
-    }
-
-    if (!props.hasProperty('gradle.publish.secret')) {
-        throw new GradleException('Could not find find gradle.publish.secret in secrets.properties')
-    }
-}
-
 task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
     if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
-        publishPlugins.dependsOn prepareGradlePluginsRepoRelease
         dependsOn prepareRelease, publishArtifact, publishGroovydoc, publishPlugins
         doLast {
             grgit.push {
