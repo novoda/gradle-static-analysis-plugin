@@ -72,7 +72,7 @@ task prepareGradlePluginsRepoRelease {
     description = "Prepares the release to the Gradle Plugins Repository"
     group = 'release'
     doLast {
-        def secretsProperties = project.file('secrets.properties')
+        def secretsProperties = rootProject.file('secrets.properties')
         if (secretsProperties.exists()) {
             validateSecrets(secretsProperties)
             System.properties['com.gradle.login.properties.file'] = secretsProperties.absolutePath
