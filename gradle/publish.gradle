@@ -115,10 +115,19 @@ task publishGroovydoc {
     mustRunAfter publishArtifact
 }
 
+task prepareGradlePluginsRepoRelease {
+    description = "Prepares the release to the Gradle Plugins Repository"
+    group = 'release'
+    doLast {
+        println("TODO: prepare the release")
+    }
+}
+
 task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
     if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
+        publishPlugins.dependsOn prepareGradlePluginsRepoRelease
         dependsOn prepareRelease, publishArtifact, publishGroovydoc, publishPlugins
         doLast {
             grgit.push {
