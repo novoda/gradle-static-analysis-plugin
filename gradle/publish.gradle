@@ -69,7 +69,7 @@ prepareGhPages.dependsOn groovydoc
 publishGhPages.dependsOn prepareGhCredentials
 
 task prepareGradlePluginsRepoRelease {
-    description = "Prepares the release to the Gradle Plugins Repository"
+    description = "Prepare the release to the Gradle Plugins Repository"
     group = 'release'
     doLast {
         def secretsProperties = rootProject.file('secrets.properties')
