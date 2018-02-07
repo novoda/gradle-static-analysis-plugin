@@ -23,6 +23,8 @@ buildProperties {
 This file should contain:
 - git.username: the username used to push to the repo
 - git.password: the password used to push to the repo
+- gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
+- gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
 		''')
     }
 }
@@ -66,10 +68,19 @@ task prepareGhCredentials {
 prepareGhPages.dependsOn groovydoc
 publishGhPages.dependsOn prepareGhCredentials
 
+task prepareGradlePluginsRepoRelease {
+    doLast {
+        // force evaluation of properties to check whether they're there or not
+        buildProperties.secrets['gradle.publish.key'].string
+        buildProperties.secrets['gradle.publish.secret'].string
+        System.properties['com.gradle.login.properties.file'] = rootProject.file('secrets.properties')
+    }
+}
+
 task prepareRelease {
     description = 'Prepare changelog and tag for release'
     group = 'release'
-    dependsOn prepareGhPages, prepareGhCredentials
+    dependsOn prepareGhPages, prepareGhCredentials, prepareGradlePluginsRepoRelease
     doLast {
         String changelog = extractChangelog()
         grgit.tag.add {
