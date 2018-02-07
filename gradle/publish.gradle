@@ -69,8 +69,6 @@ prepareGhPages.dependsOn groovydoc
 publishGhPages.dependsOn prepareGhCredentials
 
 task prepareGradlePluginsRepoRelease {
-    description = "Prepare the release to the Gradle Plugins Repository"
-    group = 'release'
     doLast {
         // force evaluation of properties to check whether they're there or not
         buildProperties.secrets['gradle.publish.key'].string
