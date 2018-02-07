@@ -72,24 +72,10 @@ task prepareGradlePluginsRepoRelease {
     description = "Prepare the release to the Gradle Plugins Repository"
     group = 'release'
     doLast {
-        def secretsProperties = rootProject.file('secrets.properties')
-        if (secretsProperties.exists()) {
-            validateSecrets(secretsProperties)
-            System.properties['com.gradle.login.properties.file'] = secretsProperties.absolutePath
-        }
-    }
-}
-
-private static void validateSecrets(File secretsProperties) {
-    def props = new Properties()
-    secretsProperties.withInputStream { props.load(it) }
-
-    if (!props.containsKey('gradle.publish.key')) {
-        throw new GradleException('Could not find find gradle.publish.key in secrets.properties')
-    }
-
-    if (!props.containsKey('gradle.publish.secret')) {
-        throw new GradleException('Could not find find gradle.publish.secret in secrets.properties')
+        // force evaluation of properties to check whether they're there or not
+        buildProperties.secrets['gradle.publish.key'].string
+        buildProperties.secrets['gradle.publish.secret'].string
+        System.properties['com.gradle.login.properties.file'] = rootProject.file('secrets.properties')
     }
 }
 
