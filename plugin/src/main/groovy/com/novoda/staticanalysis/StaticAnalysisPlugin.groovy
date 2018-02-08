@@ -15,8 +15,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        StaticAnalysisExtension pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
-        Task evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
+        def pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
+        def evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
         createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
         project.afterEvaluate {
             project.tasks['check'].dependsOn evaluateViolations
