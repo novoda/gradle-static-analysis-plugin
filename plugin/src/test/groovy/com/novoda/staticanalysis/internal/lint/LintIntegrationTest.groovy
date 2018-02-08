@@ -17,7 +17,7 @@ class LintIntegrationTest {
         """
 
     @Test
-    void shouldFailBuildWhenLintErrorsOverTheThresholds() throws Exception {
+    void shouldFailBuildWhenLintErrorsOverTheThresholds() {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_ERRORS, 0, 0)
                 .buildAndFail('check')
 
@@ -25,7 +25,7 @@ class LintIntegrationTest {
     }
 
     @Test
-    void shouldNotFailBuildWhenLintErrorsWithinTheThresholds() throws Exception {
+    void shouldNotFailBuildWhenLintErrorsWithinTheThresholds() {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_ERRORS, 0, 1)
                 .build('check')
 
@@ -33,7 +33,7 @@ class LintIntegrationTest {
     }
 
     @Test
-    void shouldFailBuildWhenLintWarningsOverTheThresholds() throws Exception {
+    void shouldFailBuildWhenLintWarningsOverTheThresholds() {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 0, 0)
                 .buildAndFail('check')
 
@@ -41,7 +41,7 @@ class LintIntegrationTest {
     }
 
     @Test
-    void shouldNotFailBuildWhenLintWarningsWithinTheThresholds() throws Exception {
+    void shouldNotFailBuildWhenLintWarningsWithinTheThresholds() {
         def result = createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 1, 0)
                 .build('check')
 

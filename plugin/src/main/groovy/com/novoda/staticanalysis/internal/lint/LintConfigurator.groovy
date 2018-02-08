@@ -3,11 +3,12 @@ package com.novoda.staticanalysis.internal.lint
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
+import com.novoda.staticanalysis.internal.VariantAware
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-class LintConfigurator implements Configurator {
+class LintConfigurator implements Configurator, VariantAware {
 
     private final Project project
     private final Violations violations
@@ -28,16 +29,27 @@ class LintConfigurator implements Configurator {
 
     @Override
     void execute() {
-        project.extensions.findByType(StaticAnalysisExtension).ext."lintOptions" = { Closure config ->
-            if (!isAndroidProject(project)) {
-                return
+        project.extensions.findByType(StaticAnalysisExtension).ext.lintOptions = { Closure config ->
+            project.plugins.withId('com.android.application') {
+                configureLint(config)
+                filteredApplicationVariants.all {
+                    configureCollectViolationsTask(it)
+                }
             }
-            configureLint(config)
-            configureToolTask()
+            project.plugins.withId('com.android.library') {
+                configureLint(config)
+                filteredLibraryVariants.all {
+                    configureCollectViolationsTask(it)
+                }
+            }
+
         }
     }
 
     private void configureLint(Closure config) {
+        project.android.lintOptions.ext.includeVariants = { Closure<Boolean> filter ->
+            includeVariantsFilter = filter
+        }
         project.android.lintOptions(config)
         project.android.lintOptions {
             xmlReport = true
@@ -46,32 +58,26 @@ class LintConfigurator implements Configurator {
         }
     }
 
-    private void configureToolTask() {
-        // evaluate violations after lint
-        def collectViolations = createCollectViolationsTask(violations)
+    private void configureCollectViolationsTask(variant) {
+        def collectViolations = createCollectViolationsTask(variant, violations)
         evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn project.tasks['lint']
+        collectViolations.dependsOn project.tasks["lint${variant.name.capitalize()}"]
     }
 
-    private CollectLintViolationsTask createCollectViolationsTask(Violations violations) {
-        project.tasks.create('collectLintViolations', CollectLintViolationsTask) { collectViolations ->
-            collectViolations.xmlReportFile = xmlOutputFile
-            collectViolations.htmlReportFile = new File(defaultOutputFolder, 'lint-results.html')
-            collectViolations.violations = violations
+    private CollectLintViolationsTask createCollectViolationsTask(variant, Violations violations) {
+        project.tasks.create("collectLint${variant.name.capitalize()}Violations", CollectLintViolationsTask) { task ->
+            task.xmlReportFile = xmlOutputFileFor(variant)
+            task.htmlReportFile = new File(defaultOutputFolder, "lint-results-${variant.name}.html")
+            task.violations = violations
         }
     }
 
-    private File getXmlOutputFile() {
-        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder, 'lint-results.xml')
+    private File xmlOutputFileFor(variant) {
+        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder, "lint-results-${variant.name}.xml")
     }
 
     private File getDefaultOutputFolder() {
         new File(project.buildDir, 'reports')
     }
 
-    private static boolean isAndroidProject(final Project project) {
-        final boolean isAndroidApplication = project.plugins.hasPlugin('com.android.application')
-        final boolean isAndroidLibrary = project.plugins.hasPlugin('com.android.library')
-        return isAndroidApplication || isAndroidLibrary
-    }
 }

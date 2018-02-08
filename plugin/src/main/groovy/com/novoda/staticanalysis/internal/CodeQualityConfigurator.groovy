@@ -36,13 +36,13 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             }
             project.plugins.withId('com.android.application') {
                 project.afterEvaluate {
-                    configureAndroidProject(filteredApplicationVariants)
+                    configureAndroidProject(filteredApplicationAndTestVariants)
                     configureToolTasks()
                 }
             }
             project.plugins.withId('com.android.library') {
                 project.afterEvaluate {
-                    configureAndroidProject(filteredLibraryVariants)
+                    configureAndroidProject(filteredLibraryAndTestVariants)
                     configureToolTasks()
                 }
             }

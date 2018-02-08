@@ -11,7 +11,7 @@ import static com.google.common.truth.Truth.assertThat
 class CollectLintViolationsTaskTest {
 
     @Test
-    void shouldAddResultsToViolations() throws Exception {
+    void shouldAddResultsToViolations() {
         Project project = ProjectBuilder.builder().build()
         def task = project.task('collectLintViolationsTask', type: CollectLintViolationsTask)
 
