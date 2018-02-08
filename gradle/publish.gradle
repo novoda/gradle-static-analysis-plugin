@@ -70,10 +70,8 @@ publishGhPages.dependsOn prepareGhCredentials
 
 task prepareGradlePluginsRepoRelease {
     doLast {
-        // force evaluation of properties to check whether they're there or not
-        buildProperties.secrets['gradle.publish.key'].string
-        buildProperties.secrets['gradle.publish.secret'].string
-        System.properties['com.gradle.login.properties.file'] = rootProject.file('secrets.properties')
+        project.setProperty('gradle.publish.key', buildProperties.env['GRADLE_PLUGINS_REPO_KEY'])
+        project.setProperty('gradle.publish.secret', buildProperties.env['GRADLE_PLUGINS_REPO_SECRET'])
     }
 }
 
