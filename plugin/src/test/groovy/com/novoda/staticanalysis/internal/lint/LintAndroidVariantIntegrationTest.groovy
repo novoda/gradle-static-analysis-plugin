@@ -12,78 +12,82 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class LintAndroidVariantIntegrationTest {
 
-    private static String LINT_CONFIGURATION =
+    private static final String LINT_CONFIGURATION =
             """
-        lintOptions {              
+        lintOptions {       
             lintConfig = file("${Fixtures.Lint.RULES}") 
         }
         """
 
     @Rule
-    public
-    final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
+    public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
 
     @Test
     void shouldFailBuildWhenLintViolationsOverThresholdInActiveProductFlavorVariant() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Lint.SOURCES_WITH_WARNINGS)
+        TestProject.Result result = starterProject()
                 .withSourceSet('demo', Fixtures.Lint.SOURCES_WITH_ERRORS)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 1
-                }''')
-                .withAdditionalAndroidConfig('''    
-                    flavorDimensions 'tier'
-                    productFlavors {
-                        demo { dimension 'tier' }
-                        full { dimension 'tier' }
-                    }
-                ''')
                 .withToolsConfig(LINT_CONFIGURATION)
-                .buildAndFail('check')
+                .buildAndFail('evaluateViolations')
 
         assertThat(result.logs).containsLimitExceeded(2, 3)
         assertThat(result.logs).containsLintViolations(2, 4,
-                'reports/lint-results-demoDebug.html')
-    }
-
-    @Test
-    void shouldContainCollectLintTasksForAllVariantsByDefault() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxErrors = 1
-                    maxWarnings = 1
-                }''')
-                .withAdditionalAndroidConfig('''
-                    flavorDimensions 'tier'
-
-                    productFlavors {
-                        demo { dimension 'tier' }
-                        full { dimension 'tier' }
-                    }
-                ''')
-                .withToolsConfig(LINT_CONFIGURATION)
-                .build('check')
-
-        Truth.assertThat(result.tasksPaths).containsAllOf(
-                ":lintDemoDebug",
-                ":collectLintDemoDebugViolations",
-                ":lintDemoRelease",
-                ":collectLintDemoReleaseViolations",
-                ":lintFullDebug",
-                ":collectLintFullDebugViolations",
-                ":lintFullRelease",
-                ":collectLintFullReleaseViolations"
+                'reports/lint-results-demoDebug.html',
+                'reports/lint-results-demoRelease.html',
+                'reports/lint-results-fullDebug.html',
+                'reports/lint-results-fullRelease.html'
         )
     }
 
     @Test
+    void shouldContainCollectLintTasksForAllVariantsByDefault() {
+        TestProject.Result result = starterProject()
+                .withToolsConfig(LINT_CONFIGURATION)
+                .buildAndFail('evaluateViolations')
+
+        Truth.assertThat(result.tasksPaths).containsAllOf(
+                ':lintDemoDebug',
+                ':collectLintDemoDebugViolations',
+                ':lintDemoRelease',
+                ':collectLintDemoReleaseViolations',
+                ':lintFullDebug',
+                ':collectLintFullDebugViolations',
+                ':lintFullRelease',
+                ':collectLintFullReleaseViolations'
+        )
+
+        Truth.assertThat(result.tasksPaths).doesNotContain(':lint')
+    }
+
+    @Test
     void shouldContainCollectLintTasksForIncludedVariantsOnly() {
-        TestProject.Result result = projectRule.newProject()
-                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
+        TestProject.Result result = starterProject()
+                .withToolsConfig("""
+                    lintOptions {        
+                        checkReleaseBuilds false      
+                        lintConfig = file("${Fixtures.Lint.RULES}")               
+                        includeVariants { it.name == 'demoDebug' }
+                    }
+                """)
+                .build('evaluateViolations')
+
+        Truth.assertThat(result.tasksPaths).containsAllOf(
+                ':lintDemoDebug',
+                ':collectLintDemoDebugViolations')
+        Truth.assertThat(result.tasksPaths).containsNoneOf(
+                ':lint',
+                ':lintDemoRelease',
+                ':collectLintDemoReleaseViolations',
+                ':lintFullDebug',
+                ':collectLintFullDebugViolations',
+                ':lintFullRelease',
+                ':collectLintFullReleaseViolations')
+    }
+
+    private TestAndroidProject starterProject() {
+        projectRule.newProject()
+                .withSourceSet('main', Fixtures.Lint.SOURCES_WITH_WARNINGS)
                 .withPenalty('''{
-                    maxErrors = 1
+                    maxErrors = 0
                     maxWarnings = 1
                 }''')
                 .withAdditionalAndroidConfig('''
@@ -94,24 +98,6 @@ class LintAndroidVariantIntegrationTest {
                         full { dimension 'tier' }
                     }
                 ''')
-                .withToolsConfig("""
-                    lintOptions {              
-                        lintConfig = file("${Fixtures.Lint.RULES}")               
-                        includeVariants { it.name == 'demoDebug' }
-                    }
-                """)
-                .build('check')
-
-        Truth.assertThat(result.tasksPaths).containsAllOf(
-                ":lintDemoDebug",
-                ":collectLintDemoDebugViolations")
-        Truth.assertThat(result.tasksPaths).containsNoneOf(
-                ":lintDemoRelease",
-                ":collectLintDemoReleaseViolations",
-                ":lintFullDebug",
-                ":collectLintFullDebugViolations",
-                ":lintFullRelease",
-                ":collectLintFullReleaseViolations")
     }
 
 }
