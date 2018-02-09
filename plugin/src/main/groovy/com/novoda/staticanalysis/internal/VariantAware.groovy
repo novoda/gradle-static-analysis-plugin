@@ -5,32 +5,26 @@ import org.gradle.api.NamedDomainObjectSet
 
 trait VariantAware {
 
-    private boolean hasFilter = false
-    Closure<Boolean> includeVariantsFilter = { true }
+    Closure<Boolean> includeVariantsFilter
 
-    void setIncludeVariantsFilter(Closure<Boolean> includeVariantsFilter) {
-        this.hasFilter = true
-        this.includeVariantsFilter = includeVariantsFilter
-    }
-
-    boolean getHasFilter() {
-        hasFilter
+    final variantSelector = { DomainObjectSet variants ->
+        includeVariantsFilter != null ? variants.matching { includeVariantsFilter(it) } : variants
     }
 
     DomainObjectSet<Object> getFilteredApplicationVariants() {
-        project.android.applicationVariants.matching { includeVariantsFilter(it) }
+        variantSelector(project.android.applicationVariants)
     }
 
     NamedDomainObjectSet<Object> getFilteredApplicationAndTestVariants() {
-        getAllVariants(project.android.applicationVariants).matching { includeVariantsFilter(it) }
+        variantSelector(getAllVariants(project.android.applicationVariants))
     }
 
     DomainObjectSet<Object> getFilteredLibraryVariants() {
-        project.android.libraryVariants.matching { includeVariantsFilter(it) }
+        variantSelector(project.android.libraryVariants)
     }
 
     NamedDomainObjectSet<Object> getFilteredLibraryAndTestVariants() {
-        getAllVariants(project.android.libraryVariants).matching { includeVariantsFilter(it) }
+        variantSelector(getAllVariants(project.android.libraryVariants))
     }
 
     private NamedDomainObjectSet<Object> getAllVariants(variants1) {
