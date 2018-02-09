@@ -3,7 +3,10 @@ package com.novoda.staticanalysis.internal.pmd
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import org.gradle.api.*
+import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
 
@@ -49,22 +52,20 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureAndroidProject(NamedDomainObjectSet variants) {
+    protected void configureAndroidVariant(variant) {
         project.with {
-            variants.all { variant ->
-                variant.sourceSets.each { sourceSet ->
-                    def taskName = "pmd${sourceSet.name.capitalize()}"
-                    Pmd task = tasks.findByName(taskName)
-                    if (task == null) {
-                        task = tasks.create(taskName, Pmd)
-                        task.with {
-                            description = "Run PMD analysis for ${sourceSet.name} classes"
-                            source = sourceSet.java.srcDirs
-                        }
+            variant.sourceSets.each { sourceSet ->
+                def taskName = "pmd${sourceSet.name.capitalize()}"
+                Pmd task = tasks.findByName(taskName)
+                if (task == null) {
+                    task = tasks.create(taskName, Pmd)
+                    task.with {
+                        description = "Run PMD analysis for ${sourceSet.name} classes"
+                        source = sourceSet.java.srcDirs
                     }
-                    sourceFilter.applyTo(task)
-                    task.mustRunAfter variant.javaCompile
                 }
+                sourceFilter.applyTo(task)
+                task.mustRunAfter variant.javaCompile
             }
         }
     }

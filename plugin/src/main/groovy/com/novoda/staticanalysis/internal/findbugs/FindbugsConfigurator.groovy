@@ -57,22 +57,20 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureAndroidProject(NamedDomainObjectSet variants) {
-        variants.all { variant ->
-            FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
-            List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
-            task.with {
-                description = "Run FindBugs analysis for ${variant.name} classes"
-                source = androidSourceDirs
-                classpath = variant.javaCompile.classpath
-            }
-            sourceFilter.applyTo(task)
-            task.conventionMapping.map("classes", {
-                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-                getAndroidClasses(variant, includes)
-            });
-            task.dependsOn variant.javaCompile
+    protected void configureAndroidVariant(variant) {
+        FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
+        List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
+        task.with {
+            description = "Run FindBugs analysis for ${variant.name} classes"
+            source = androidSourceDirs
+            classpath = variant.javaCompile.classpath
         }
+        sourceFilter.applyTo(task)
+        task.conventionMapping.map("classes", {
+            List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
+            getAndroidClasses(variant, includes)
+        })
+        task.dependsOn variant.javaCompile
     }
 
     private FileCollection getAndroidClasses(Object variant, List<String> includes) {
