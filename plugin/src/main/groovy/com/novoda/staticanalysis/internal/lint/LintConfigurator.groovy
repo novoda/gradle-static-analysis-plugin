@@ -4,6 +4,7 @@ import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.VariantAware
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -31,18 +32,21 @@ class LintConfigurator implements Configurator, VariantAware {
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext.lintOptions = { Closure config ->
             project.plugins.withId('com.android.application') {
-                configureLint(config)
-                filteredApplicationVariants.all {
-                    configureCollectViolationsTask(it)
-                }
+                configureWithVariants(config, filteredApplicationVariants)
             }
             project.plugins.withId('com.android.library') {
-                configureLint(config)
-                filteredLibraryVariants.all {
-                    configureCollectViolationsTask(it)
-                }
+                configureWithVariants(config, filteredLibraryVariants)
             }
 
+        }
+    }
+
+    private void configureWithVariants(Closure config, DomainObjectSet variants) {
+        configureLint(config)
+        if (hasFilter) {
+            variants.all { configureCollectViolationsTask(it) }
+        } else {
+            configureCollectViolationsTask()
         }
     }
 
@@ -58,22 +62,25 @@ class LintConfigurator implements Configurator, VariantAware {
         }
     }
 
-    private void configureCollectViolationsTask(variant) {
-        def collectViolations = createCollectViolationsTask(variant, violations)
+    private void configureCollectViolationsTask(variant = null) {
+        def taskSuffix = variant ? variant.name : ''
+        def collectViolations = createCollectViolationsTask(taskSuffix, violations).with {
+            it.dependsOn project.tasks.findByName("lint${taskSuffix.capitalize()}")
+        }
         evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn project.tasks["lint${variant.name.capitalize()}"]
     }
 
-    private CollectLintViolationsTask createCollectViolationsTask(variant, Violations violations) {
-        project.tasks.create("collectLint${variant.name.capitalize()}Violations", CollectLintViolationsTask) { task ->
-            task.xmlReportFile = xmlOutputFileFor(variant)
-            task.htmlReportFile = new File(defaultOutputFolder, "lint-results-${variant.name}.html")
+    private CollectLintViolationsTask createCollectViolationsTask(String taskSuffix, Violations violations) {
+        project.tasks.create("collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask) { task ->
+            def reportSuffix = taskSuffix ? "-$taskSuffix" : ''
+            task.xmlReportFile = xmlOutputFileFor(reportSuffix)
+            task.htmlReportFile = new File(defaultOutputFolder, "lint-results${reportSuffix}.html")
             task.violations = violations
         }
     }
 
-    private File xmlOutputFileFor(variant) {
-        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder, "lint-results-${variant.name}.xml")
+    private File xmlOutputFileFor(reportSuffix) {
+        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder, "lint-results${reportSuffix}.xml")
     }
 
     private File getDefaultOutputFolder() {
