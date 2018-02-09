@@ -38,24 +38,26 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             }
             project.plugins.withId('com.android.application') {
                 configureAndroidWithVariants(filteredApplicationVariants)
+                configureToolTasks()
             }
             project.plugins.withId('com.android.library') {
                 configureAndroidWithVariants(filteredLibraryVariants)
+                configureToolTasks()
             }
             project.plugins.withId('java') {
                 configureJavaProject()
+                configureToolTasks()
             }
-            configureToolTasks()
         }
     }
 
-    private void configureAndroidWithVariants(DomainObjectSet variants) {
+    def configureAndroidWithVariants(DomainObjectSet variants) {
         variantFilter.variants.all { configureAndroidVariant(it) }
         variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
         variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
     }
 
-    protected void configureToolTasks() {
+    def configureToolTasks() {
         project.tasks.withType(taskClass) { task ->
             task.group = 'verification'
             configureReportEvaluation(task, violations)
