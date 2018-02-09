@@ -79,16 +79,18 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected void configureJavaProject() {
-        project.sourceSets.each { SourceSet sourceSet ->
-            String taskName = sourceSet.getTaskName(toolName, null)
-            FindBugs task = project.tasks.findByName(taskName)
-            if (task != null) {
-                sourceFilter.applyTo(task)
-                task.conventionMapping.map("classes", {
-                    List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
-                    List<String> includes = createIncludePatterns(task.source, sourceDirs)
-                    getJavaClasses(sourceSet, includes)
-                });
+        project.afterEvaluate {
+            project.sourceSets.each { SourceSet sourceSet ->
+                String taskName = sourceSet.getTaskName(toolName, null)
+                FindBugs task = project.tasks.findByName(taskName)
+                if (task != null) {
+                    sourceFilter.applyTo(task)
+                    task.conventionMapping.map("classes", {
+                        List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
+                        List<String> includes = createIncludePatterns(task.source, sourceDirs)
+                        getJavaClasses(sourceSet, includes)
+                    })
+                }
             }
         }
     }

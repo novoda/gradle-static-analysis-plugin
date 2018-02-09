@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import org.gradle.api.Action
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
@@ -36,22 +37,22 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 config()
             }
             project.plugins.withId('com.android.application') {
-                variantFilter.filteredApplicationVariants.all { configureAndroidVariant(it) }
-                variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
-                variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+                configureAndroidWithVariants(filteredApplicationVariants)
             }
             project.plugins.withId('com.android.library') {
-                variantFilter.filteredLibraryVariants.all { configureAndroidVariant(it) }
-                variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
-                variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+                configureAndroidWithVariants(filteredLibraryVariants)
             }
             project.plugins.withId('java') {
-                project.afterEvaluate {
-                    configureJavaProject()
-                }
+                configureJavaProject()
             }
             configureToolTasks()
         }
+    }
+
+    private void configureAndroidWithVariants(DomainObjectSet variants) {
+        variantFilter.variants.all { configureAndroidVariant(it) }
+        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
     }
 
     protected void configureToolTasks() {
