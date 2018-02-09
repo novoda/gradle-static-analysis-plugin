@@ -7,7 +7,7 @@ trait VariantAware {
 
     Closure<Boolean> includeVariantsFilter
 
-    final variantSelector = { DomainObjectSet variants ->
+    final variantSelector = { variants ->
         includeVariantsFilter != null ? variants.matching { includeVariantsFilter(it) } : variants
     }
 
