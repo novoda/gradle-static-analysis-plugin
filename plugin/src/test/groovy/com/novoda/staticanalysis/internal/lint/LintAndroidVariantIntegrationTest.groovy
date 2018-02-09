@@ -12,6 +12,76 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class LintAndroidVariantIntegrationTest {
 
+    @Rule
+    public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
+
+    @Test
+    void shouldFailBuildWhenLintViolationsOverThreshold() {
+        TestProject.Result result = starterProject()
+                .withSourceSet('demo', Fixtures.Lint.SOURCES_WITH_ERRORS)
+                .withToolsConfig(DEFAULT_CONFIG)
+                .buildAndFail('evaluateViolations')
+
+        assertThat(result.logs).containsLimitExceeded(1, 1)
+        assertThat(result.logs).containsLintViolations(1, 1,
+                'reports/lint-results.html')
+    }
+
+    @Test
+    void givenVariantsFilteredShouldFailBuildWithDuplicatedNumbers() {
+        TestProject.Result result = starterProject()
+                .withSourceSet('demo', Fixtures.Lint.SOURCES_WITH_ERRORS)
+                .withToolsConfig(configWithVariants('demoDebug', 'fullRelease'))
+                .buildAndFail('evaluateViolations')
+
+        assertThat(result.logs).containsLimitExceeded(1, 2)
+        assertThat(result.logs).containsLintViolations(1, 2,
+                'reports/lint-results-demoDebug.html',
+                'reports/lint-results-fullRelease.html'
+        )
+    }
+
+    @Test
+    void shouldIgnoreErrorsFromInactiveVariant() {
+        TestProject.Result result = starterProject(maxWarnings: 1)
+                .withSourceSet('demo', Fixtures.Lint.SOURCES_WITH_ERRORS)
+                .withToolsConfig(configWithVariants('fullRelease'))
+                .build('evaluateViolations')
+
+        assertThat(result.logs).containsLintViolations(0, 1)
+    }
+
+    @Test
+    void shouldContainCollectLintTasks() {
+        TestProject.Result result = starterProject(maxWarnings: 1)
+                .withToolsConfig(DEFAULT_CONFIG)
+                .build('evaluateViolations')
+
+        Truth.assertThat(result.tasksPaths).containsAllOf(
+                ':lint',
+                ':collectLintViolations',
+        )
+    }
+
+    @Test
+    void givenVariantsFilteredShouldContainTasksForIncludedVariantsOnly() {
+        TestProject.Result result = starterProject(maxWarnings: 1)
+                .withToolsConfig(configWithVariants('demoDebug'))
+                .build('evaluateViolations')
+
+        Truth.assertThat(result.tasksPaths).containsAllOf(
+                ':lintDemoDebug',
+                ':collectLintDemoDebugViolations')
+        Truth.assertThat(result.tasksPaths).containsNoneOf(
+                ':lint',
+                ':lintDemoRelease',
+                ':collectLintDemoReleaseViolations',
+                ':lintFullDebug',
+                ':collectLintFullDebugViolations',
+                ':lintFullRelease',
+                ':collectLintFullReleaseViolations')
+    }
+
     private static final String DEFAULT_CONFIG =
             """
         lintOptions {       
@@ -30,73 +100,13 @@ class LintAndroidVariantIntegrationTest {
         """
     }
 
-    @Rule
-    public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
-
-    @Test
-    void shouldFailBuildWhenLintViolationsOverThresholdInActiveProductFlavorVariant() {
-        TestProject.Result result = starterProject()
-                .withSourceSet('demo', Fixtures.Lint.SOURCES_WITH_ERRORS)
-                .withToolsConfig(DEFAULT_CONFIG)
-                .buildAndFail('evaluateViolations')
-
-        assertThat(result.logs).containsLimitExceeded(1, 1)
-        assertThat(result.logs).containsLintViolations(1, 1,
-                'reports/lint-results.html')
-    }
-
-    @Test
-    void givenIncludeVariantsShouldFailBuildWithDuplicatedNumbers() {
-        TestProject.Result result = starterProject()
-                .withSourceSet('demo', Fixtures.Lint.SOURCES_WITH_ERRORS)
-                .withToolsConfig(configWithVariants('demoDebug', 'fullRelease'))
-                .buildAndFail('evaluateViolations')
-
-        assertThat(result.logs).containsLimitExceeded(1, 2)
-        assertThat(result.logs).containsLintViolations(1, 2,
-                'reports/lint-results-demoDebug.html',
-                'reports/lint-results-fullRelease.html'
-        )
-    }
-
-    @Test
-    void shouldContainCollectLintTasksForAllVariantsByDefault() {
-        TestProject.Result result = starterProject()
-                .withToolsConfig(DEFAULT_CONFIG)
-                .buildAndFail('evaluateViolations')
-
-        Truth.assertThat(result.tasksPaths).containsAllOf(
-                ':lint',
-                ':collectLintViolations',
-        )
-    }
-
-    @Test
-    void shouldContainCollectLintTasksForIncludedVariantsOnly() {
-        TestProject.Result result = starterProject()
-                .withToolsConfig(configWithVariants('demoDebug'))
-                .buildAndFail('evaluateViolations')
-
-        Truth.assertThat(result.tasksPaths).containsAllOf(
-                ':lintDemoDebug',
-                ':collectLintDemoDebugViolations')
-        Truth.assertThat(result.tasksPaths).containsNoneOf(
-                ':lint',
-                ':lintDemoRelease',
-                ':collectLintDemoReleaseViolations',
-                ':lintFullDebug',
-                ':collectLintFullDebugViolations',
-                ':lintFullRelease',
-                ':collectLintFullReleaseViolations')
-    }
-
-    private TestAndroidProject starterProject() {
+    private TestAndroidProject starterProject(def args = [:]) {
         projectRule.newProject()
                 .withSourceSet('main', Fixtures.Lint.SOURCES_WITH_WARNINGS)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 0
-                }''')
+                .withPenalty("""{
+                    maxErrors = ${args.maxErrors ?: 0}
+                    maxWarnings = ${args.maxWarnings ?: 0}
+                }""")
                 .withAdditionalAndroidConfig('''
                     flavorDimensions 'tier'
 
