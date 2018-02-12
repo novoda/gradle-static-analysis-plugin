@@ -4,7 +4,6 @@ import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.VariantAware
-import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -32,23 +31,24 @@ class LintConfigurator implements Configurator, VariantAware {
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext.lintOptions = { Closure config ->
             project.plugins.withId('com.android.application') {
-                configureWithVariants(config, filteredApplicationVariants)
+                configureLint(config)
+                if (includeVariantsFilter != null) {
+                    filteredApplicationVariants.all { configureCollectViolationsTask(it) }
+                } else {
+                    configureCollectViolationsTask()
+                }
             }
             project.plugins.withId('com.android.library') {
-                configureWithVariants(config, filteredLibraryVariants)
+                configureLint(config)
+                if (includeVariantsFilter != null) {
+                    filteredLibraryVariants.all { configureCollectViolationsTask(it) }
+                } else {
+                    configureCollectViolationsTask()
+                }
             }
-
         }
     }
 
-    private void configureWithVariants(Closure config, DomainObjectSet variants) {
-        configureLint(config)
-        if (includeVariantsFilter != null) {
-            variants.all { configureCollectViolationsTask(it) }
-        } else {
-            configureCollectViolationsTask()
-        }
-    }
 
     private void configureLint(Closure config) {
         project.android.lintOptions.ext.includeVariants = { Closure<Boolean> filter ->
