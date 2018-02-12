@@ -43,7 +43,7 @@ class LintConfigurator implements Configurator, VariantAware {
 
     private void configureWithVariants(Closure config, DomainObjectSet variants) {
         configureLint(config)
-        if (hasFilter) {
+        if (includeVariantsFilter != null) {
             variants.all { configureCollectViolationsTask(it) }
         } else {
             configureCollectViolationsTask()
