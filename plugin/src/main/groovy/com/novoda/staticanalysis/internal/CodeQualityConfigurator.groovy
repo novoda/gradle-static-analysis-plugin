@@ -15,7 +15,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected final Violations violations
     protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
-    private final VariantFilter variantFilter
+    protected final VariantFilter variantFilter
 
     protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
