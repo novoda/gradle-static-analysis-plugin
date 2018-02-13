@@ -37,11 +37,11 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 config()
             }
             project.plugins.withId('com.android.application') {
-                configureAndroidWithVariants(filteredApplicationVariants)
+                configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
                 configureToolTasks()
             }
             project.plugins.withId('com.android.library') {
-                configureAndroidWithVariants(filteredLibraryVariants)
+                configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
                 configureToolTasks()
             }
             project.plugins.withId('java') {
@@ -52,7 +52,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     }
 
     def configureAndroidWithVariants(DomainObjectSet variants) {
-        variantFilter.variants.all { configureAndroidVariant(it) }
+        variants.all { configureAndroidVariant(it) }
         variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
         variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
     }
