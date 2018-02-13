@@ -4,6 +4,7 @@ import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.VariantFilter
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -34,27 +35,14 @@ class LintConfigurator implements Configurator {
         project.extensions.findByType(StaticAnalysisExtension).ext.lintOptions = { Closure config ->
             project.plugins.withId('com.android.application') {
                 configureLint(config)
-                if (variantFilter.includeVariantsFilter != null) {
-                    variantFilter.filteredApplicationVariants.all {
-                        configureCollectViolationsTask(it.name, "lint-results-${it.name}")
-                    }
-                } else {
-                    configureCollectViolationsTask('lint-results')
-                }
+                configureWithVariants(variantFilter.filteredApplicationVariants)
             }
             project.plugins.withId('com.android.library') {
                 configureLint(config)
-                if (variantFilter.includeVariantsFilter != null) {
-                    variantFilter.filteredLibraryVariants.all {
-                        configureCollectViolationsTask(it.name, "lint-results-${it.name}")
-                    }
-                } else {
-                    configureCollectViolationsTask('lint-results')
-                }
+                configureWithVariants(variantFilter.filteredLibraryVariants)
             }
         }
     }
-
 
     private void configureLint(Closure config) {
         project.android.lintOptions.ext.includeVariants = { Closure<Boolean> filter ->
@@ -65,6 +53,16 @@ class LintConfigurator implements Configurator {
             xmlReport = true
             htmlReport = true
             abortOnError false
+        }
+    }
+
+    private void configureWithVariants(DomainObjectSet variants) {
+        if (variantFilter.includeVariantsFilter != null) {
+            variants.all {
+                configureCollectViolationsTask(it.name, "lint-results-${it.name}")
+            }
+        } else {
+            configureCollectViolationsTask('lint-results')
         }
     }
 
