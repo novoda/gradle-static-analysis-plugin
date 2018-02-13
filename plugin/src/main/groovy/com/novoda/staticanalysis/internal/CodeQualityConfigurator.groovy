@@ -3,7 +3,7 @@ package com.novoda.staticanalysis.internal
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectSet
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
@@ -37,27 +37,27 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
                 config()
             }
             project.plugins.withId('com.android.application') {
-                project.afterEvaluate {
-                    configureAndroidProject(variantFilter.filteredApplicationAndTestVariants)
-                    configureToolTasks()
-                }
+                configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
+                configureToolTasks()
             }
             project.plugins.withId('com.android.library') {
-                project.afterEvaluate {
-                    configureAndroidProject(variantFilter.filteredLibraryAndTestVariants)
-                    configureToolTasks()
-                }
+                configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
+                configureToolTasks()
             }
             project.plugins.withId('java') {
-                project.afterEvaluate {
-                    configureJavaProject()
-                    configureToolTasks()
-                }
+                configureJavaProject()
+                configureToolTasks()
             }
         }
     }
 
-    protected void configureToolTasks() {
+    def configureAndroidWithVariants(DomainObjectSet variants) {
+        variants.all { configureAndroidVariant(it) }
+        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+    }
+
+    def configureToolTasks() {
         project.tasks.withType(taskClass) { task ->
             task.group = 'verification'
             configureReportEvaluation(task, violations)
@@ -80,7 +80,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         }
     }
 
-    protected abstract void configureAndroidProject(NamedDomainObjectSet variants)
+    protected abstract void configureAndroidVariant(variant)
 
     protected void configureJavaProject() {
         project.tasks.withType(taskClass) { task -> sourceFilter.applyTo(task) }

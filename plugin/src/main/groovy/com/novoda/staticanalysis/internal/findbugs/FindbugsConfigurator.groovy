@@ -57,22 +57,20 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureAndroidProject(NamedDomainObjectSet variants) {
-        variants.all { variant ->
-            FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
-            List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
-            task.with {
-                description = "Run FindBugs analysis for ${variant.name} classes"
-                source = androidSourceDirs
-                classpath = variant.javaCompile.classpath
-            }
-            sourceFilter.applyTo(task)
-            task.conventionMapping.map("classes", {
-                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-                getAndroidClasses(variant, includes)
-            });
-            task.dependsOn variant.javaCompile
+    protected void configureAndroidVariant(variant) {
+        FindBugs task = project.tasks.create("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
+        List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
+        task.with {
+            description = "Run FindBugs analysis for ${variant.name} classes"
+            source = androidSourceDirs
+            classpath = variant.javaCompile.classpath
         }
+        sourceFilter.applyTo(task)
+        task.conventionMapping.map("classes", {
+            List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
+            getAndroidClasses(variant, includes)
+        })
+        task.dependsOn variant.javaCompile
     }
 
     private FileCollection getAndroidClasses(Object variant, List<String> includes) {
@@ -81,16 +79,18 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected void configureJavaProject() {
-        project.sourceSets.each { SourceSet sourceSet ->
-            String taskName = sourceSet.getTaskName(toolName, null)
-            FindBugs task = project.tasks.findByName(taskName)
-            if (task != null) {
-                sourceFilter.applyTo(task)
-                task.conventionMapping.map("classes", {
-                    List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
-                    List<String> includes = createIncludePatterns(task.source, sourceDirs)
-                    getJavaClasses(sourceSet, includes)
-                });
+        project.afterEvaluate {
+            project.sourceSets.each { SourceSet sourceSet ->
+                String taskName = sourceSet.getTaskName(toolName, null)
+                FindBugs task = project.tasks.findByName(taskName)
+                if (task != null) {
+                    sourceFilter.applyTo(task)
+                    task.conventionMapping.map("classes", {
+                        List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
+                        List<String> includes = createIncludePatterns(task.source, sourceDirs)
+                        getJavaClasses(sourceSet, includes)
+                    })
+                }
             }
         }
     }
