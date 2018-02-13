@@ -3,7 +3,7 @@ package com.novoda.staticanalysis.internal
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectSet
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
@@ -15,14 +15,14 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected final Violations violations
     protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
-    protected Closure<Boolean> includeVariantsFilter
+    protected final VariantFilter variantFilter
 
     protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
         this.sourceFilter = new SourceFilter(project)
-        this.includeVariantsFilter = { true }
+        this.variantFilter = new VariantFilter(project)
     }
 
     @Override
@@ -32,52 +32,36 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             project.extensions.findByType(extensionClass).with {
                 defaultConfiguration.execute(it)
                 ext.exclude = { Object rule -> sourceFilter.exclude(rule) }
-                ext.includeVariants = { Closure<Boolean> filter -> includeVariantsFilter = filter }
+                ext.includeVariants = { Closure<Boolean> filter -> variantFilter.includeVariantsFilter = filter }
                 config.delegate = it
                 config()
             }
             project.plugins.withId('com.android.application') {
-                project.afterEvaluate {
-                    configureAndroidProject(allApplicationVariants.matching { includeVariantsFilter(it) })
-                    configureToolTasks()
-                }
+                configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
+                configureToolTasks()
             }
             project.plugins.withId('com.android.library') {
-                project.afterEvaluate {
-                    configureAndroidProject(allLibraryVariants.matching { includeVariantsFilter(it) })
-                    configureToolTasks()
-                }
+                configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
+                configureToolTasks()
             }
             project.plugins.withId('java') {
-                project.afterEvaluate {
-                    configureJavaProject()
-                    configureToolTasks()
-                }
+                configureJavaProject()
+                configureToolTasks()
             }
         }
     }
 
-    protected NamedDomainObjectSet<Object> getAllApplicationVariants() {
-        getAllVariants(project.android.applicationVariants)
+    def configureAndroidWithVariants(DomainObjectSet variants) {
+        variants.all { configureAndroidVariant(it) }
+        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
     }
 
-    protected void configureToolTasks() {
+    def configureToolTasks() {
         project.tasks.withType(taskClass) { task ->
             task.group = 'verification'
             configureReportEvaluation(task, violations)
         }
-    }
-
-    protected NamedDomainObjectSet<Object> getAllLibraryVariants() {
-        getAllVariants(project.android.libraryVariants)
-    }
-
-    private NamedDomainObjectSet<Object> getAllVariants(variants1) {
-        NamedDomainObjectSet<Object> variants = project.container(Object)
-        variants.addAll(variants1)
-        variants.addAll(project.android.testVariants)
-        variants.addAll(project.android.unitTestVariants)
-        return variants
     }
 
     protected abstract String getToolName()
@@ -96,7 +80,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         }
     }
 
-    protected abstract void configureAndroidProject(NamedDomainObjectSet variants)
+    protected abstract void configureAndroidVariant(variant)
 
     protected void configureJavaProject() {
         project.tasks.withType(taskClass) { task -> sourceFilter.applyTo(task) }

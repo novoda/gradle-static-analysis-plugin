@@ -1,14 +1,19 @@
-version = '0.5.1'
+ext {
+    websiteUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
+}
+
+version = '0.5.2'
 String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
+apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.novoda.bintray-release'
 publish {
     userOrg = 'novoda'
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
     publishVersion = project.version
-    website = 'https://github.com/novoda/gradle-static-analysis-plugin'
+    website = websiteUrl
 }
 
 apply plugin: 'com.novoda.build-properties'
@@ -18,6 +23,8 @@ buildProperties {
 This file should contain:
 - git.username: the username used to push to the repo
 - git.password: the password used to push to the repo
+- gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
+- gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
 		''')
     }
 }
@@ -30,6 +37,20 @@ githubPages {
     pages {
         from groovydoc.destinationDir
         into "docs/${project.version}"
+    }
+}
+
+pluginBundle {
+    website = websiteUrl
+    vcsUrl = websiteUrl
+    description = 'A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.'
+    tags = ['java', 'kotlin', 'android', 'static analysis', 'code quality']
+
+    plugins {
+        gradleStaticAnalysisPlugin {
+            id = 'com.novoda.static-analysis'
+            displayName = 'Gradle static analysis plugin'
+        }
     }
 }
 
@@ -47,10 +68,19 @@ task prepareGhCredentials {
 prepareGhPages.dependsOn groovydoc
 publishGhPages.dependsOn prepareGhCredentials
 
+task prepareGradlePluginsRepoRelease {
+    doLast {
+        String key = buildProperties.env['GRADLE_PLUGINS_REPO_KEY'].or(buildProperties.secrets['gradle.publish.key']).string
+        String secret = buildProperties.env['GRADLE_PLUGINS_REPO_SECRET'].or(buildProperties.secrets['gradle.publish.secret']).string
+        project.setProperty('gradle.publish.key', key)
+        project.setProperty('gradle.publish.secret', secret)
+    }
+}
+
 task prepareRelease {
     description = 'Prepare changelog and tag for release'
     group = 'release'
-    dependsOn prepareGhPages, prepareGhCredentials
+    dependsOn prepareGhPages, prepareGhCredentials, prepareGradlePluginsRepoRelease
     doLast {
         String changelog = extractChangelog()
         grgit.tag.add {
@@ -100,7 +130,7 @@ task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
     if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
-        dependsOn prepareRelease, publishArtifact, publishGroovydoc
+        dependsOn prepareRelease, publishArtifact, publishGroovydoc, publishPlugins
         doLast {
             grgit.push {
                 tags = true

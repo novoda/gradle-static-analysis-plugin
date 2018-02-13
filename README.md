@@ -1,7 +1,7 @@
 # Gradle static analysis plugin
 [![](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin)](https://ci.novoda.com/job/gradle-static-analysis-plugin/lastSuccessfulBuild) [![](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE.txt) [![Bintray](https://api.bintray.com/packages/novoda/maven/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda/maven/gradle-static-analysis-plugin/_latestVersion)
 
-A Gradle plugin to easily apply the same setup of static analysis tools across different Android or Java projects.
+A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.
 
 ## Description
 Gradle supports many popular static analysis (Checkstyle, PMD, FindBugs, etc) via a set of built-in plugins.
@@ -36,7 +36,7 @@ Applying `gradle-static-analysis-plugin` to your Android project will make sure 
 without any additional hassle.
 
 ## Add the plugin to your project
-The plugin is available on jCenter and can be included as a classpath dependency:
+Apply the plugin from jCenter as a classpath dependency
 
 ```gradle
 buildscript {
@@ -44,15 +44,20 @@ buildscript {
        jcenter()
     }
     dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:0.5.1'
+        classpath 'com.novoda:gradle-static-analysis-plugin:0.5.2'
     }
 }
-```
 
-You can then apply the plugin via:
+apply plugin: 'com.novoda.static-analysis'
+```
+        
+or from the [Gradle Plugins Repository](https://plugins.gradle.org/):
 
 ```gradle
-apply plugin: 'com.novoda.static-analysis'
+plugins {
+    id 'com.novoda.static-analysis' version '0.5.2'
+}
+
 ```
 
 ## Simple usage

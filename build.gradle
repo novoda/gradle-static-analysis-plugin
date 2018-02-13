@@ -4,11 +4,13 @@ subprojects {
     buildscript {
         repositories {
             jcenter()
+            gradlePluginPortal()
         }
         dependencies {
             classpath gradlePlugins.bintrayRelease
             classpath gradlePlugins.buildProperties
             classpath gradlePlugins.gradleGit
+            classpath gradlePlugins.gradlePublish
         }
     }
 
@@ -22,4 +24,9 @@ subprojects {
             targetCompatibility = JavaVersion.VERSION_1_7
         }
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+    distributionType = Wrapper.DistributionType.ALL
 }

@@ -94,12 +94,12 @@ via the `includeVariants` method added to each tool extension. E.g.,
 staticAnalysis {
     findbugs {
         includeVariants { variant ->
-            variant.name.equals('debug') // only the debug variant
+            variant.name == 'debug' // only the debug variant
         }
     }
 }
 ```
 
-Please note that this is not supported for Detekt & Android Lint yet.
+Please note that this is not yet supported for Detekt.
 
 [penaltyextensioncode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/PenaltyExtension.groovy
