@@ -3,16 +3,17 @@ package com.novoda.staticanalysis.internal.lint
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.VariantAware
+import com.novoda.staticanalysis.internal.VariantFilter
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-class LintConfigurator implements Configurator, VariantAware {
+class LintConfigurator implements Configurator {
 
     private final Project project
     private final Violations violations
     private final Task evaluateViolations
+    private final VariantFilter variantFilter
 
     static LintConfigurator create(Project project,
                                    NamedDomainObjectContainer<Violations> violationsContainer,
@@ -25,6 +26,7 @@ class LintConfigurator implements Configurator, VariantAware {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
+        this.variantFilter = new VariantFilter(project)
     }
 
     @Override
@@ -32,8 +34,8 @@ class LintConfigurator implements Configurator, VariantAware {
         project.extensions.findByType(StaticAnalysisExtension).ext.lintOptions = { Closure config ->
             project.plugins.withId('com.android.application') {
                 configureLint(config)
-                if (includeVariantsFilter != null) {
-                    filteredApplicationVariants.all {
+                if (variantFilter.includeVariantsFilter != null) {
+                    variantFilter.filteredApplicationVariants.all {
                         configureCollectViolationsTask(it.name, "lint-results-${it.name}")
                     }
                 } else {
@@ -42,8 +44,8 @@ class LintConfigurator implements Configurator, VariantAware {
             }
             project.plugins.withId('com.android.library') {
                 configureLint(config)
-                if (includeVariantsFilter != null) {
-                    filteredLibraryVariants.all {
+                if (variantFilter.includeVariantsFilter != null) {
+                    variantFilter.filteredLibraryVariants.all {
                         configureCollectViolationsTask(it.name, "lint-results-${it.name}")
                     }
                 } else {
@@ -56,7 +58,7 @@ class LintConfigurator implements Configurator, VariantAware {
 
     private void configureLint(Closure config) {
         project.android.lintOptions.ext.includeVariants = { Closure<Boolean> filter ->
-            includeVariantsFilter = filter
+            variantFilter.includeVariantsFilter = filter
         }
         project.android.lintOptions(config)
         project.android.lintOptions {

@@ -9,18 +9,20 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
 
-abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> implements Configurator, VariantAware {
+abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> implements Configurator {
 
     protected final Project project
     protected final Violations violations
     protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
+    private final VariantFilter variantFilter
 
     protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
         this.sourceFilter = new SourceFilter(project)
+        this.variantFilter = new VariantFilter(project)
     }
 
     @Override
@@ -30,19 +32,19 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             project.extensions.findByType(extensionClass).with {
                 defaultConfiguration.execute(it)
                 ext.exclude = { Object rule -> sourceFilter.exclude(rule) }
-                ext.includeVariants = { Closure<Boolean> filter -> includeVariantsFilter = filter }
+                ext.includeVariants = { Closure<Boolean> filter -> variantFilter.includeVariantsFilter = filter }
                 config.delegate = it
                 config()
             }
             project.plugins.withId('com.android.application') {
                 project.afterEvaluate {
-                    configureAndroidProject(filteredApplicationAndTestVariants)
+                    configureAndroidProject(variantFilter.filteredApplicationAndTestVariants)
                     configureToolTasks()
                 }
             }
             project.plugins.withId('com.android.library') {
                 project.afterEvaluate {
-                    configureAndroidProject(filteredLibraryAndTestVariants)
+                    configureAndroidProject(variantFilter.filteredLibraryAndTestVariants)
                     configureToolTasks()
                 }
             }

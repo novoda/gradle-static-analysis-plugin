@@ -2,29 +2,35 @@ package com.novoda.staticanalysis.internal
 
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectSet
+import org.gradle.api.Project
 
-trait VariantAware {
+final class VariantFilter {
 
+    private final Project project
     Closure<Boolean> includeVariantsFilter
 
-    final variantSelector = { variants ->
-        includeVariantsFilter != null ? variants.matching { includeVariantsFilter(it) } : variants
+    VariantFilter(Project project) {
+        this.project = project
     }
 
     DomainObjectSet<Object> getFilteredApplicationVariants() {
-        variantSelector(project.android.applicationVariants)
+        filterVariants(project.android.applicationVariants)
     }
 
     NamedDomainObjectSet<Object> getFilteredApplicationAndTestVariants() {
-        variantSelector(getAllVariants(project.android.applicationVariants))
+        filterVariants(getAllVariants(project.android.applicationVariants))
     }
 
     DomainObjectSet<Object> getFilteredLibraryVariants() {
-        variantSelector(project.android.libraryVariants)
+        filterVariants(project.android.libraryVariants)
     }
 
     NamedDomainObjectSet<Object> getFilteredLibraryAndTestVariants() {
-        variantSelector(getAllVariants(project.android.libraryVariants))
+        filterVariants(getAllVariants(project.android.libraryVariants))
+    }
+    
+    private def filterVariants(variants) {
+        includeVariantsFilter != null ? variants.matching { includeVariantsFilter(it) } : variants
     }
 
     private NamedDomainObjectSet<Object> getAllVariants(variants1) {
