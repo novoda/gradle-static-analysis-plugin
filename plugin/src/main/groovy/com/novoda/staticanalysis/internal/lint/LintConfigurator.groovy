@@ -33,17 +33,21 @@ class LintConfigurator implements Configurator, VariantAware {
             project.plugins.withId('com.android.application') {
                 configureLint(config)
                 if (includeVariantsFilter != null) {
-                    filteredApplicationVariants.all { configureCollectViolationsTask(it) }
+                    filteredApplicationVariants.all {
+                        configureCollectViolationsTask(it.name, "lint-results-${it.name}")
+                    }
                 } else {
-                    configureCollectViolationsTask()
+                    configureCollectViolationsTask('lint-results')
                 }
             }
             project.plugins.withId('com.android.library') {
                 configureLint(config)
                 if (includeVariantsFilter != null) {
-                    filteredLibraryVariants.all { configureCollectViolationsTask(it) }
+                    filteredLibraryVariants.all {
+                        configureCollectViolationsTask(it.name, "lint-results-${it.name}")
+                    }
                 } else {
-                    configureCollectViolationsTask()
+                    configureCollectViolationsTask('lint-results')
                 }
             }
         }
@@ -62,25 +66,27 @@ class LintConfigurator implements Configurator, VariantAware {
         }
     }
 
-    private void configureCollectViolationsTask(variant = null) {
-        def taskSuffix = variant ? variant.name : ''
-        def collectViolations = createCollectViolationsTask(taskSuffix, violations).with {
+    private void configureCollectViolationsTask(String taskSuffix = '', String reportFileName) {
+        def collectViolations = createCollectViolationsTask(taskSuffix, reportFileName, violations).with {
             it.dependsOn project.tasks.findByName("lint${taskSuffix.capitalize()}")
         }
         evaluateViolations.dependsOn collectViolations
     }
 
-    private CollectLintViolationsTask createCollectViolationsTask(String taskSuffix, Violations violations) {
+    private CollectLintViolationsTask createCollectViolationsTask(String taskSuffix, String reportFileName, Violations violations) {
         project.tasks.create("collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask) { task ->
-            def reportSuffix = taskSuffix ? "-$taskSuffix" : ''
-            task.xmlReportFile = xmlOutputFileFor(reportSuffix)
-            task.htmlReportFile = new File(defaultOutputFolder, "lint-results${reportSuffix}.html")
+            task.xmlReportFile = xmlOutputFileFor(reportFileName)
+            task.htmlReportFile = htmlOutputFileFor(reportFileName)
             task.violations = violations
         }
     }
 
-    private File xmlOutputFileFor(reportSuffix) {
-        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder, "lint-results${reportSuffix}.xml")
+    private File xmlOutputFileFor(reportFileName) {
+        project.android.lintOptions.xmlOutput ?: new File(defaultOutputFolder, "${reportFileName}.xml")
+    }
+
+    private File htmlOutputFileFor(reportFileName) {
+        project.android.lintOptions.htmlOutput ?: new File(defaultOutputFolder, "${reportFileName}.html")
     }
 
     private File getDefaultOutputFolder() {
