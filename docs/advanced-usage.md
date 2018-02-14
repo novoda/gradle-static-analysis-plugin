@@ -31,20 +31,35 @@ fail or not.
 If you don't specify a `penalty` configuration, the plugin will use the [default threshold values][penaltyextensioncode], which are to
 allow any warning, but break the build on any error.
 
-It is also possible to use below convenience configuration to control failure thresholds
+#### Default `penalty` profiles
+
+It's also possible to use one of the default `penalty` profiles instead of specifying thresholds explicitly as follows:
 
 ```gradle
 staticAnalysis {
-    // no failure
     penalty none
-    
-    // fail only on errors (default)
+}
+```
+
+In this case the build won't fail no matter how many violations (warnings or errors) are found.
+
+```gradle
+staticAnalysis {
     penalty failOnErrors
-    
-    // fail fast
+}
+```
+
+Default policy. This will break the build if any error is found. Warnings instead are only logged and will not break the build.
+
+
+```gradle
+staticAnalysis {
     penalty failOnWarnings
 }
 ```
+
+Use this if you want to fail fast: the build will break if any warning or error is found.
+
 
 ## Improve the report with a base URL
 Build logs will show an overall report of how many violations have been found during the analysis and the links to
