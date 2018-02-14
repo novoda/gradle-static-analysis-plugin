@@ -7,7 +7,7 @@ the build will not fail, which is very useful for legacy projects.
  * [Configurable failure thresholds](#configurable-failure-thresholds)
  * [Improve the report with a base URL](#improve-the-report-with-a-base-URL)
  * [Add exclusions with `exclude` filters](#add-exclusions-with-exclude-filters)
- * [Add exclusions with Android build variants](#add-exclusions-with-Android-build-variants)
+ * [Add exclusions with Android build variants](#add-exclusions-with-android-build-variants)
  * [Custom violations evaluator (**incubating**)](incubating/custom-evaluator.md#custom-violations-evaluator-incubating)
 
 ---
