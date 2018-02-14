@@ -72,8 +72,8 @@ task prepareGradlePluginsRepoRelease {
     doLast {
         def key = buildProperties.env['GRADLE_PLUGINS_REPO_KEY'] | buildProperties.secrets['gradle.publish.key']
         def secret = buildProperties.env['GRADLE_PLUGINS_REPO_SECRET'] | buildProperties.secrets['gradle.publish.secret']
-        project.properties['gradle.publish.key'] = key.string
-        project.properties['gradle.publish.secret'] = secret.string
+        System.properties['gradle.publish.key'] = key.string
+        System.properties['gradle.publish.secret'] = secret.string
     }
 }
 
