@@ -116,27 +116,23 @@ task publishArtifact {
     description = "Publish artifact for plugin version: $tag"
     group = 'release'
     project.afterEvaluate { dependsOn bintrayUpload }
-    mustRunAfter prepareRelease
+    //mustRunAfter prepareRelease
 }
 
 task publishGroovydoc {
     description = "Deploy groovydoc for plugin version: $tag"
     group = 'release'
     dependsOn publishGhPages
-    mustRunAfter publishArtifact
+    //mustRunAfter publishArtifact
 }
 
 task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
-    if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
-        dependsOn prepareRelease, publishArtifact, publishGroovydoc, publishPlugins
-        doLast {
-            grgit.push {
-                tags = true
-            }
+    dependsOn prepareRelease, publishGroovydoc
+    doLast {
+        grgit.push {
+            tags = true
         }
-    } else {
-        dependsOn publishArtifact
     }
 }
