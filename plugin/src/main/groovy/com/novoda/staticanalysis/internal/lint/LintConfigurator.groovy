@@ -74,11 +74,11 @@ class LintConfigurator implements Configurator {
     }
 
     private CollectLintViolationsTask createCollectViolationsTask(String taskSuffix, String reportFileName, Violations violations) {
-        project.tasks.create("collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask) { task ->
-            task.xmlReportFile = xmlOutputFileFor(reportFileName)
-            task.htmlReportFile = htmlOutputFileFor(reportFileName)
-            task.violations = violations
-        }
+        def task = project.tasks.maybeCreate("collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask)
+        task.xmlReportFile = xmlOutputFileFor(reportFileName)
+        task.htmlReportFile = htmlOutputFileFor(reportFileName)
+        task.violations = violations
+        return task
     }
 
     private File xmlOutputFileFor(reportFileName) {
