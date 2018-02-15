@@ -213,6 +213,22 @@ public class PmdIntegrationTest {
         assertThat(result.logs).doesNotContainPmdViolations()
     }
 
+    @Test
+    void shouldNotFailBuildWhenPmdIsConfiguredMultipleTimes() {
+        projectRule.newProject()
+                .withSourceSet('main', Fixtures.Pmd.SOURCES_WITH_PRIORITY_1_VIOLATION)
+                .withPenalty('none')
+                .withToolsConfig("""  
+                    pmd {
+                        ruleSetFiles = $DEFAULT_RULES
+                    }
+                    pmd {
+                        ignoreFailures = false
+                    }  
+                """)
+                .build('check')
+    }
+
     private String pmd(String rules, String... configs) {
         """pmd {
             ruleSetFiles = $rules
