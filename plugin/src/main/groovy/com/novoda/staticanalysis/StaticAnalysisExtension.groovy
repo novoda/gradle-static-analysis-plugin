@@ -18,9 +18,15 @@ class StaticAnalysisExtension {
         it.maxErrors = 0
     }
 
-    final Action<? super PenaltyExtension> failOnWarnings = {
+    final Action<? super PenaltyExtension> failFast = {
         it.maxWarnings = 0
         it.maxErrors = 0
+    }
+
+    @Deprecated
+    def getFailOnWarnings() {
+        logger.warn 'com.novoda.static-analysis: failOnWarnings is deprecated. Please use `penalty failFast` for clarity.'
+        failFast
     }
 
     private final Project project
