@@ -7,7 +7,7 @@ the build will not fail, which is very useful for legacy projects.
  * [Configurable failure thresholds](#configurable-failure-thresholds)
  * [Improve the report with a base URL](#improve-the-report-with-a-base-URL)
  * [Add exclusions with `exclude` filters](#add-exclusions-with-exclude-filters)
- * [Add exclusions with Android build variants](#add-exclusions-with-Android-build-variants)
+ * [Add exclusions with Android build variants](#add-exclusions-with-android-build-variants)
  * [Custom violations evaluator (**incubating**)](incubating/custom-evaluator.md#custom-violations-evaluator-incubating)
 
 ---
@@ -30,6 +30,34 @@ fail or not.
 
 If you don't specify a `penalty` configuration, the plugin will use the [default threshold values][penaltyextensioncode], which are to
 allow any warning, but break the build on any error.
+
+### Default `penalty` profiles
+Besides manually specifying thresholds, the plugin includes a few built-in `penalty` profiles that can be used as follows:
+
+* `none`
+    ```gradle
+    staticAnalysis {
+        penalty none
+    }
+    ```
+    In this case the build won't fail no matter how many violations (warnings or errors) are found.
+
+* `failOnErrors` (default policy)
+    ```gradle
+    staticAnalysis {
+        penalty failOnErrors
+    }
+    ```
+    This will break the build if any error is found. Warnings instead are only logged and will not break the build.
+
+* `failOnWarnings`
+    ```gradle
+    staticAnalysis {
+        penalty failOnWarnings
+    }
+    ```
+    This policy will fail the build if any warning or error is found. It is a zero-tolerance policy, useful to keep
+    the codebase clean from any warnings or errors over time.
 
 ## Improve the report with a base URL
 Build logs will show an overall report of how many violations have been found during the analysis and the links to
