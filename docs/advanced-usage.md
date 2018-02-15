@@ -31,7 +31,7 @@ fail or not.
 If you don't specify a `penalty` configuration, the plugin will use the [default threshold values][penaltyextensioncode], which are to
 allow any warning, but break the build on any error.
 
-#### Default `penalty` profiles
+### Default `penalty` profiles
 
 It's also possible to use one of the default `penalty` profiles instead of specifying thresholds explicitly as follows:
 
