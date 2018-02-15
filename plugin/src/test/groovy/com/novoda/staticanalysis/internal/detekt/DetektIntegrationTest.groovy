@@ -34,7 +34,7 @@ class DetektIntegrationTest {
 
         def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withToolsConfig(emptyConfiguration)
-                .buildAndFail('check', '--dry-run')
+                .buildAndFail('check')
 
         assertThat(result.logs).contains(OUTPUT_NOT_DEFINED)
     }
@@ -43,7 +43,7 @@ class DetektIntegrationTest {
     void shouldFailBuildOnConfigurationWhenDetektConfiguredButNotApplied() {
         def result = projectRule.newProject()
                 .withToolsConfig(detektConfiguration(Fixtures.Detekt.SOURCES_WITH_ERRORS))
-                .buildAndFail('check', '--dry-run')
+                .buildAndFail('check')
 
         assertThat(result.logs).contains(DETEKT_NOT_APPLIED)
     }
