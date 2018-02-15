@@ -50,10 +50,10 @@ Besides manually specifying thresholds, the plugin includes a few built-in `pena
     ```
     This will break the build if any error is found. Warnings instead are only logged and will not break the build.
 
-* `failOnWarnings`
+* `failFast`
     ```gradle
     staticAnalysis {
-        penalty failOnWarnings
+        penalty failFast
     }
     ```
     This policy will fail the build if any warning or error is found. It is a zero-tolerance policy, useful to keep
