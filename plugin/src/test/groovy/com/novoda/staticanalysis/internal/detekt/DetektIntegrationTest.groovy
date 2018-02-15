@@ -29,7 +29,7 @@ class DetektIntegrationTest {
     }
 
     @Test
-    void givenOutputNotDefinedShouldFailBuildOnConfiguration() {
+    void shouldFailBuildOnConfigurationWhenNoOutputNotDefined() {
         def emptyConfiguration = detektWith("")
 
         def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
