@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+[Version 0.5.2](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.5.2)
+--------------------------
+
+- Add support for variants Filtering in Android Lint ([PR#79](https://github.com/novoda/gradle-static-analysis-plugin/pull/79))
+
 [Version 0.5.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.5.1)
 --------------------------
 
