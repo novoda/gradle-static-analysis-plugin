@@ -9,7 +9,7 @@ import static com.novoda.test.LogsSubject.assertThat
 
 class LintIntegrationTest {
 
-    private static GString LINT_CONFIGURATION =
+    private static final String LINT_CONFIGURATION =
             """
         lintOptions {              
             lintConfig = file("${Fixtures.Lint.RULES}") 
@@ -46,6 +46,20 @@ class LintIntegrationTest {
                 .build('check')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
+    }
+
+    @Test
+    void shouldNotFailBuildWhenLintIsConfiguredMultipleTimes() {
+        createAndroidProjectWith(Fixtures.Lint.SOURCES_WITH_WARNINGS, 1, 0)
+                .withToolsConfig("""
+                    lintOptions {              
+                        lintConfig = file("${Fixtures.Lint.RULES}") 
+                    }
+                    lintOptions {              
+                        checkReleaseBuilds false 
+                    }
+                    """)
+                .build('check', '--dry-run')
     }
 
     private static TestProject createAndroidProjectWith(File sources, int maxWarnings = 0, int maxErrors = 0) {
