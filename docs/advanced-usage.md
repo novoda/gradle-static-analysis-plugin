@@ -8,6 +8,7 @@ the build will not fail, which is very useful for legacy projects.
  * [Improve the report with a base URL](#improve-the-report-with-a-base-URL)
  * [Add exclusions with `exclude` filters](#add-exclusions-with-exclude-filters)
  * [Add exclusions with Android build variants](#add-exclusions-with-android-build-variants)
+ * [Consume rules from artefact](#consume-rules-from-artefact)
  * [Custom violations evaluator (**incubating**)](incubating/custom-evaluator.md#custom-violations-evaluator-incubating)
 
 ---
@@ -131,3 +132,57 @@ staticAnalysis {
 Please note that this is not yet supported for Detekt.
 
 [penaltyextensioncode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/PenaltyExtension.groovy
+
+
+### Consume rules from artefact     
+
+In order to reuse your rules among multiple projects or to easily use an open source rule set, we added support for consuming the 
+rules for all supported tools from a maven artefact. An example of how to create and publish your rules as artefact can be 
+found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle). Novoda open sourced their rules to [bintray](https://bintray.com/novoda/maven/static-analysis-rules) inlcluding
+rules for Checkstyle, PMD, FindBugs, detekt and Android Lint.
+
+
+To consume the rules from an artefact you need to configure the `rules` closure pointing to a maven artefact and use it when configuring the tools, e.g.
+ 
+```gradle
+staticAnalysis {
+    rules {
+        novoda {
+            maven 'com.novoda:static-analysis-rules:0.2'
+        }
+    }
+    
+    checkstyle {
+        toolVersion '8.8'
+        config rules.novoda['checkstyle-modules.xml']
+    }
+}
+```
+
+These are the necessary configurations for all supported tools:
+
+```gradle
+checkstyle {
+    toolVersion '8.8'
+    config rules.novoda['checkstyle-modules.xml']
+}
+
+pmd {
+    toolVersion '6.0.1'
+    ruleSetFiles = project.files(rules.novoda['pmd-rules.xml'].asFile().path)
+}
+
+findbugs {
+    excludeFilter rules.novoda['findbugs-excludes.xml'].asFile()
+}
+
+detekt {
+    profile('main') {
+        config = rules.novoda['detekt.yml'].asFile().path
+    }
+}
+
+lintOptions {
+    lintConfig = rules.novoda['lint-config.xml'].asFile()
+}
+```
