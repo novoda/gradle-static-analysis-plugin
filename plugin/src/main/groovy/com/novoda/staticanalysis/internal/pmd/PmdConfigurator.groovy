@@ -82,10 +82,10 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     private CollectPmdViolationsTask createViolationsCollectionTask(Pmd pmd, Violations violations) {
-        project.tasks.create("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { collectViolations ->
-            collectViolations.xmlReportFile = pmd.reports.xml.destination
-            collectViolations.violations = violations
-        }
+        def task = project.tasks.maybeCreate("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask)
+        task.xmlReportFile = pmd.reports.xml.destination
+        task.violations = violations
+        task
     }
 
 }
