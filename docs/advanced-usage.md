@@ -186,7 +186,7 @@ findbugs {
 }
 ```
 
-detekt
+Detekt
 ```
 detekt {
     profile('main') {
