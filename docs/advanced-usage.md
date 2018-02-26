@@ -138,8 +138,8 @@ Please note that this is not yet supported for Detekt.
 
 In order to reuse your rules among multiple projects or to easily use an open source rule set, we added support for consuming the 
 rules for all supported tools from a maven artefact. An example of how to create and publish your rules as artefact can be 
-found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle). Novoda open sourced their rules to [bintray](https://bintray.com/novoda/maven/static-analysis-rules) inlcluding
-rules for Checkstyle, PMD, FindBugs, detekt and Android Lint.
+found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle). Novoda open sourced their rules to [bintray](https://bintray.com/novoda/maven/static-analysis-rules) including
+configurations for Checkstyle, PMD, FindBugs, detekt and Android Lint.
 
 
 To consume the rules from an artefact you need to configure the `rules` closure pointing to a maven artefact and use it when configuring the tools, e.g.
