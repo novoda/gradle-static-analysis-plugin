@@ -8,7 +8,7 @@ the build will not fail, which is very useful for legacy projects.
  * [Improve the report with a base URL](#improve-the-report-with-a-base-URL)
  * [Add exclusions with `exclude` filters](#add-exclusions-with-exclude-filters)
  * [Add exclusions with Android build variants](#add-exclusions-with-android-build-variants)
- * [Consume rules from artefact](#consume-rules-from-artefact)
+ * [Consume rules from an artifact](#consume-rules-from-an-artifact)
  * [Custom violations evaluator (**incubating**)](incubating/custom-evaluator.md#custom-violations-evaluator-incubating)
 
 ---
@@ -134,54 +134,72 @@ Please note that this is not yet supported for Detekt.
 [penaltyextensioncode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/PenaltyExtension.groovy
 
 
-### Consume rules from artefact     
+## Consume rules from an artifact     
 
 In order to reuse your rules among multiple projects or to easily use an open source rule set, we added support for consuming the 
-rules for all supported tools from a maven artefact. An example of how to create and publish your rules as artefact can be 
-found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle). Novoda open sourced their rules to [bintray](https://bintray.com/novoda/maven/static-analysis-rules) including
-configurations for Checkstyle, PMD, FindBugs, detekt and Android Lint.
+rules for all supported tools from a maven artifact. 
 
 
-To consume the rules from an artefact you need to configure the `rules` closure pointing to a maven artefact and use it when configuring the tools, e.g.
- 
-```gradle
+### Rules artifact
+
+A rule artifact is just a bundle of files that is published on a maven repository as artifact. An example of how to do that can be be found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle).
+In this case we bundle the files as jar using the using the [java plugin](https://docs.gradle.org/current/userguide/java_plugin.html) and publish it using our [bintray-release plugin](https://github.com/novoda/bintray-release). 
+
+
+### How to define a dependency from a rules artifact
+In order to access the files inside a rule artifact you have to first define an entry in the `rules {}` extension of the plugin. An entry is defined by a name and a maven coordinate, as follows:
+```
 staticAnalysis {
     rules {
         novoda {
             maven 'com.novoda:static-analysis-rules:0.2'
         }
     }
-    
-    checkstyle {
-        toolVersion '8.8'
-        config rules.novoda['checkstyle-modules.xml']
-    }
 }
 ```
 
-These are the necessary configurations for all supported tools:
+### Access rules from artifact
 
+Once you have defined a rule artifact you can access the files inside it specifying the path of the file inside the bundle, eg:
+```
+def modules = rules.novoda['checkstyle-modules.xml']
+```
+Note that `modules` is defined as [`TextResource`](https://docs.gradle.org/current/dsl/org.gradle.api.resources.TextResource.html), that is a read-only body of text backed by a string, file, archive entry, or other source. Some of the tools already accept `TextResource` as value for some of their configuration, while in other cases you have to transform a `TextResource` into a `File` or a path. Some examples of using a rule artifact in the supported tools is provided below:
+
+Checkstyle
 ```gradle
 checkstyle {
     toolVersion '8.8'
     config rules.novoda['checkstyle-modules.xml']
 }
+```
 
+PMD
+```
 pmd {
     toolVersion '6.0.1'
     ruleSetFiles = project.files(rules.novoda['pmd-rules.xml'].asFile().path)
 }
+```
 
+FindBugs
+```
 findbugs {
     excludeFilter rules.novoda['findbugs-excludes.xml'].asFile()
 }
+```
 
+detekt
+```
 detekt {
     profile('main') {
         config = rules.novoda['detekt.yml'].asFile().path
     }
 }
+```
 
+Android Lint
+```
 lintOptions {
     lintConfig = rules.novoda['lint-config.xml'].asFile()
 }
