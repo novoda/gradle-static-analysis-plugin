@@ -136,16 +136,16 @@ Please note that this is not yet supported for Detekt.
 
 ## Consume rules from an artifact     
 In order to reuse your rules among multiple projects or to easily use an open source rule set, we added support for consuming the 
-rules for all supported tools from a maven artifact. 
+rules for all supported tools from a Maven artifact. 
 
 
 ### Rules artifact
-A rule artifact is just a bundle of files that is published on a maven repository as artifact. An example of how to do that can be be found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle).
+A rule artifact is just a bundle of files that is published on a Maven repository as artifact. An example of how to do that can be be found [here](https://github.com/novoda/novoda/blob/master/scaffolding/build.gradle).
 In this case we bundle the files as jar using the using the [java plugin](https://docs.gradle.org/current/userguide/java_plugin.html) and publish it using our [bintray-release plugin](https://github.com/novoda/bintray-release). 
 
 
 ### How to define a dependency from a rules artifact
-In order to access the files inside a rule artifact you have to first define an entry in the `rules {}` extension of the plugin. An entry is defined by a name and a maven coordinate, as follows:
+In order to access the files inside a rule artifact you have to first define an entry in the `rules {}` extension of the plugin. An entry is defined by a name and a Maven coordinate, as follows:
 ```
 staticAnalysis {
     rules {
