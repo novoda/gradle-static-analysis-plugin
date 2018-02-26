@@ -345,6 +345,20 @@ class FindbugsIntegrationTest {
         Truth.assertThat(result.outcome(':checkFindbugsClasses')).isEqualTo(TaskOutcome.SUCCESS)
     }
 
+    @Test
+    void shouldNotFailBuildWhenFindbugsIsConfiguredMultipleTimes() {
+        projectRule.newProject()
+                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
+                .withPenalty('none')
+                .withToolsConfig("""  
+                    findbugs { }
+                    findbugs {
+                        ignoreFailures = false
+                    }  
+                """)
+                .build('check')
+    }
+
     /**
      * The custom task created in the snippet below will check whether {@code Findbugs} tasks with
      * empty {@code source} will have empty {@code classes} too. </p>
