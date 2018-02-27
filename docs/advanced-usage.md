@@ -155,7 +155,7 @@ staticAnalysis {
 ```
 
 ### Access rules from artifact
-Once you have defined a rule artifact you can access the files inside it specifying the path of the file inside the bundle, eg:
+Once you have defined a rule artifact you can access the files inside it specifying the path of the file inside the bundle, e.g.:
 ```
 def modules = rules.novoda['checkstyle-modules.xml']
 ```
