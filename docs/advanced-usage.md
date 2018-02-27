@@ -161,7 +161,7 @@ def modules = rules.novoda['checkstyle-modules.xml']
 ```
 Note that `modules` is defined as [`TextResource`](https://docs.gradle.org/current/dsl/org.gradle.api.resources.TextResource.html), that is a read-only body of text backed by a string, file, archive entry, or other source. Some of the tools already accept `TextResource` as value for some of their configuration, while in other cases you have to transform a `TextResource` into a `File` or a path. Some examples of using a rule artifact in the supported tools is provided below:
 
-Checkstyle
+#### Checkstyle
 ```gradle
 checkstyle {
     toolVersion '8.8'
@@ -169,7 +169,7 @@ checkstyle {
 }
 ```
 
-PMD
+#### PMD
 ```gradle
 pmd {
     toolVersion '6.0.1'
@@ -177,14 +177,14 @@ pmd {
 }
 ```
 
-FindBugs
+#### FindBugs
 ```gradle
 findbugs {
     excludeFilter rules.novoda['findbugs-excludes.xml'].asFile()
 }
 ```
 
-Detekt
+#### Detekt
 ```gradle
 detekt {
     profile('main') {
@@ -193,7 +193,7 @@ detekt {
 }
 ```
 
-Android Lint
+#### Android Lint
 ```gradle
 lintOptions {
     lintConfig = rules.novoda['lint-config.xml'].asFile()
