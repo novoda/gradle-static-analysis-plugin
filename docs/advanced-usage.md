@@ -170,7 +170,7 @@ checkstyle {
 ```
 
 PMD
-```
+```gradle
 pmd {
     toolVersion '6.0.1'
     ruleSetFiles = project.files(rules.novoda['pmd-rules.xml'].asFile().path)
@@ -178,14 +178,14 @@ pmd {
 ```
 
 FindBugs
-```
+```gradle
 findbugs {
     excludeFilter rules.novoda['findbugs-excludes.xml'].asFile()
 }
 ```
 
 Detekt
-```
+```gradle
 detekt {
     profile('main') {
         config = rules.novoda['detekt.yml'].asFile().path
@@ -194,7 +194,7 @@ detekt {
 ```
 
 Android Lint
-```
+```gradle
 lintOptions {
     lintConfig = rules.novoda['lint-config.xml'].asFile()
 }
