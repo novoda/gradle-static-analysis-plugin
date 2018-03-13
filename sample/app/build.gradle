@@ -67,19 +67,12 @@ staticAnalysis {
 
     detekt {
         profile('main') {
-//            input = "$projectDir/src/main/java"
+            input = "$projectDir/src/main/java"
             config = rootProject.file('team-props/detekt-config.yml')
-//            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
+            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
             output = "$projectDir/build/reports/detekt"
-//            outputName = 'detektReport'
+            outputName = 'detektReport'
         }
     }
 
 }
-
-//detekt {
-//    profile('main') {
-//        config = rootProject.file('team-props/detekt-config.yml')
-///       output = "$projectDir/build/reports/detekt"
-//    }
-//}
