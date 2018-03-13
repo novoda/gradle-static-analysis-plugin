@@ -1,6 +1,11 @@
+plugins {
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC6-3'
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
 
 android {
     compileSdkVersion 27
@@ -28,9 +33,6 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
-apply plugin: 'io.gitlab.arturbosch.detekt'
 
 staticAnalysis {
 
