@@ -2,14 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
-repositories {
-    google()
-    jcenter()
-}
-
-apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
-apply plugin: 'io.gitlab.arturbosch.detekt'
-
 android {
     compileSdkVersion 27
     buildToolsVersion "27.0.3"
@@ -36,6 +28,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
+
+apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
+apply plugin: 'io.gitlab.arturbosch.detekt'
 
 staticAnalysis {
 
@@ -71,7 +66,6 @@ staticAnalysis {
             config = rootProject.file('team-props/detekt-config.yml')
             filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
             output = "$projectDir/build/reports/detekt"
-            outputName = 'detektReport'
         }
     }
 
