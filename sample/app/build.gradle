@@ -45,7 +45,6 @@ staticAnalysis {
         toolVersion '8.8'
         exclude project.fileTree('src/test/java')
         configFile rootProject.file('team-props/checkstyle-modules.xml')
-//        includeVariants { variant -> excludeTestAndRelease(variant) }
     }
 
     pmd {
@@ -53,14 +52,11 @@ staticAnalysis {
         exclude project.fileTree('src/test/java')
 
         ruleSetFiles = rootProject.files('team-props/pmd-rules.xml')
-        ruleSets = [] // Note: this is a workaround to make the <exclude-pattern>s in pmd-rules.xml actually work
-//        includeVariants { variant -> excludeTestAndRelease(variant) }
     }
 
     findbugs {
         toolVersion '3.0.1'
         excludeFilter rootProject.file('team-props/findbugs-excludes.xml')
-//        includeVariants { variant -> excludeTestAndRelease(variant) }
     }
 
     lintOptions {
@@ -69,14 +65,21 @@ staticAnalysis {
         warningsAsErrors true
     }
 
+    detekt {
+        profile('main') {
+//            input = "$projectDir/src/main/java"
+            config = rootProject.file('team-props/detekt-config.yml')
+//            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
+            output = "$projectDir/build/reports/detekt"
+//            outputName = 'detektReport'
+        }
+    }
+
 }
 
-detekt {
-    profile('main') {
-//            input = "$projectDir/src/main/java"
-        config = rootProject.file('team-props/detekt-config.yml')
-//            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-//            output = "$projectDir/build/reports/detekt"
-//            outputName = 'detektReport'
-    }
-}
+//detekt {
+//    profile('main') {
+//        config = rootProject.file('team-props/detekt-config.yml')
+///       output = "$projectDir/build/reports/detekt"
+//    }
+//}
