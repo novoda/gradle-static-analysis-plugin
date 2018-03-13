@@ -7,7 +7,6 @@
   <!--region File exclusions-->
   <exclude-pattern>.*\.kt</exclude-pattern>
   <exclude-pattern>.*\.R\$.*</exclude-pattern>
-  <exclude-pattern>.*Test.*</exclude-pattern>
   <!--endregion-->
 
   <!--region Best practices -->

@@ -4,10 +4,6 @@
 
 <module name="Checker">
 
-  <module name="SuppressionFilter">
-    <property name="file" value="team-props/checkstyle-suppressions.xml" />
-  </module>
-
   <module name="SuppressWarningsFilter" />
 
   <module name="NewlineAtEndOfFile" />
