@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Squanchy PMD rules" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+  <description>Mandatory PMD rules description.</description>
+
+  <!--region File exclusions-->
+  <exclude-pattern>.*\.kt</exclude-pattern>
+  <exclude-pattern>.*\.R\$.*</exclude-pattern>
+  <exclude-pattern>.*Test.*</exclude-pattern>
+  <!--endregion-->
+
+  <!--region Best practices -->
+  <rule ref="category/java/bestpractices.xml" />
+  <!--endregion-->
+
+  <!--region Code style -->
+  <rule ref="category/java/codestyle.xml">
+    <exclude name="AbstractNaming" />    <!--Abstract classes should NOT be named ‘AbstractXXX’ -->
+    <exclude name="AtLeastOneConstructor" />    <!--We do not require at least one ctor per class -->
+    <exclude name="AvoidPrefixingMethodParameters" />    <!--This picks up Android framework methods (e.g., onSaveInstanceState) -->
+    <exclude name="CommentDefaultAccessModifier" />    <!--We don't want to add "default" to specify package visibility -->
+    <exclude name="DefaultPackage" />    <!--We're absolutely not against package-private visibility -->
+    <exclude name="LocalVariableCouldBeFinal" />    <!--We discourage making everything final -->
+    <exclude name="LongVariable" />   <!-- We prefer descriptive names -->
+    <exclude name="MethodArgumentCouldBeFinal" />    <!--We discourage making everything final -->
+    <exclude name="OnlyOneReturn" />    <!-- We allow for multiple returns so we can have quick-fails -->
+    <exclude name="ShortVariable" />   <!-- One-char names make sense in some situations -->
+  </rule>
+
+  <!-- Allow classes to have a minimum of 3 characters as a minimum (default: 5) -->
+  <rule ref="category/java/codestyle.xml/ShortClassName">
+    <properties>
+      <property name="minimum" value="3" />
+    </properties>
+  </rule>
+
+  <!-- Allow methods to have a minimum of 2 characters as a minimum (default: 3) -->
+  <rule ref="category/java/codestyle.xml/ShortMethodName">
+    <properties>
+      <property name="minimum" value="2" />
+    </properties>
+  </rule>
+  <!--endregion-->
+
+  <!--region Design -->
+  <rule ref="category/java/design.xml">
+    <exclude name="LawOfDemeter" />   <!-- Implementation is too strict -->
+    <exclude name="LoosePackageCoupling" />   <!-- Requires too much maintenance for its white/blacklist -->
+    <exclude name="ModifiedCyclomaticComplexity" />   <!-- Deprecated rule -->
+    <exclude name="SignatureDeclareThrowsException" />    <!--Ignored because of the Callable pattern -->
+    <exclude name="StdCyclomaticComplexity" />   <!-- Deprecated rule -->
+    <exclude name="TooManyMethods" />   <!-- This counts accessors as well and doesn't seem too useful as such -->
+  </rule>
+
+  <!-- Suppress CyclomaticComplexity check for equals and hashCode -->
+  <rule ref="category/java/design.xml/CyclomaticComplexity">
+    <properties>
+      <property name="violationSuppressXPath" value="//MethodDeclarator[@Image='equals' or @Image='hashCode']" />
+    </properties>
+  </rule>
+
+  <!-- Suppress ExcessiveParameterList check for Api models ctors and factory methods -->
+  <rule ref="category/java/design.xml/ExcessiveParameterList">
+    <properties>
+      <property name="violationSuppressXPath"
+        value="//ClassOrInterfaceDeclaration[starts-with(@Image, 'Api')]//MethodDeclaration[@Static = 'true' and @Private = 'false'] | //ClassOrInterfaceDeclaration[starts-with(@Image, 'Api')]//ConstructorDeclaration" />
+    </properties>
+  </rule>
+
+  <!-- Suppress ImmutableField check for Api models -->
+  <rule ref="category/java/design.xml/ImmutableField">
+    <properties>
+      <property name="violationSuppressXPath" value="//ClassOrInterfaceDeclaration[starts-with(@Image, 'Api')]//FieldDeclaration" />
+    </properties>
+  </rule>
+
+  <!-- Allow for methods up to 25 lines and classes up to 300 lines (defaults are 12 and 250 respectively) -->
+  <rule ref="category/java/design.xml/NcssCount">
+    <properties>
+      <property name="methodReportLevel" value="25" />
+      <property name="classReportLevel" value="300" />
+    </properties>
+  </rule>
+
+  <!-- Suppress NPathComplexity check for equals and hashCode -->
+  <rule ref="category/java/design.xml/NPathComplexity">
+    <properties>
+      <property name="violationSuppressXPath" value="//MethodDeclarator[@Image='equals' or @Image='hashCode']" />
+    </properties>
+  </rule>
+  <!--endregion-->
+
+  <!--region Documentation -->
+  <rule ref="category/java/documentation.xml">
+    <exclude name="CommentRequired" />    <!--We prefer self-documenting code to JavaDocs -->
+    <exclude name="CommentSize" />    <!--This would pick up several legitimate comments, such as for adopted code -->
+  </rule>
+  <!--endregion-->
+
+  <!--region Error prone -->
+  <rule ref="category/java/errorprone.xml">
+    <exclude name="AvoidFieldNameMatchingMethodName" />    <!--We don't use beans-style getters and this would flag it -->
+    <exclude name="BeanMembersShouldSerialize" />    <!--We don't use Beans nor Serialization on Android -->
+    <exclude name="DataflowAnomalyAnalysis" />    <!--Looks buggy as heck -->
+    <exclude name="NullAssignment" />    <!--Picks up legitimate code such as a return with ternaries that may yield null -->
+  </rule>
+  <!--endregion-->
+
+  <!--region Multithreading-->
+  <rule ref="category/java/multithreading.xml">
+    <exclude name="UseConcurrentHashMap" />    <!--Seems to flag ANY HashMap regardless -->
+  </rule>
+  <!--endregion-->
+
+  <!--region Performance -->
+  <rule ref="category/java/performance.xml">
+    <exclude name="TooFewBranchesForASwitchStatement" />   <!-- Not necessarily a problem, especially if meant as extension points -->
+  </rule>
+  <!--endregion-->
+
+</ruleset>

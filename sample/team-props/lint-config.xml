@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+
+  <!-- Loads of false positives :( -->
+  <issue id="StringFormatInvalid"
+    severity="ignore" />
+
+  <issue id="MissingTranslation"
+    severity="ignore" />
+  <issue id="GoogleAppIndexingWarning"
+    severity="ignore" />
+
+  <issue id="OldTargetApi"
+    severity="informational" />
+
+  <!-- Ignore RtL warnings since the app doesn't support RtL -->
+  <issue id="RtlSymmetry"
+    severity="ignore" />
+  <issue id="RtlHardcoded"
+    severity="ignore" />
+  <issue id="RtlEnabled"
+    severity="ignore" />
+
+  <!-- Lint only flags only missing content descriptions in XML ImageViews but we rarely put content descriptions here -->
+  <issue id="ContentDescription"
+    severity="ignore" />
+
+  <!-- We have duplicate IDs on pages in the homescreen, but those are never accessed from the activity, so it's safe -->
+  <issue id="DuplicateIncludedIds"
+    severity="ignore" />
+
+  <!-- Ignore OkIO's usages of java.nio.file -->
+  <issue id="InvalidPackage">
+    <ignore regexp="okio-(.*?)\.jar" />
+  </issue>
+
+  <!-- Ignore Retrofit's usages of java.lang.invoke -->
+  <issue id="InvalidPackage">
+    <ignore regexp="retrofit-(.*?)\.jar" />
+  </issue>
+
+  <!-- The Google Services JSON plugin generates some API keys even if we don't actually use them -->
+  <issue id="UnusedResources" severity="informational">
+    <ignore path="*generated/res/google-services/*" />
+  </issue>
+
+  <!-- Timber is not using UAST for its Lint checks as of 4.5.1 -->
+  <issue id="ObsoleteLintCustomCheck">
+    <ignore regexp="timber.lint" />
+  </issue>
+
+</lint>
