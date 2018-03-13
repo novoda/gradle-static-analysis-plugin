@@ -9,7 +9,7 @@ apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
 
 android {
     compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.novoda.staticanalysis.sample"
@@ -32,6 +32,7 @@ android {
 dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    testImplementation 'junit:junit:4.12'
 }
 
 staticAnalysis {
@@ -41,6 +42,7 @@ staticAnalysis {
     checkstyle {
         toolVersion '8.8'
         exclude project.fileTree('src/test/java')
+        exclude '**/*.kt'
         configFile rootProject.file('team-props/checkstyle-modules.xml')
         includeVariants { variant -> variant.name.contains('debug') }
     }
@@ -49,6 +51,7 @@ staticAnalysis {
         toolVersion '6.1.0'
         exclude project.fileTree('src/test/java')
         ruleSetFiles = rootProject.files('team-props/pmd-rules.xml')
+        ruleSets = [] // https://stackoverflow.com/questions/32247190/pmd-exclude-pattern-with-gradle
         includeVariants { variant -> variant.name.contains('debug') }
     }
 
