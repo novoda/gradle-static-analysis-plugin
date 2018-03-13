@@ -7,7 +7,6 @@ test-pattern: # Configure exclusions for test sources
     - '.*/test/.*'
     - '.*Test.kt'
     - '.*Spec.kt'
-    - '.*Repository.kt'
   exclude-rule-sets:
     - 'comments'
   exclude-rules:
@@ -20,15 +19,15 @@ test-pattern: # Configure exclusions for test sources
     - 'SpreadOperator'
     - 'TooManyFunctions'
 
-#build:
-#  warningThreshold: 5
-#  failThreshold: 10
-#  maxIssues: 10
-#  weights:
-    # complexity: 2
-    # LongParameterList: 1
-    # style: 1
-    # comments: 1
+build:
+  warningThreshold: 5
+  failThreshold: 10
+  maxIssues: 10
+  weights:
+     complexity: 2
+     LongParameterList: 1
+     style: 1
+     comments: 1
 
 processors:
   active: true
