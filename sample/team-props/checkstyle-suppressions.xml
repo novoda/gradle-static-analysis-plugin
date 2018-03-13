@@ -6,7 +6,6 @@
 
 <suppressions>
 
-  <!-- Exclude all Kotlin files -->
   <suppress checks=".*" files=".*\.kt" />
 
 </suppressions>

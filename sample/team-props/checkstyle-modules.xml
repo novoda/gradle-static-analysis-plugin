@@ -10,24 +10,14 @@
 
   <module name="SuppressWarningsFilter" />
 
-  <!-- Checks whether files end with a new line.                        -->
-  <!-- See http://checkstyle.sf.net/config_misc.html#NewlineAtEndOfFile -->
   <module name="NewlineAtEndOfFile" />
 
-  <!-- Checks that property files contain the same keys.         -->
-  <!-- See http://checkstyle.sf.net/config_misc.html#Translation -->
   <module name="Translation" />
 
-  <!-- Checks for Size Violations.                    -->
-  <!-- See http://checkstyle.sf.net/config_sizes.html -->
   <module name="FileLength" />
 
-  <!-- Checks for whitespace                               -->
-  <!-- See http://checkstyle.sf.net/config_whitespace.html -->
   <module name="FileTabCharacter" />
 
-  <!-- Miscellaneous other checks.                   -->
-  <!-- See http://checkstyle.sf.net/config_misc.html -->
   <module name="RegexpSingleline">
     <property name="format" value="\s+$" />
     <property name="minimum" value="0" />
@@ -54,8 +44,6 @@
       <property name="influenceFormat" value="1" />
     </module>
 
-    <!-- Checks for Naming Conventions.                  -->
-    <!-- See http://checkstyle.sf.net/config_naming.html -->
     <module name="ConstantName" />
     <module name="LocalFinalVariableName" />
     <module name="LocalVariableName" />
@@ -66,30 +54,21 @@
     <module name="StaticVariableName" />
     <module name="TypeName" />
 
-    <!-- Checks for imports                              -->
-    <!-- See http://checkstyle.sf.net/config_import.html -->
     <module name="AvoidStarImport">
       <property name="allowStaticMemberImports" value="true" />
     </module>
     <module name="IllegalImport" />
-    <!-- defaults to sun.* packages -->
     <module name="RedundantImport" />
     <module name="UnusedImports" />
 
-    <!-- Checks for Size Violations.                    -->
-    <!-- See http://checkstyle.sf.net/config_sizes.html -->
     <module name="LineLength">
-      <!-- what is a good max value? -->
       <property name="max" value="150" />
-      <!-- ignore lines like "$File: //depot/... $" -->
       <property name="ignorePattern" value="\$File.*\$" />
       <property name="severity" value="info" />
     </module>
     <module name="MethodLength" />
     <module name="ParameterNumber" />
 
-    <!-- Checks for whitespace                               -->
-    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
     <module name="EmptyForIteratorPad" />
     <module name="GenericWhitespace" />
     <module name="MethodParamPad" />
@@ -101,13 +80,9 @@
     <module name="WhitespaceAfter" />
     <module name="WhitespaceAround" />
 
-    <!-- Modifier Checks                                    -->
-    <!-- See http://checkstyle.sf.net/config_modifiers.html -->
     <module name="ModifierOrder" />
     <module name="RedundantModifier" />
 
-    <!-- Checks for blocks. You know, those {}'s         -->
-    <!-- See http://checkstyle.sf.net/config_blocks.html -->
     <module name="AvoidNestedBlocks" />
     <module name="EmptyBlock">
       <property name="option" value="text" />
@@ -116,8 +91,6 @@
     <module name="NeedBraces" />
     <module name="RightCurly" />
 
-    <!-- Checks for common coding problems               -->
-    <!-- See http://checkstyle.sf.net/config_coding.html -->
     <module name="EmptyStatement" />
     <module name="EqualsHashCode" />
     <module name="HiddenField">
@@ -136,15 +109,11 @@
     <module name="SimplifyBooleanExpression" />
     <module name="SimplifyBooleanReturn" />
 
-    <!-- Checks for class design                         -->
-    <!-- See http://checkstyle.sf.net/config_design.html -->
     <module name="FinalClass" />
     <module name="HideUtilityClassConstructor" />
     <module name="InterfaceIsType" />
     <module name="VisibilityModifier" />
 
-    <!-- Miscellaneous other checks.                   -->
-    <!-- See http://checkstyle.sf.net/config_misc.html -->
     <module name="ArrayTypeStyle" />
     <module name="UpperEll" />
 

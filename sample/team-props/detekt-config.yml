@@ -1,13 +1,12 @@
 autoCorrect: true
 failFast: false
 
-test-pattern: # Configure exclusions for test sources
+test-pattern:
   active: true
-  patterns: # Test file regexes
+  patterns:
     - '.*/test/.*'
     - '.*Test.kt'
     - '.*Spec.kt'
-    - '.*Repository.kt'
   exclude-rule-sets:
     - 'comments'
   exclude-rules:
@@ -20,40 +19,24 @@ test-pattern: # Configure exclusions for test sources
     - 'SpreadOperator'
     - 'TooManyFunctions'
 
-#build:
-#  warningThreshold: 5
-#  failThreshold: 10
-#  maxIssues: 10
-#  weights:
-    # complexity: 2
-    # LongParameterList: 1
-    # style: 1
-    # comments: 1
+build:
+  warningThreshold: 5
+  failThreshold: 10
+  maxIssues: 10
+  weights:
+     complexity: 2
+     LongParameterList: 1
+     style: 1
+     comments: 1
 
 processors:
   active: true
-  exclude:
-  # - 'FunctionCountProcessor'
-  # - 'PropertyCountProcessor'
-  # - 'ClassCountProcessor'
-  # - 'PackageCountProcessor'
-  # - 'KtFileCountProcessor'
 
 console-reports:
   active: true
-  exclude:
-  #  - 'ProjectStatisticsReport'
-  #  - 'ComplexityReport'
-  #  - 'NotificationReport'
-  #  - 'FindingsReport'
-  #  - 'BuildFailureReport'
 
 output-reports:
   active: true
-  exclude:
-  #  - 'HtmlOutputReport'
-  #  - 'PlainOutputReport'
-  #  - 'XmlOutputReport'
 
 comments:
   active: true
@@ -77,36 +60,27 @@ complexity:
   active: true
   ComplexCondition:
     active: true
-    #threshold: 4
   ComplexInterface:
     active: false
-    #threshold: 10
     includeStaticDeclarations: false
   ComplexMethod:
     active: true
-    #threshold: 10
     ignoreSingleWhenExpression: false
   LabeledExpression:
     active: false
   LargeClass:
     active: true
-    #threshold: 150
   LongMethod:
     active: true
-    #threshold: 20
   LongParameterList:
     active: true
-    #threshold: 6
     ignoreDefaultParameters: false
   MethodOverloading:
     active: false
-    #threshold: 6
   NestedBlockDepth:
     active: true
-    #threshold: 4
   StringLiteralDuplication:
     active: false
-    #threshold: 3
     ignoreAnnotation: true
     excludeStringsWithLessThan5Characters: true
     ignoreStringsRegex: '$^'
