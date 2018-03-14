@@ -30,3 +30,5 @@ compileTestKotlin {
         jvmTarget = "1.8"
     }
 }
+
+apply from: rootProject.file('team-props/static-analysis.gradle')
