@@ -81,7 +81,7 @@ This will enable all the tools with their default settings. For more advanced co
 [advanced usage](docs/advanced-usage.md) and to the [supported tools](docs/supported-tools.md) pages.
 
 ## Sample app
-There's a sample Android project available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/plugin). This sample showcases a simple setup featuring Checkstyle, FindBugs, PMD and Detekt.
+There's a sample Android project available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/plugin). This sample showcases a simple setup featuring Checkstyle, FindBugs, PMD, Lint and Detekt.
 
 ## Roadmap
 The plugin is under active development and to be considered in **beta stage**. It is routinely used by many Novoda projects and
