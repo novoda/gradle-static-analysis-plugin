@@ -21,8 +21,8 @@ test-pattern:
 
 build:
   warningThreshold: 5
-  failThreshold: 10
-  maxIssues: 10
+  failThreshold: 500
+  maxIssues: 500
   weights:
      complexity: 2
      LongParameterList: 1

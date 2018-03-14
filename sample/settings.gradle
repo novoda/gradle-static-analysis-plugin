@@ -1,2 +1,3 @@
 rootProject.name = 'gradle-static-analysis-plugin-sample'
 include ':app'
+include ':core'

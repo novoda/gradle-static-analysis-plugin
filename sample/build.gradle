@@ -12,9 +12,63 @@ buildscript {
     }
 }
 
+plugins {
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC6-3'
+}
+
 subprojects {
     repositories {
         google()
         mavenCentral()
+    }
+}
+
+// if we don't add the check task ourselves we get a "Task with name 'check' not found in root project 'gradle-static-analysis-plugin-sample'." error
+apply from: 'team-props/tasks.gradle'
+
+subprojects {
+    apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
+
+    staticAnalysis {
+
+        penalty none
+
+        checkstyle {
+            toolVersion '8.8'
+            exclude project.fileTree('src/test/java')
+            exclude '**/*.kt'
+            configFile rootProject.file('team-props/checkstyle-modules.xml')
+            includeVariants { variant -> variant.name.contains('debug') }
+        }
+
+        pmd {
+            toolVersion '6.1.0'
+            exclude project.fileTree('src/test/java')
+            ruleSetFiles = rootProject.files('team-props/pmd-rules.xml')
+            ruleSets = [] // https://stackoverflow.com/questions/32247190/pmd-exclude-pattern-with-gradle
+            includeVariants { variant -> variant.name.contains('debug') }
+        }
+
+        // can't apply findbugs per project (i.e. with the subprojects closure), getting error: "No class directories configured for FindBugs analysis."
+        findbugs {
+            toolVersion '3.0.1'
+            excludeFilter rootProject.file('team-props/findbugs-excludes.xml')
+            includeVariants { variant -> variant.name.contains('debug') }
+        }
+
+        lintOptions {
+            lintConfig rootProject.file('team-props/lint-config.xml')
+            checkReleaseBuilds false
+            warningsAsErrors true
+        }
+
+        detekt {
+            profile('main') {
+                input = "$projectDir/src/main/java"
+                config = rootProject.file('team-props/detekt-config.yml')
+                filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
+                output = "$projectDir/build/reports/detekt"
+            }
+        }
     }
 }
