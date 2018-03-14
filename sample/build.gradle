@@ -27,23 +27,6 @@ subprojects { subproject ->
         google()
         mavenCentral()
     }
-
-    apply plugin: 'io.gitlab.arturbosch.detekt'
-
-    detekt {
-        version = "1.0.0.RC6-3"
-        profile('main') {
-            input = subproject.file("src/main/java")
-            config = rootProject.file('team-props/detekt-config.yml')
-            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-            output = subproject.file("build/reports/detekt")
-        }
-    }
-
-    subproject.afterEvaluate {
-        it.tasks['check'].dependsOn(it.tasks['detektCheck'])
-    }
-
 }
 
 

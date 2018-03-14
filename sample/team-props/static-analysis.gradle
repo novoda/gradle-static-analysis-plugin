@@ -1,4 +1,5 @@
 apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
+apply plugin: 'io.gitlab.arturbosch.detekt'
 
 staticAnalysis {
 
@@ -30,5 +31,15 @@ staticAnalysis {
         lintConfig rootProject.file('team-props/lint-config.xml')
         checkReleaseBuilds false
         warningsAsErrors true
+    }
+
+    detekt {
+        version = "1.0.0.RC6-3"
+        profile('main') {
+            input = project.file("src/main/java")
+            config = rootProject.file('team-props/detekt-config.yml')
+            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
+            output = project.file("build/reports/detekt")
+        }
     }
 }
