@@ -34,7 +34,6 @@ staticAnalysis {
     }
 
     detekt {
-        version = "1.0.0.RC6-3"
         profile('main') {
             input = project.file("src/main/java")
             config = rootProject.file('team-props/detekt-config.yml')
