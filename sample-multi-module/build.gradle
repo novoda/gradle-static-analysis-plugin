@@ -28,5 +28,3 @@ subprojects { subproject ->
         mavenCentral()
     }
 }
-
-
