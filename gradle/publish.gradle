@@ -163,8 +163,15 @@ task publishGroovydoc {
 task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
-    if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
-        dependsOn prepareRelease, publishArtifact, publishGroovydoc, publishPlugins
+    boolean isDryRun = buildProperties.cli['dryRun'].or(true).boolean
+    if (!isDryRun) {
+        dependsOn prepareRelease, publishArtifact, publishGroovydoc
+
+        boolean isSnapshot = buildProperties.cli['bintraySnapshot'].or(false)
+        if (!isSnapshot) {
+            dependsOn publishPlugins
+        }
+
         doLast {
             grgit.push {
                 tags = true
