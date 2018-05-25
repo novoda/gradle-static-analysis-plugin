@@ -50,6 +50,7 @@ This file should contain:
 
 apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.novoda.bintray-release'
+
 publish {
     userOrg = 'novoda'
     repoName = 'maven'
