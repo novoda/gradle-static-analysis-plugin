@@ -165,7 +165,9 @@ task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
     boolean isDryRun = buildProperties.cli['dryRun'].or(true).boolean
-    if (!isDryRun) {
+    if (isDryRun) {
+        dependsOn publishArtifact
+    } else {
         dependsOn publishArtifact
         boolean isSnapshot = buildProperties.cli['bintraySnapshot'].or(false)
         if (!isSnapshot) {
@@ -176,7 +178,5 @@ task publishRelease {
                 }
             }
         }
-    } else {
-        dependsOn publishArtifact
     }
 }
