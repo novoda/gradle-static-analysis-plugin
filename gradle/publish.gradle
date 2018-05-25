@@ -10,13 +10,14 @@ apply plugin: 'com.novoda.build-properties'
 buildProperties {
 
     secrets {
-        file(rootProject.file('secrets.properties'), '''
-This file should contain:
+        using rootProject.file('secrets.properties')
+        description = '''
+    This file should contain:
 - git.username: the username used to push to the repo
 - git.password: the password used to push to the repo
 - gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
 - gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
-		''')
+		'''
     }
 
     cli {
