@@ -10,14 +10,20 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.novoda.bintray-release'
 publish {
     userOrg = 'novoda'
+    repoName = 'maven'
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
-    publishVersion = project.version
+
+    version = buildProperties.publish['version'].string
+    publishVersion = buildProperties.publish['version'].string
+    bintrayUser = buildProperties.publish['bintrayUser'].string
+    bintrayKey = buildProperties.publish['bintrayKey'].string
     website = websiteUrl
 }
 
 apply plugin: 'com.novoda.build-properties'
 buildProperties {
+
     secrets {
         file(rootProject.file('secrets.properties'), '''
 This file should contain:
@@ -27,6 +33,34 @@ This file should contain:
 - gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
 		''')
     }
+
+    cli {
+        using(project)
+    }
+
+    bintray {
+        def bintrayCredentials = {
+            boolean isDryRun = cli['dryRun'].or(true).boolean
+            return isDryRun ?
+                    ['bintrayRepo': 'n/a', 'bintrayUser': 'n/a', 'bintrayKey': 'n/a'] :
+                    new File("${System.getenv('BINTRAY_PROPERTIES')}")
+        }
+        using(bintrayCredentials()).or(cli)
+        description = '''This should contain the following properties:
+                      | - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
+                      | - bintrayUser: name of the account used to deploy the artifacts
+                      | - bintrayKey: API key of the account used to deploy the artifacts
+        '''.stripMargin()
+    }
+
+    publish {
+        def generateVersion = {
+            boolean isSnapshot = cli['bintraySnapshot'].or(false).boolean
+            return isSnapshot ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
+        }
+        using(['version': "${generateVersion()}"]).or(buildProperties.bintray)
+    }
+
 }
 
 apply plugin: 'org.ajoberstar.grgit'
