@@ -26,8 +26,7 @@ buildProperties {
 
     bintray {
         def bintrayCredentials = {
-            boolean isDryRun = cli['dryRun'].or(true).boolean
-            return isDryRun ?
+            return isDryRun() ?
                     ['bintrayRepo': 'n/a', 'bintrayUser': 'n/a', 'bintrayKey': 'n/a'] :
                     new File("${System.getenv('BINTRAY_PROPERTIES')}")
         }
@@ -41,8 +40,7 @@ buildProperties {
 
     publish {
         def generateVersion = {
-            boolean isSnapshot = cli['bintraySnapshot'].or(false).boolean
-            return isSnapshot ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
+            return isSnapshot() ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
         }
         using(['version': "${generateVersion()}"]).or(buildProperties.bintray)
     }
@@ -165,13 +163,11 @@ task publishGroovydoc {
 task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
-    boolean isDryRun = buildProperties.cli['dryRun'].or(true).boolean
-    if (isDryRun) {
+    if (isDryRun()) {
         dependsOn publishArtifact
     } else {
         dependsOn publishArtifact
-        boolean isSnapshot = buildProperties.cli['bintraySnapshot'].or(false)
-        if (!isSnapshot) {
+        if (!isSnapshot()) {
             dependsOn prepareRelease, publishGroovydoc, publishPlugins
             doLast {
                 grgit.push {
@@ -180,4 +176,12 @@ task publishRelease {
             }
         }
     }
+}
+
+boolean isDryRun() {
+    buildProperties.cli['dryRun'].or(true).boolean
+}
+
+boolean isSnapshot() {
+    buildProperties.cli['bintraySnapshot'].or(false)
 }
