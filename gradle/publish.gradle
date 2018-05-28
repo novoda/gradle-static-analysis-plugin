@@ -6,27 +6,61 @@ version = '0.5.2'
 String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
-apply plugin: 'com.gradle.plugin-publish'
-apply plugin: 'com.novoda.bintray-release'
-publish {
-    userOrg = 'novoda'
-    groupId = 'com.novoda'
-    artifactId = 'gradle-static-analysis-plugin'
-    publishVersion = project.version
-    website = websiteUrl
-}
-
 apply plugin: 'com.novoda.build-properties'
 buildProperties {
+
     secrets {
-        file(rootProject.file('secrets.properties'), '''
-This file should contain:
+        using rootProject.file('secrets.properties')
+        description = '''
+    This file should contain:
 - git.username: the username used to push to the repo
 - git.password: the password used to push to the repo
 - gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
 - gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
-		''')
+		'''
     }
+
+    cli {
+        using(project)
+    }
+
+    bintray {
+        def bintrayCredentials = {
+            return isDryRun() ?
+                    ['bintrayRepo': 'n/a', 'bintrayUser': 'n/a', 'bintrayKey': 'n/a'] :
+                    new File("${System.getenv('BINTRAY_PROPERTIES')}")
+        }
+        using(bintrayCredentials()).or(cli)
+        description = '''This should contain the following properties:
+                      | - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
+                      | - bintrayUser: name of the account used to deploy the artifacts
+                      | - bintrayKey: API key of the account used to deploy the artifacts
+        '''.stripMargin()
+    }
+
+    publish {
+        def generateVersion = {
+            return isSnapshot() ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
+        }
+        using(['version': "${generateVersion()}"]).or(buildProperties.bintray)
+    }
+
+}
+
+apply plugin: 'com.gradle.plugin-publish'
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    userOrg = 'novoda'
+    repoName = 'maven'
+    groupId = 'com.novoda'
+    artifactId = 'gradle-static-analysis-plugin'
+
+    version = project.buildProperties.publish['version'].string
+    publishVersion = project.buildProperties.publish['version'].string
+    bintrayUser = project.buildProperties.publish['bintrayUser'].string
+    bintrayKey = project.buildProperties.publish['bintrayKey'].string
+    website = websiteUrl
 }
 
 apply plugin: 'org.ajoberstar.grgit'
@@ -129,14 +163,25 @@ task publishGroovydoc {
 task publishRelease {
     description = "Publish release for plugin version: $tag"
     group = 'release'
-    if (project.hasProperty('dryRun') && project['dryRun'] == 'false') {
-        dependsOn prepareRelease, publishArtifact, publishGroovydoc, publishPlugins
-        doLast {
-            grgit.push {
-                tags = true
-            }
-        }
+    if (isDryRun()) {
+        dependsOn publishArtifact
     } else {
         dependsOn publishArtifact
+        if (!isSnapshot()) {
+            dependsOn prepareRelease, publishGroovydoc, publishPlugins
+            doLast {
+                grgit.push {
+                    tags = true
+                }
+            }
+        }
     }
+}
+
+boolean isDryRun() {
+    buildProperties.cli['dryRun'].or(true).boolean
+}
+
+boolean isSnapshot() {
+    buildProperties.cli['bintraySnapshot'].or(false).boolean
 }
