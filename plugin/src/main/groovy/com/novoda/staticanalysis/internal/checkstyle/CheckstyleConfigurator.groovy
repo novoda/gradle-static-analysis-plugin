@@ -59,6 +59,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
                         description = "Run Checkstyle analysis for ${sourceSet.name} classes"
                         source = sourceSet.java.srcDirs
                         classpath = files("$buildDir/intermediates/classes/")
+                        exclude '**/*.kt'
                     }
                 }
                 sourceFilter.applyTo(task)
