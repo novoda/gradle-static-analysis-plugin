@@ -14,17 +14,28 @@ import static com.novoda.test.LogsSubject.assertThat
 class KtlintIntegrationTest {
 
     private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.'
+    public static final String DEFAULT_CONFIG = '''
+                    ktlint {
+                        includeVariants { it.name == "debug" }
+                    }
+                    '''
+    public static final String EMPTY_CONFIG = 'ktlint {}'
 
-    @Parameterized.Parameters(name = "{0}")
+    @Parameterized.Parameters(name = '{0}')
     static def rules() {
-        return [TestProjectRule.forAndroidKotlinProject()] // TestProjectRule.forKotlinProject(),
+        return [
+                [TestProjectRule.forKotlinProject(), 'main'].toArray(),
+                [TestProjectRule.forAndroidKotlinProject(), 'debug'].toArray()
+        ]
     }
 
     @Rule
     public final TestProjectRule projectRule
+    private final String sourceSetName;
 
-    KtlintIntegrationTest(TestProjectRule projectRule) {
+    KtlintIntegrationTest(TestProjectRule projectRule, String sourceSetName) {
         this.projectRule = projectRule
+        this.sourceSetName = sourceSetName
     }
 
     @Test
@@ -38,7 +49,7 @@ class KtlintIntegrationTest {
     @Test
     void shouldFailBuildOnConfigurationWhenKtlintConfiguredButNotApplied() {
         def result = projectRule.newProject()
-                .withToolsConfig('ktlint {}')
+                .withToolsConfig(EMPTY_CONFIG)
                 .buildAndFail('evaluateViolations')
 
         assertThat(result.logs).contains(KTLINT_NOT_APPLIED)
@@ -47,36 +58,28 @@ class KtlintIntegrationTest {
     @Test
     void shouldFailBuildWhenKtlintErrorsOverTheThreshold() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_WITH_ERROR)
-                .withToolsConfig('''
-                    ktlint {
-                        includeVariants { it.name == "debug" }
-                    }
-                    ''')
+                .withToolsConfig(DEFAULT_CONFIG)
                 .buildAndFail('evaluateViolations')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsKtlintViolations(1,
-                result.buildFileUrl('reports/ktlint/ktlint-debug.txt'))
+                result.buildFileUrl("reports/ktlint/ktlint-${sourceSetName}.txt"))
     }
 
     @Test
     void shouldNotFailWhenErrorsAreWithinThreshold() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_WITH_ERROR, 1)
-                .withToolsConfig('''
-                    ktlint {
-                        includeVariants { it.name == "debug" }
-                    }
-                    ''')
+                .withToolsConfig(DEFAULT_CONFIG)
                 .build('evaluateViolations')
 
         assertThat(result.logs).containsKtlintViolations(1,
-                result.buildFileUrl('reports/ktlint/ktlint-debug.txt'))
+                result.buildFileUrl("reports/ktlint/ktlint-${sourceSetName}.txt"))
     }
 
     @Test
     void shouldNotFailBuildWhenNoErrorsEncounteredAndNoThresholdTrespassed() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_NO_ERROR, 0)
-                .withToolsConfig('ktlint {}')
+                .withToolsConfig(EMPTY_CONFIG)
                 .build('evaluateViolations')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -85,7 +88,7 @@ class KtlintIntegrationTest {
 
     private TestProject createProjectWith(File sources, int maxErrors = 0) {
         projectRule.newProject()
-                .withPlugin("org.jlleitschuh.gradle.ktlint", "4.1.0")
+                .withPlugin('org.jlleitschuh.gradle.ktlint', '4.1.0')
                 .withSourceSet('main', sources)
                 .withPenalty("""{
                     maxWarnings = 0

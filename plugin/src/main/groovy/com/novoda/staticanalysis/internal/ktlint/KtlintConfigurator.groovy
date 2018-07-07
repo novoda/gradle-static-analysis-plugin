@@ -53,13 +53,13 @@ class KtlintConfigurator implements Configurator {
             project.afterEvaluate {
 
                 project.plugins.withId("kotlin") {
-                    it.sourceSets.each { configureKtlint(it) }
+                    configureKotlinProject()
                 }
                 project.plugins.withId("kotlin2js") {
-                    it.sourceSets.each { configureKtlint(it) }
+                    configureKotlinProject()
                 }
                 project.plugins.withId("kotlin-platform-common") {
-                    it.sourceSets.each { configureKtlint(it) }
+                    configureKotlinProject()
                 }
                 project.plugins.withId('com.android.application') {
                     configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
@@ -71,7 +71,11 @@ class KtlintConfigurator implements Configurator {
         }
     }
 
-    def configureAndroidWithVariants(def mainVariants) {
+    private void configureKotlinProject() {
+        project.sourceSets.each { configureKtlint(it) }
+    }
+
+    private void configureAndroidWithVariants(def mainVariants) {
         mainVariants.all { configureKtlint(it) }
         variantFilter.filteredTestVariants.all { configureKtlint(it) }
         variantFilter.filteredUnitTestVariants.all { configureKtlint(it) }

@@ -19,6 +19,11 @@ plugins {
 }
 
 apply plugin: 'kotlin'
+
+repositories { 
+    jcenter()
+}
+
 sourceSets {
     ${formatSourceSets(project)}
 }
