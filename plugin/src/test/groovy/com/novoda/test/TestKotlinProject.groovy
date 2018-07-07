@@ -15,6 +15,7 @@ buildscript {
 
 plugins {
     ${formatPlugins(project)}
+    id 'com.novoda.static-analysis'
 }
 
 apply plugin: 'kotlin'

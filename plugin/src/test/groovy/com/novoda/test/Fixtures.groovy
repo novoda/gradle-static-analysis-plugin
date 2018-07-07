@@ -50,6 +50,11 @@ public final class Fixtures {
         public static final File RULES = new File(RULES_DIR, 'detekt/detekt.yml')
     }
 
+    final static class Ktlint {
+        static final File SOURCES_WITH_ERROR = new File(SOURCES_DIR, 'ktlint/with-error')
+        static final File SOURCES_NO_ERROR = new File(SOURCES_DIR, 'ktlint/no-error')
+    }
+
     final static class Lint {
         public static final File SOURCES_WITH_WARNINGS = new File(SOURCES_DIR, 'lint/warnings')
         public static final File SOURCES_WITH_ERRORS = new File(SOURCES_DIR, 'lint/errors')
