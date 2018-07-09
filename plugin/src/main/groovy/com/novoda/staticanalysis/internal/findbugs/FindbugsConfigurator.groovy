@@ -64,6 +64,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             description = "Run FindBugs analysis for ${variant.name} classes"
             source = androidSourceDirs
             classpath = variant.javaCompile.classpath
+            exclude '**/*.kt'
         }
         sourceFilter.applyTo(task)
         task.conventionMapping.map("classes") {
@@ -90,6 +91,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                         List<String> includes = createIncludePatterns(task.source, sourceDirs)
                         getJavaClasses(sourceSet, includes)
                     })
+                    task.exclude '**/*.kt'
                 }
             }
         }

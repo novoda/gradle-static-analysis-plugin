@@ -62,6 +62,7 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
                     task.with {
                         description = "Run PMD analysis for ${sourceSet.name} classes"
                         source = sourceSet.java.srcDirs
+                        exclude '**/*.kt'
                     }
                 }
                 sourceFilter.applyTo(task)
