@@ -28,22 +28,4 @@ You can have multiple `exclude` statements.
 For more informations about Findbugs rules, refer to the [official website](http://findbugs.sourceforge.net/bugDescriptions.html).
 
 ## Findbugs in mixed-language projects
-If your project mixes Java and Kotlin code, you most likely want to have an exclusion in place for all `*.kt` files. You can use the `exclude`
-in the configuration closure, or you can do so by adding a suppression to the filter file:
-
-`findbugs-excludes.xml`
-```xml
-<FindBugsFilter>
-
-  ...
-
-  <Match>
-    <Source name="~.*\.kt" />
-  </Match>
-
-  ...
-
-</FindBugsFilter>
-```
-
-
+If your project mixes Java and Kotlin code, your Kotlin source files will automatically be ignored.
