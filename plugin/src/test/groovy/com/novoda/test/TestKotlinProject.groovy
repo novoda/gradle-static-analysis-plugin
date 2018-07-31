@@ -15,9 +15,15 @@ buildscript {
 
 plugins {
     ${formatPlugins(project)}
+    id 'com.novoda.static-analysis'
 }
 
 apply plugin: 'kotlin'
+
+repositories { 
+    jcenter()
+}
+
 sourceSets {
     ${formatSourceSets(project)}
 }

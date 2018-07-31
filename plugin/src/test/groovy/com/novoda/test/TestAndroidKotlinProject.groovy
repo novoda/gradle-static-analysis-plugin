@@ -14,7 +14,8 @@ buildscript {
     }
 }
 plugins {
-    ${formatPlugins(project)}
+    ${formatPlugins(project)}   
+    id 'com.novoda.static-analysis'
 }
 repositories {
     google()
@@ -58,7 +59,7 @@ ${formatExtension(project)}
                 .collect { Map.Entry<String, List<String>> entry ->
             """$entry.key {
             manifest.srcFile '${Fixtures.ANDROID_MANIFEST}'
-            kotlin {
+            java {
                 ${entry.value.collect { "srcDir '$it'" }.join('\n\t\t\t\t')}
             }
         }"""
