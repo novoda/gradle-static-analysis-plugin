@@ -57,13 +57,21 @@ class DetektConfigurator implements Configurator {
         project.tasks['check'].dependsOn(detektTask)
 
         // evaluate violations after detekt
-        def output = detekt.systemOrDefaultProfile().output
+        def output = resolveOutput(detekt)
         if (!output) {
             throw new IllegalArgumentException(OUTPUT_NOT_DEFINED)
         }
         def collectViolations = createCollectViolationsTask(violations, project.file(output))
         evaluateViolations.dependsOn collectViolations
         collectViolations.dependsOn detektTask
+    }
+
+    private static resolveOutput(detekt) {
+        if (detekt.hasProperty('profileStorage')) {
+            detekt.profileStorage.systemOrDefault.output
+        } else {
+            detekt.systemOrDefaultProfile().output
+        }
     }
 
     private CollectDetektViolationsTask createCollectViolationsTask(Violations violations, File outputFolder) {
