@@ -13,6 +13,7 @@ class DetektConfigurator implements Configurator {
     private static final String DETEKT_PLUGIN = 'io.gitlab.arturbosch.detekt'
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/arturbosch/detekt.'
     private static final String OUTPUT_NOT_DEFINED = 'Output not defined! To analyze the results, `output` needs to be defined in Detekt profile.'
+    private static final String DETEKT_CONFIGURATION_ERROR = 'A problem occurred while configuring Detekt. Please make sure to use a compatible version.'
 
     private final Project project
     private final Violations violations
@@ -53,9 +54,6 @@ class DetektConfigurator implements Configurator {
         def detektTask = project.tasks['detektCheck']
         detektTask.group = 'verification'
 
-        // run detekt as part of check
-        project.tasks['check'].dependsOn(detektTask)
-
         // evaluate violations after detekt
         def output = resolveOutput(detekt)
         if (!output) {
@@ -69,8 +67,10 @@ class DetektConfigurator implements Configurator {
     private static resolveOutput(detekt) {
         if (detekt.hasProperty('profileStorage')) {
             detekt.profileStorage.systemOrDefault.output
-        } else {
+        } else if (detekt.respondsTo('systemOrDefaultProfile')) {
             detekt.systemOrDefaultProfile().output
+        } else {
+            throw new IllegalStateException(DETEKT_CONFIGURATION_ERROR)
         }
     }
 
