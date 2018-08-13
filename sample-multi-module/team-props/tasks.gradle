@@ -1,0 +1,1 @@
+task build(dependsOn: [rootProject.task('assemble'), rootProject.task('check')])

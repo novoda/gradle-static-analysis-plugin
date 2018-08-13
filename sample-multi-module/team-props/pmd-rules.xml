@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PMD rules" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+  <description>Mandatory PMD rules description.</description>
+
+  <!--region File exclusions-->
+  <exclude-pattern>.*\.kt</exclude-pattern>
+  <exclude-pattern>.*\.R\$.*</exclude-pattern>
+  <!--endregion-->
+
+  <!--region Best practices -->
+  <rule ref="category/java/bestpractices.xml" />
+  <!--endregion-->
+
+  <!--region Code style -->
+  <rule ref="category/java/codestyle.xml">
+    <exclude name="AbstractNaming" />
+  </rule>
+
+  <!-- Allow class names to have a minimum of 3 characters (default: 5) -->
+  <rule ref="category/java/codestyle.xml/ShortClassName">
+    <properties>
+      <property name="minimum" value="3" />
+    </properties>
+  </rule>
+
+  <!-- Allow method names to have a minimum of 2 characters (default: 3) -->
+  <rule ref="category/java/codestyle.xml/ShortMethodName">
+    <properties>
+      <property name="minimum" value="2" />
+    </properties>
+  </rule>
+  <!--endregion-->
+
+  <!--region Design -->
+  <rule ref="category/java/design.xml">
+    <exclude name="StdCyclomaticComplexity" />
+  </rule>
+
+  <!-- Suppress CyclomaticComplexity check for equals and hashCode -->
+  <rule ref="category/java/design.xml/CyclomaticComplexity">
+    <properties>
+      <property name="violationSuppressXPath" value="//MethodDeclarator[@Image='equals' or @Image='hashCode']" />
+    </properties>
+  </rule>
+
+  <!--region Documentation -->
+  <rule ref="category/java/documentation.xml">
+    <exclude name="CommentRequired" />
+    <exclude name="CommentSize" />
+  </rule>
+  <!--endregion-->
+
+  <!--region Performance -->
+  <rule ref="category/java/performance.xml">
+    <exclude name="TooFewBranchesForASwitchStatement" />
+  </rule>
+  <!--endregion-->
+
+</ruleset>
