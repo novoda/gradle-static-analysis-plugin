@@ -1,5 +1,6 @@
 plugins {
-    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC6-3'
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC8'
+    id "org.jlleitschuh.gradle.ktlint" version "5.0.0"
 }
 
 apply plugin: 'com.android.application'
@@ -9,7 +10,6 @@ apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId 'com.novoda.staticanalysis.sample'
@@ -30,7 +30,7 @@ android {
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     testImplementation 'junit:junit:4.12'
 }
@@ -42,7 +42,6 @@ staticAnalysis {
     checkstyle {
         toolVersion '8.8'
         exclude project.fileTree('src/test/java')
-        exclude '**/*.kt'
         configFile rootProject.file('team-props/checkstyle-modules.xml')
         includeVariants { variant -> variant.name.contains('debug') }
     }
@@ -76,4 +75,8 @@ staticAnalysis {
         }
     }
 
+    ktlint {
+        android true
+        includeVariants { variant -> variant.name.contains('debug') }
+    }
 }
