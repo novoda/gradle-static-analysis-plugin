@@ -80,6 +80,9 @@ staticAnalysis {
 This will enable all the tools with their default settings. For more advanced configurations, please refer to the
 [advanced usage](docs/advanced-usage.md) and to the [supported tools](docs/supported-tools.md) pages.
 
+## Sample app
+There are two sample Android projects available, one consisting of a regular app - available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/sample) - and the other comprising a multi-module setup available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/sample-multi-module). Both sample projects showcase a setup featuring Checkstyle, FindBugs, PMD, Lint and Detekt.
+
 ## Snapshots
 [![CI status](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin-snapshot)](https://ci.novoda.com/job/gradle-static-analysis-plugin-snapshot/lastBuild/console) [![Download from Bintray](https://api.bintray.com/packages/novoda/snapshots/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda/snapshots/gradle-static-analysis-plugin/_latestVersion)
 
@@ -94,7 +97,6 @@ repositories {
 ```
 
 You can find the latest snapshot version following this [link](https://bintray.com/novoda/snapshots/gradle-static-analysis-plugin/_latestVersion).
-
 
 ## Roadmap
 The plugin is under active development and to be considered in **beta stage**. It is routinely used by many Novoda projects and
