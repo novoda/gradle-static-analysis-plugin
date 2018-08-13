@@ -18,7 +18,7 @@ class CollectLintViolationsTaskTest {
         Violations violations = new Violations('Android Lint')
         task.collectViolations(Fixtures.Lint.SAMPLE_REPORT, null, violations)
 
-        assertThat(violations.getErrors()).isEqualTo(1)
+        assertThat(violations.getErrors()).isEqualTo(2)
         assertThat(violations.getWarnings()).isEqualTo(1)
     }
 }

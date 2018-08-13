@@ -83,6 +83,21 @@ This will enable all the tools with their default settings. For more advanced co
 ## Sample app
 There are two sample Android projects available, one consisting of a regular app - available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/sample) - and the other comprising a multi-module setup available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/sample-multi-module). Both sample projects showcase a setup featuring Checkstyle, FindBugs, PMD, Lint and Detekt.
 
+## Snapshots
+[![CI status](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin-snapshot)](https://ci.novoda.com/job/gradle-static-analysis-plugin-snapshot/lastBuild/console) [![Download from Bintray](https://api.bintray.com/packages/novoda/snapshots/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda/snapshots/gradle-static-analysis-plugin/_latestVersion)
+
+Snapshot builds from [`develop`](https://github.com/novoda/gradle-static-analysis-plugin/compare/master...develop) are automatically deployed to a [repository](https://bintray.com/novoda/snapshots/gradle-static-analysis-plugin/_latestVersion) that is not synced with JCenter.
+To consume a snapshot build add an additional maven repo as follows:
+```
+repositories {
+    maven {
+        url 'https://novoda.bintray.com/snapshots'
+    }
+}
+```
+
+You can find the latest snapshot version following this [link](https://bintray.com/novoda/snapshots/gradle-static-analysis-plugin/_latestVersion).
+
 ## Roadmap
 The plugin is under active development and to be considered in **beta stage**. It is routinely used by many Novoda projects and
 by other external projects with no known critical issues. The API is supposed to be relatively stable, but there still may be

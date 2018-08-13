@@ -34,7 +34,6 @@ ${project.additionalConfiguration}
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
-        withPlugin('com.novoda.static-analysis')
     }
 
     private static File createProjectDir(String path) {
@@ -126,7 +125,7 @@ ${project.additionalConfiguration}
     }
 
     protected static String formatPlugins(TestProject project) {
-        "${project.plugins.join('\n')}"
+        project.plugins.join('\n')
     }
 
     public static class Result {

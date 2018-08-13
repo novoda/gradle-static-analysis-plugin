@@ -13,6 +13,9 @@ import static com.novoda.test.LogsSubject.assertThat
 @RunWith(Parameterized.class)
 class DetektIntegrationTest {
 
+    private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.'
+    private static final String OUTPUT_NOT_DEFINED = 'Output not defined! To analyze the results, `output` needs to be defined in Detekt profile.'
+
     @Parameterized.Parameters(name = "{0}")
     static Iterable<TestProjectRule> rules() {
         return [TestProjectRule.forKotlinProject(), TestProjectRule.forAndroidKotlinProject()]
@@ -23,6 +26,26 @@ class DetektIntegrationTest {
 
     DetektIntegrationTest(TestProjectRule projectRule) {
         this.projectRule = projectRule
+    }
+
+    @Test
+    void shouldFailBuildOnConfigurationWhenNoOutputNotDefined() {
+        def emptyConfiguration = detektWith("")
+
+        def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
+                .withToolsConfig(emptyConfiguration)
+                .buildAndFail('check')
+
+        assertThat(result.logs).contains(OUTPUT_NOT_DEFINED)
+    }
+
+    @Test
+    void shouldFailBuildOnConfigurationWhenDetektConfiguredButNotApplied() {
+        def result = projectRule.newProject()
+                .withToolsConfig(detektConfiguration(Fixtures.Detekt.SOURCES_WITH_ERRORS))
+                .buildAndFail('check')
+
+        assertThat(result.logs).contains(DETEKT_NOT_APPLIED)
     }
 
     @Test
@@ -79,7 +102,7 @@ class DetektIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-        testProject = testProject.withToolsConfig(detektConfigurationWithoutInput(testProject))
+                .withToolsConfig(detektConfigurationWithoutInput())
 
         TestProject.Result result = testProject
                 .build('check')
@@ -88,36 +111,19 @@ class DetektIntegrationTest {
         assertThat(result.logs).doesNotContainDetektViolations()
     }
 
-    @Test
-    void shouldFailBuildWhenDetektConfiguredButNotApplied() {
-        def testProject = projectRule.newProject()
-                .withPenalty('''{
-                    maxWarnings = 0
-                    maxErrors = 0
-                }''')
-
-        testProject = testProject.withToolsConfig(detektConfiguration(testProject, Fixtures.Detekt.SOURCES_WITH_ERRORS))
-
-        TestProject.Result result = testProject
-                .buildAndFail('check')
-
-        assertThat(result.logs).containsDetektNotApplied()
-    }
-
     private TestProject createProjectWithZeroThreshold(File sources) {
         createProjectWith(sources)
     }
 
     private TestProject createProjectWith(File sources, int maxWarnings = 0, int maxErrors = 0) {
-        def testProject = projectRule.newProject()
+        projectRule.newProject()
                 .withPlugin("io.gitlab.arturbosch.detekt", "1.0.0.RC6-2")
                 .withSourceSet('main', sources)
                 .withPenalty("""{
                     maxWarnings = ${maxWarnings}
                     maxErrors = ${maxErrors}
                 }""")
-
-        testProject.withToolsConfig(detektConfiguration(testProject, sources))
+                .withToolsConfig(detektConfiguration(sources))
     }
 
     private TestProject createProjectWithoutDetekt() {
@@ -130,27 +136,29 @@ class DetektIntegrationTest {
                 }''')
     }
 
-    private static GString detektConfiguration(TestProject testProject, File input) {
-        """
-        detekt { 
-            profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
-                // The input just needs to be configured for the tests. 
-                // Probably detekt doesn't pick up the changed source sets. 
-                // In a example project it was not needed.
-                input = "${input}"
-            }
-        }
+    private static String detektConfiguration(File input) {
+        detektWith """
+            config = '${Fixtures.Detekt.RULES}' 
+            output = "\$buildDir/reports"
+            // The input just needs to be configured for the tests. 
+            // Probably detekt doesn't pick up the changed source sets. 
+            // In a example project it was not needed.
+            input = "${input}"
         """
     }
 
-    private static GString detektConfigurationWithoutInput(TestProject testProject) {
+    private static String detektConfigurationWithoutInput() {
+        detektWith """
+            config = '${Fixtures.Detekt.RULES}' 
+            output = "\$buildDir/reports"
+        """
+    }
+
+    private static String detektWith(String mainProfile) {
         """
         detekt { 
             profile('main') { 
-                config = "${Fixtures.Detekt.RULES}" 
-                output = "${testProject.projectDir()}/build/reports"
+                ${mainProfile.stripIndent()}
             }
         }
         """
