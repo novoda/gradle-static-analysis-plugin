@@ -10,9 +10,7 @@ Tool | Java | Android<br/>(Java) | Kotlin | Android<br/>(Kotlin)
 [`FindBugs`](http://findbugs.sourceforge.net/) | :white_check_mark: | :white_check_mark: | — | —
 [`Detekt`](https://github.com/arturbosch/detekt) | — | — | :white_check_mark: | :white_check_mark:
 [`Android Lint`](https://developer.android.com/studio/write/lint.html) | — | :white_check_mark:️ | — | :white_check_mark:️
-[`KtLint`\*](https://github.com/shyiko/ktlint) | — | — | ✖️ | ✖️
-
-_\* Not supported [yet](https://github.com/novoda/gradle-static-analysis-plugin/issues?q=is%3Aopen+is%3Aissue+label%3A%22new+tool%22)_
+[`KtLint`](https://github.com/shyiko/ktlint) | — | — | :white_check_mark:️ | :white_check_mark:️
 
 For additional informations and tips on how to obtain advanced behaviours with the plugin and its tools, please refer to the
 [advanced usage](advanced-usage.md) page.
@@ -25,7 +23,7 @@ For additional informations and tips on how to obtain advanced behaviours with t
    * [PMD](tools/pmd.md)
    * [Findbugs](tools/findbugs.md)
    * [Android Lint](tools/android_lint.md)
-   * KtLint — _COMING SOON_
+   * [KtLint](tools/ktlint.md)
  * [Example configurations](#example-configurations)
 
 ---
@@ -42,7 +40,9 @@ staticAnalysis {
     checkstyle {}
     pmd {}
     findbugs {}
+    lintOptions {}
     detekt {}
+    ktlint {}
 }
 ```
 
