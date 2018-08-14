@@ -9,8 +9,4 @@
     </Or>
   </Match>
 
-  <Match>
-    <Source name="~.*\.kt" />
-  </Match>
-
 </FindBugsFilter>

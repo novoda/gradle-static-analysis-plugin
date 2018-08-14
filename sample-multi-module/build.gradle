@@ -1,21 +1,22 @@
 buildscript {
-    ext.kotlin_version = '1.2.30'
+    ext.kotlin_version = '1.2.60'
 
     repositories {
         google()
-        maven { url "https://plugins.gradle.org/m2/" }
+        gradlePluginPortal()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath "gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC6-3"
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'gradle.plugin.io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0.RC8'
+        classpath 'gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:5.0.0'
     }
 }
 
-apply from: "$rootDir/team-props/tasks.gradle"
+apply from: rootProject.file('team-props/tasks.gradle')
 
-subprojects { subproject ->
+subprojects {
 
     buildscript {
         repositories {
@@ -26,5 +27,6 @@ subprojects { subproject ->
     repositories {
         google()
         mavenCentral()
+        jcenter()
     }
 }
