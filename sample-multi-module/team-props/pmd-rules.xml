@@ -5,7 +5,6 @@
   <description>Mandatory PMD rules description.</description>
 
   <!--region File exclusions-->
-  <exclude-pattern>.*\.kt</exclude-pattern>
   <exclude-pattern>.*\.R\$.*</exclude-pattern>
   <!--endregion-->
 
