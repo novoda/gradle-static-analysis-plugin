@@ -54,5 +54,5 @@ ktlint {
 For other configuration options and adding custom rules, refer to the 
 [official guide](https://github.com/JLLeitschuh/ktlint-gradle/#configuration).
 
-**Note:** Please make sure __note__ to set `ignoreFailures = false` since failures and threshold detection is handled by
-Static Analysis plugin
+**Note:** Failures and threshold detection is handled by Static Analysis plugin. That is why `ignoreFailures = true` is set by 
+the plugin. Please do not manually override `ignoreFailures` property. 
