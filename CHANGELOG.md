@@ -1,6 +1,27 @@
 Change Log
 ==========
 
+[Version 0.6](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.6)
+--------------------------
+
+- Fix release to plugin portal ([PR#82](https://github.com/novoda/gradle-static-analysis-plugin/pull/82),[PR#83](https://github.com/novoda/gradle-static-analysis-plugin/pull/83))
+- Improve plugin documentation and samples ([PR#85](https://github.com/novoda/gradle-static-analysis-plugin/pull/85),
+[PR#88](https://github.com/novoda/gradle-static-analysis-plugin/pull/88),
+[PR#97](https://github.com/novoda/gradle-static-analysis-plugin/pull/97),
+[PR#99](https://github.com/novoda/gradle-static-analysis-plugin/pull/99),
+[PR#100](https://github.com/novoda/gradle-static-analysis-plugin/pull/100),
+[PR#101](https://github.com/novoda/gradle-static-analysis-plugin/pull/101),
+[PR#113](https://github.com/novoda/gradle-static-analysis-plugin/pull/113),
+[PR#123](https://github.com/novoda/gradle-static-analysis-plugin/pull/123), 
+[PR#124](https://github.com/novoda/gradle-static-analysis-plugin/pull/124))
+- Improve support for Android Lint ([PR#89](https://github.com/novoda/gradle-static-analysis-plugin/pull/89), [PR#105](https://github.com/novoda/gradle-static-analysis-plugin/pull/105))
+- Improve support for Detekt ([PR#90](https://github.com/novoda/gradle-static-analysis-plugin/pull/90), [PR#121](https://github.com/novoda/gradle-static-analysis-plugin/pull/121))
+- Rename built-in `failOnWarnings` penalty to `failFast` ([PR#92](https://github.com/novoda/gradle-static-analysis-plugin/pull/92))
+- Support multiple configurations for `Pmd`, `Findbugs`, `Checkstyle` ([PR#93](https://github.com/novoda/gradle-static-analysis-plugin/pull/93))
+- Support automatic snapshot builds from `develop` ([PR#106](https://github.com/novoda/gradle-static-analysis-plugin/pull/106),[PR#107](https://github.com/novoda/gradle-static-analysis-plugin/pull/107))
+- Automatically exclude Kotlin files from Java code quality tools ([PR#109](https://github.com/novoda/gradle-static-analysis-plugin/pull/109))
+- Integrate [KtLint](https://github.com/shyiko/ktlint) ([PR#110](https://github.com/novoda/gradle-static-analysis-plugin/pull/110))
+
 [Version 0.5.2](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.5.2)
 --------------------------
 
