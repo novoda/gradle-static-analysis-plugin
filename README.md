@@ -44,7 +44,7 @@ buildscript {
        jcenter()
     }
     dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:0.5.2'
+        classpath 'com.novoda:gradle-static-analysis-plugin:0.6'
     }
 }
 
@@ -55,7 +55,7 @@ or from the [Gradle Plugins Repository](https://plugins.gradle.org/):
 
 ```gradle
 plugins {
-    id 'com.novoda.static-analysis' version '0.5.2'
+    id 'com.novoda.static-analysis' version '0.6'
 }
 
 ```
