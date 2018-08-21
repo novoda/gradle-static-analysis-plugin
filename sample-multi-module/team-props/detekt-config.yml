@@ -1,5 +1,4 @@
 autoCorrect: true
-failFast: false
 
 test-pattern:
   active: true
@@ -18,16 +17,6 @@ test-pattern:
     - 'StringLiteralDuplication'
     - 'SpreadOperator'
     - 'TooManyFunctions'
-
-build:
-  warningThreshold: 5
-  failThreshold: 500
-  maxIssues: 500
-  weights:
-     complexity: 2
-     LongParameterList: 1
-     style: 1
-     comments: 1
 
 processors:
   active: true

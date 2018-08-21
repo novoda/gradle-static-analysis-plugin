@@ -59,6 +59,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
                         description = "Run Checkstyle analysis for ${sourceSet.name} classes"
                         source = sourceSet.java.srcDirs
                         classpath = files("$buildDir/intermediates/classes/")
+                        exclude '**/*.kt'
                     }
                 }
                 sourceFilter.applyTo(task)
@@ -80,9 +81,9 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     private CollectCheckstyleViolationsTask createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {
-        project.tasks.create("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask) { collectViolations ->
-            collectViolations.xmlReportFile = checkstyle.reports.xml.destination
-            collectViolations.violations = violations
-        }
+        def task = project.tasks.maybeCreate("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask)
+        task.xmlReportFile = checkstyle.reports.xml.destination
+        task.violations = violations
+        task
     }
 }

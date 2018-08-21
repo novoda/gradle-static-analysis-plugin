@@ -83,7 +83,10 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected abstract void configureAndroidVariant(variant)
 
     protected void configureJavaProject() {
-        project.tasks.withType(taskClass) { task -> sourceFilter.applyTo(task) }
+        project.tasks.withType(taskClass) { task ->
+            sourceFilter.applyTo(task)
+            task.exclude '**/*.kt'
+        }
     }
 
     protected abstract Class<T> getTaskClass()

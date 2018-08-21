@@ -11,7 +11,10 @@ import org.gradle.api.Task
 class DetektConfigurator implements Configurator {
 
     private static final String DETEKT_PLUGIN = 'io.gitlab.arturbosch.detekt'
+    private static final String LAST_COMPATIBLE_DETEKT_VERSION = '1.0.0.RC8'
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/arturbosch/detekt.'
+    private static final String OUTPUT_NOT_DEFINED = 'Output not defined! To analyze the results, `output` needs to be defined in Detekt profile.'
+    private static final String DETEKT_CONFIGURATION_ERROR = "A problem occurred while configuring Detekt. Please make sure to use a compatible version (All versions up to $LAST_COMPATIBLE_DETEKT_VERSION)"
 
     private final Project project
     private final Violations violations
@@ -32,7 +35,7 @@ class DetektConfigurator implements Configurator {
 
     @Override
     void execute() {
-        project.extensions.findByType(StaticAnalysisExtension).ext.'detekt' = { Closure config ->
+        project.extensions.findByType(StaticAnalysisExtension).ext.detekt = { Closure config ->
             if (!isKotlinProject(project)) {
                 return
             }
@@ -41,34 +44,42 @@ class DetektConfigurator implements Configurator {
                 throw new GradleException(DETEKT_NOT_APPLIED)
             }
 
-            project.extensions.findByName('detekt').with {
-                // apply configuration closure to detekt extension
-                config.delegate = it
-                config()
-            }
-
-            configureToolTask()
+            def detekt = project.extensions.findByName('detekt')
+            config.delegate = detekt
+            config()
+            configureToolTask(detekt)
         }
     }
 
-    private void configureToolTask() {
+    private void configureToolTask(detekt) {
         def detektTask = project.tasks['detektCheck']
-        // run detekt as part of check
-        project.tasks['check'].dependsOn(detektTask)
+        detektTask.group = 'verification'
 
         // evaluate violations after detekt
-        detektTask.group = 'verification'
-        def collectViolations = createCollectViolationsTask(violations)
+        def output = resolveOutput(detekt)
+        if (!output) {
+            throw new IllegalArgumentException(OUTPUT_NOT_DEFINED)
+        }
+        def collectViolations = createCollectViolationsTask(violations, project.file(output))
         evaluateViolations.dependsOn collectViolations
         collectViolations.dependsOn detektTask
     }
 
-    private CollectDetektViolationsTask createCollectViolationsTask(Violations violations) {
-        def outputFolder = project.file(project.extensions.findByName('detekt').systemOrDefaultProfile().output)
-        project.tasks.create('collectDetektViolations', CollectDetektViolationsTask) { collectViolations ->
-            collectViolations.xmlReportFile = new File(outputFolder, 'detekt-checkstyle.xml')
-            collectViolations.htmlReportFile = new File(outputFolder, 'detekt-report.html')
-            collectViolations.violations = violations
+    private static resolveOutput(detekt) {
+        if (detekt.hasProperty('profileStorage')) {
+            detekt.profileStorage.systemOrDefault.output
+        } else if (detekt.respondsTo('systemOrDefaultProfile')) {
+            detekt.systemOrDefaultProfile().output
+        } else {
+            throw new IllegalStateException(DETEKT_CONFIGURATION_ERROR)
+        }
+    }
+
+    private CollectDetektViolationsTask createCollectViolationsTask(Violations violations, File outputFolder) {
+        project.tasks.create('collectDetektViolations', CollectDetektViolationsTask) { task ->
+            task.xmlReportFile = new File(outputFolder, 'detekt-checkstyle.xml')
+            task.htmlReportFile = new File(outputFolder, 'detekt-report.html')
+            task.violations = violations
         }
     }
 

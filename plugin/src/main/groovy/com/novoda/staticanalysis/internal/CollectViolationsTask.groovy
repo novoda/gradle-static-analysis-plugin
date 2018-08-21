@@ -2,10 +2,12 @@ package com.novoda.staticanalysis.internal
 
 import com.novoda.staticanalysis.Violations
 import org.gradle.api.DefaultTask
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 
 abstract class CollectViolationsTask extends DefaultTask {
 
+    @InputFile
     private File xmlReportFile
     private File htmlReportFile
     private Violations violations

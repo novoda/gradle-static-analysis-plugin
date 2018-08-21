@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <issues format="4" by="lint 3.0.1">
 
+    <issue id="StopShip" severity="Fatal" message="Code contains STOPSHIP marker" category="Correctness"
+      priority="10" summary="Code contains STOPSHIP marker"/>
+
     <issue
         id="MissingSuperCall"
         severity="Error"
