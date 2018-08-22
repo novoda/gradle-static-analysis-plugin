@@ -9,6 +9,10 @@ groovydoc.docTitle = 'Static Analysis Plugin'
 apply plugin: 'com.novoda.build-properties'
 buildProperties {
 
+    env {
+        using System.getenv()
+    }
+
     secrets {
         using rootProject.file('secrets.properties')
         description = '''
