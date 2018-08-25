@@ -57,7 +57,7 @@ staticAnalysis {
 ```
 
 ## Example configurations
-If you want, you can use the Novoda [`team-props` scaffolding system](https://github.com/novoda/novoda/tree/master/team-props) as a starting point for setting
-up your project. The repository contains a good example of [configuration](https://github.com/novoda/novoda/blob/master/team-props/static-analysis.gradle) for
-the plugin, and [rulesets](https://github.com/novoda/novoda/tree/master/team-props/static-analysis) for all supported tools.
+If you want, you can use the Novoda [`team-props` scaffolding system](https://github.com/novoda/novoda/tree/master/scaffolding/team-props) as a starting point for setting
+up your project. The repository contains a good example of [configuration](https://github.com/novoda/novoda/blob/master/scaffolding/team-props/static-analysis.gradle) for
+the plugin, and [rulesets](https://github.com/novoda/novoda/tree/master/scaffolding/team-props/static-analysis) for all supported tools.
 
