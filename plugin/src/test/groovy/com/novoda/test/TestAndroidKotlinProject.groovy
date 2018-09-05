@@ -34,6 +34,9 @@ android {
         versionCode 1
         versionName '1.0'
     }
+    lintOptions {
+        disable 'OldTargetApi'
+    }
     sourceSets {
         ${formatSourceSets(project)}
     }
