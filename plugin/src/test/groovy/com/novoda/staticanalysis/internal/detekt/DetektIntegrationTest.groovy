@@ -37,7 +37,7 @@ class DetektIntegrationTest {
 
     @Test
     void shouldFailBuildOnConfigurationWhenNoOutputNotDefined() {
-        def emptyConfiguration = detektWith("")
+        def emptyConfiguration = detektWith(detektVersion, "")
 
         def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .withToolsConfig(emptyConfiguration)
@@ -49,7 +49,7 @@ class DetektIntegrationTest {
     @Test
     void shouldFailBuildOnConfigurationWhenDetektConfiguredButNotApplied() {
         def result = projectRule.newProject()
-                .withToolsConfig(detektConfiguration(Fixtures.Detekt.SOURCES_WITH_ERRORS))
+                .withToolsConfig(detektConfiguration(Fixtures.Detekt.SOURCES_WITH_ERRORS, detektVersion))
                 .buildAndFail('check')
 
         assertThat(result.logs).contains(DETEKT_NOT_APPLIED)
@@ -109,7 +109,7 @@ class DetektIntegrationTest {
                     maxWarnings = 0
                     maxErrors = 0
                 }''')
-                .withToolsConfig(detektConfigurationWithoutInput())
+                .withToolsConfig(detektConfigurationWithoutInput(detektVersion))
 
         TestProject.Result result = testProject
                 .build('check')
@@ -130,7 +130,7 @@ class DetektIntegrationTest {
                     maxWarnings = ${maxWarnings}
                     maxErrors = ${maxErrors}
                 }""")
-                .withToolsConfig(detektConfiguration(sources))
+                .withToolsConfig(detektConfiguration(sources, detektVersion))
     }
 
     private TestProject createProjectWithoutDetekt() {
@@ -143,27 +143,29 @@ class DetektIntegrationTest {
                 }''')
     }
 
-    private static String detektConfiguration(File input) {
-        detektWith """
+    private static String detektConfiguration(File input, String detektVersion) {
+        detektWith(detektVersion, """
             config = '${Fixtures.Detekt.RULES}' 
             output = "\$buildDir/reports"
             // The input just needs to be configured for the tests. 
             // Probably detekt doesn't pick up the changed source sets. 
             // In a example project it was not needed.
             input = "${input}"
-        """
+        """)
     }
 
-    private static String detektConfigurationWithoutInput() {
-        detektWith """
+    private static String detektConfigurationWithoutInput(String detektVersion) {
+        detektWith(detektVersion, """
             config = '${Fixtures.Detekt.RULES}' 
             output = "\$buildDir/reports"
-        """
+        """)
     }
 
-    private static String detektWith(String mainProfile) {
+    private static String detektWith(String detektVersion, String mainProfile) {
         """
-        detekt { 
+        detekt {      
+            version '${detektVersion}'
+            
             profile('main') { 
                 ${mainProfile.stripIndent()}
             }
