@@ -150,7 +150,12 @@ class DetektNewIntegrationTest {
         detekt {      
             toolVersion '${detektVersion}'
             
-            ${configuration.stripIndent()}
+            ${configuration.stripIndent()}  
+
+            reports {
+                xml.enabled = true
+                html.enabled = true
+            }
         }
         """
     }
