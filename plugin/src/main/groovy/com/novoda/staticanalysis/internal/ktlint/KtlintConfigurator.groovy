@@ -13,7 +13,7 @@ import org.gradle.api.Task
 class KtlintConfigurator implements Configurator {
 
     private static final String KTLINT_PLUGIN = 'org.jlleitschuh.gradle.ktlint'
-    private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/jeremymailen/kotlinter-gradle'
+    private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JLLeitschuh/ktlint-gradle/#how-to-use'
 
     private final Project project
     private final Violations violations
