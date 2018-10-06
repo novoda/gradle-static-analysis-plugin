@@ -19,3 +19,8 @@ subprojects {
         jcenter()
     }
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.10.2'
+    distributionType = Wrapper.DistributionType.ALL
+}
