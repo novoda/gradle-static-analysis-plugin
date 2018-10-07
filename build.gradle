@@ -5,6 +5,9 @@ subprojects {
         repositories {
             jcenter()
             gradlePluginPortal()
+            maven {
+                url 'https://novoda.bintray.com/snapshots'
+            }
         }
         dependencies {
             classpath gradlePlugins.bintrayRelease
