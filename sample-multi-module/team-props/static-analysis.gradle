@@ -34,11 +34,12 @@ staticAnalysis {
     }
 
     detekt {
-        profile('main') {
-            input = project.file("src/main/java")
-            config = rootProject.file('team-props/detekt-config.yml')
-            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-            output = project.file("build/reports/detekt")
+        input = project.files("src/main/java")
+        config = rootProject.files('team-props/detekt-config.yml')
+        filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
+        reports {
+            xml.enabled = true
+            html.enabled = true
         }
     }
 
