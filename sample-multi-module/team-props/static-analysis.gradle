@@ -1,4 +1,4 @@
-apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
+apply plugin: 'com.novoda.static-analysis'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 apply plugin: "org.jlleitschuh.gradle.ktlint"
 
@@ -34,12 +34,8 @@ staticAnalysis {
     }
 
     detekt {
-        profile('main') {
-            input = project.file("src/main/java")
-            config = rootProject.file('team-props/detekt-config.yml')
-            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-            output = project.file("build/reports/detekt")
-        }
+        config = rootProject.files('team-props/detekt-config.yml')
+        filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
     }
 
     ktlint {

@@ -1,2 +1,8 @@
 rootProject.name = 'gradle-static-analysis-plugin-sample'
 include ':app'
+
+includeBuild('../') {
+    dependencySubstitution {
+        substitute module('com.novoda:gradle-static-analysis-plugin') with project(':plugin')
+    }
+}
