@@ -67,13 +67,8 @@ staticAnalysis {
     }
 
     detekt {
-        input = files("$projectDir/src/main/java")
         config = rootProject.files('team-props/detekt-config.yml')
         filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-        reports {
-            xml.enabled = true
-            html.enabled = true
-        }
     }
 
     ktlint {
