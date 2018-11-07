@@ -1,5 +1,6 @@
 package com.novoda.staticanalysis.internal.detekt
 
+
 import com.novoda.test.Fixtures
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
@@ -14,14 +15,16 @@ import static com.novoda.test.LogsSubject.assertThat
 class DetektNewIntegrationTest {
 
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.'
+    private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to enable "reports.xml" in your Detekt configuration'
+
 
     @Parameterized.Parameters(name = "{0} with Detekt: {1}")
     static Iterable rules() {
         return [
-//                [TestProjectRule.forKotlinProject(), "1.0.0.RC9.2"],
-//                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
+                [TestProjectRule.forKotlinProject(), "1.0.0.RC9.2"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
                 [TestProjectRule.forKotlinProject(), "1.0.0-RC10"],
-//                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC10"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC10"],
         ]*.toArray()
     }
 
@@ -41,6 +44,20 @@ class DetektNewIntegrationTest {
                 .buildAndFail('check')
 
         assertThat(result.logs).contains(DETEKT_NOT_APPLIED)
+    }
+
+    @Test
+    void shouldFailBuildOnConfigurationWhenDetektConfiguredWithoutXmlReport() {
+        def result = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", detektVersion)
+                .withToolsConfig('''detekt {      
+                    reports {
+                        xml.enabled = false
+                    }
+                }''')
+                .buildAndFail('check')
+
+        assertThat(result.logs).contains(XML_REPORT_NOT_ENABLED)
     }
 
     @Test
