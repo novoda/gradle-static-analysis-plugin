@@ -18,8 +18,10 @@ class DetektNewIntegrationTest {
     @Parameterized.Parameters(name = "{0} with Detekt: {1}")
     static Iterable rules() {
         return [
-                [TestProjectRule.forKotlinProject(), "1.0.0.RC9.2"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
+//                [TestProjectRule.forKotlinProject(), "1.0.0.RC9.2"],
+//                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC10"],
+//                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC10"],
         ]*.toArray()
     }
 
