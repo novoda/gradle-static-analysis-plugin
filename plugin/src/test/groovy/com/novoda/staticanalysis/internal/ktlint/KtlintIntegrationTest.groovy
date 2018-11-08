@@ -35,9 +35,12 @@ class KtlintIntegrationTest {
                 [TestProjectRule.forKotlinProject(), '5.1.0', 'ktlint-main.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '5.1.0', 'ktlint-debug.txt'],
                 [TestProjectRule.forKotlinProject(), '6.1.0', 'ktlintMainCheck.txt'],
-//                [TestProjectRule.forAndroidKotlinProject(), '6.1.0', 'ktlintDebugCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
-//                [TestProjectRule.forAndroidKotlinProject(), '6.2.1', 'ktlintDebugCheck.txt'],
+                /**
+                 * Tracked in https://github.com/novoda/gradle-static-analysis-plugin/issues/146
+                 */
+                //[TestProjectRule.forAndroidKotlinProject(), '6.1.0', 'ktlintDebugCheck.txt'],
+                //[TestProjectRule.forAndroidKotlinProject(), '6.2.1', 'ktlintDebugCheck.txt'],
         ]*.toArray()
     }
 
@@ -104,7 +107,7 @@ class KtlintIntegrationTest {
     void shouldNotFailBuildWhenNoErrorsEncounteredAndNoThresholdTrespassed() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_NO_ERROR, 0)
                 .withToolsConfig(DEFAULT_CONFIG)
-                .build('evaluateViolations', '-s')
+                .build('evaluateViolations')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).doesNotContainKtlintViolations()
