@@ -14,34 +14,42 @@ import static com.novoda.test.LogsSubject.assertThat
 class KtlintIntegrationTest {
 
     private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.'
+    private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to add "CHECKSTYLE" into reports in your Ktlint configuration'
+
     public static final String DEFAULT_CONFIG = '''
                     ktlint {
+                        reporters = [
+                            org.jlleitschuh.gradle.ktlint.reporter.ReporterType.PLAIN, 
+                            org.jlleitschuh.gradle.ktlint.reporter.ReporterType.CHECKSTYLE
+                        ]
+                        
                         includeVariants { it.name == "debug" }
                     }
                     '''
-    public static final String EMPTY_CONFIG = 'ktlint {}'
 
-    @Parameterized.Parameters(name = '{0}')
+    @Parameterized.Parameters(name = '{0} with ktlint {1}')
     static def rules() {
         return [
-                [TestProjectRule.forKotlinProject(), 'main', '4.1.0'].toArray(),
-                [TestProjectRule.forAndroidKotlinProject(), 'debug', '4.1.0'].toArray(),
-                [TestProjectRule.forKotlinProject(), 'main', '5.1.0'].toArray(),
-                [TestProjectRule.forAndroidKotlinProject(), 'debug', '5.1.0'].toArray(),
-                [TestProjectRule.forKotlinProject(), 'main', '6.3.0'].toArray(),
-                [TestProjectRule.forAndroidKotlinProject(), 'debug', '6.3.0'].toArray(),
-        ]
+                [TestProjectRule.forKotlinProject(), '4.1.0', 'ktlint-main.txt'],
+                [TestProjectRule.forAndroidKotlinProject(), '4.1.0', 'ktlint-debug.txt'],
+                [TestProjectRule.forKotlinProject(), '5.1.0', 'ktlint-main.txt'],
+                [TestProjectRule.forAndroidKotlinProject(), '5.1.0', 'ktlint-debug.txt'],
+                [TestProjectRule.forKotlinProject(), '6.1.0', 'ktlintMainCheck.txt'],
+//                [TestProjectRule.forAndroidKotlinProject(), '6.1.0', 'ktlintDebugCheck.txt'],
+                [TestProjectRule.forKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
+//                [TestProjectRule.forAndroidKotlinProject(), '6.2.1', 'ktlintDebugCheck.txt'],
+        ]*.toArray()
     }
 
     @Rule
     public final TestProjectRule projectRule
-    private final String sourceSetName
     private final String ktlintVersion
+    private final String expectedOutputFileName
 
-    KtlintIntegrationTest(TestProjectRule projectRule, String sourceSetName, String ktlintVersion) {
+    KtlintIntegrationTest(TestProjectRule projectRule, String ktlintVersion, String expectedOutputFileName) {
         this.projectRule = projectRule
-        this.sourceSetName = sourceSetName
         this.ktlintVersion = ktlintVersion
+        this.expectedOutputFileName = expectedOutputFileName
     }
 
     @Test
@@ -53,9 +61,19 @@ class KtlintIntegrationTest {
     }
 
     @Test
+    void shouldFailBuildOnConfigurationWhenDetektConfiguredWithoutXmlReport() {
+        def result = projectRule.newProject()
+                .withPlugin('org.jlleitschuh.gradle.ktlint', ktlintVersion)
+                .withToolsConfig('ktlint { }')
+                .buildAndFail('evaluateViolations')
+
+        assertThat(result.logs).contains(XML_REPORT_NOT_ENABLED)
+    }
+
+    @Test
     void shouldFailBuildOnConfigurationWhenKtlintConfiguredButNotApplied() {
         def result = projectRule.newProject()
-                .withToolsConfig(EMPTY_CONFIG)
+                .withToolsConfig(DEFAULT_CONFIG)
                 .buildAndFail('evaluateViolations')
 
         assertThat(result.logs).contains(KTLINT_NOT_APPLIED)
@@ -69,7 +87,7 @@ class KtlintIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsKtlintViolations(1,
-                result.buildFileUrl("reports/ktlint/ktlint-${sourceSetName}.txt"))
+                result.buildFileUrl("reports/ktlint/$expectedOutputFileName"))
     }
 
     @Test
@@ -79,14 +97,14 @@ class KtlintIntegrationTest {
                 .build('evaluateViolations')
 
         assertThat(result.logs).containsKtlintViolations(1,
-                result.buildFileUrl("reports/ktlint/ktlint-${sourceSetName}.txt"))
+                result.buildFileUrl("reports/ktlint/$expectedOutputFileName"))
     }
 
     @Test
     void shouldNotFailBuildWhenNoErrorsEncounteredAndNoThresholdTrespassed() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_NO_ERROR, 0)
-                .withToolsConfig(EMPTY_CONFIG)
-                .build('evaluateViolations')
+                .withToolsConfig(DEFAULT_CONFIG)
+                .build('evaluateViolations', '-s')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
         assertThat(result.logs).doesNotContainKtlintViolations()

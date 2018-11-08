@@ -23,7 +23,6 @@ repositories {
 apply plugin: 'com.android.library'
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.0'
 
     defaultConfig {
         minSdkVersion 16

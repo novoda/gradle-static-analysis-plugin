@@ -9,11 +9,13 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.RegularFileProperty
 
 class KtlintConfigurator implements Configurator {
 
     private static final String KTLINT_PLUGIN = 'org.jlleitschuh.gradle.ktlint'
     private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JLLeitschuh/ktlint-gradle/#how-to-use'
+    private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to add "CHECKSTYLE" into reports in your Ktlint configuration'
 
     private final Project project
     private final Violations violations
@@ -41,14 +43,7 @@ class KtlintConfigurator implements Configurator {
                 throw new GradleException(KTLINT_NOT_APPLIED)
             }
 
-            def ktlint = project.ktlint
-            ktlint.ignoreFailures = true
-            ktlint.reporters = ['CHECKSTYLE', 'PLAIN']
-            ktlint.ext.includeVariants = { Closure<Boolean> filter ->
-                variantFilter.includeVariantsFilter = filter
-            }
-            config.delegate = ktlint
-            config()
+            configureKtlintExtension(config)
 
             project.afterEvaluate {
 
@@ -74,27 +69,61 @@ class KtlintConfigurator implements Configurator {
         }
     }
 
+    private void configureKtlintExtension(Closure config) {
+        def ktlint = project.ktlint
+        ktlint.ignoreFailures = true
+        ktlint.ext.includeVariants = { Closure<Boolean> filter ->
+            variantFilter.includeVariantsFilter = filter
+        }
+        config.delegate = ktlint
+        config()
+    }
+
     private void configureKotlinProject() {
-        project.sourceSets.each { configureKtlint(it) }
+        project.sourceSets.each { configureKtlint(it.name) }
     }
 
     private void configureAndroidWithVariants(def mainVariants) {
-        mainVariants.all { configureKtlint(it) }
-        variantFilter.filteredTestVariants.all { configureKtlint(it) }
-        variantFilter.filteredUnitTestVariants.all { configureKtlint(it) }
+        mainVariants.all { configureKtlint(it.name) }
+        variantFilter.filteredTestVariants.all { configureKtlint(it.name) }
+        variantFilter.filteredUnitTestVariants.all { configureKtlint(it.name) }
     }
 
-    private void configureKtlint(def sourceSet) {
-        def collectViolations = createCollectViolationsTask(violations, sourceSet.name)
-        evaluateViolations.dependsOn collectViolations
+    private void configureKtlint(def sourceSetName) {
+        project.tasks.matching {
+            it.name == "ktlint${sourceSetName.capitalize()}Check"
+        }.all { Task ktlintTask ->
+            def collectViolations = configureKtlintWithOutputFiles(sourceSetName, ktlintTask.reportOutputFiles)
+            collectViolations.dependsOn ktlintTask
+            evaluateViolations.dependsOn collectViolations
+        }
     }
 
-    private def createCollectViolationsTask(Violations violations, def sourceSetName) {
+    private def configureKtlintWithOutputFiles(def sourceSetName, Map<?, RegularFileProperty> reportOutputFiles) {
+        File xmlReportFile = null
+        File txtReportFile = null
+        reportOutputFiles.each { key, fileProp ->
+            def file = fileProp.get().asFile
+            if (file.name.endsWith('.xml')) {
+                xmlReportFile = file
+            }
+            if (file.name.endsWith('.txt')) {
+                txtReportFile = file
+            }
+        }
+
+        if (xmlReportFile == null) {
+            throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
+        }
+
+        createCollectViolationsTask(violations, sourceSetName, xmlReportFile, txtReportFile)
+    }
+
+    private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File txtReportFile) {
         project.tasks.create("collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
-            task.xmlReportFile = new File(project.buildDir, "reports/ktlint/ktlint-${sourceSetName}.xml")
-            task.htmlReportFile = new File(project.buildDir, "reports/ktlint/ktlint-${sourceSetName}.txt")
+            task.xmlReportFile = xmlReportFile
+            task.htmlReportFile = txtReportFile
             task.violations = violations
-            task.dependsOn project.tasks["ktlint${sourceSetName.capitalize()}Check"]
         }
     }
 }
