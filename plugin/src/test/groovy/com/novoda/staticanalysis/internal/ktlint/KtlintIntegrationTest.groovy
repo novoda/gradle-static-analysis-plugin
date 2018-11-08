@@ -24,18 +24,24 @@ class KtlintIntegrationTest {
     @Parameterized.Parameters(name = '{0}')
     static def rules() {
         return [
-                [TestProjectRule.forKotlinProject(), 'main'].toArray(),
-                [TestProjectRule.forAndroidKotlinProject(), 'debug'].toArray()
+                [TestProjectRule.forKotlinProject(), 'main', '4.1.0'].toArray(),
+                [TestProjectRule.forAndroidKotlinProject(), 'debug', '4.1.0'].toArray(),
+                [TestProjectRule.forKotlinProject(), 'main', '5.1.0'].toArray(),
+                [TestProjectRule.forAndroidKotlinProject(), 'debug', '5.1.0'].toArray(),
+                [TestProjectRule.forKotlinProject(), 'main', '6.3.0'].toArray(),
+                [TestProjectRule.forAndroidKotlinProject(), 'debug', '6.3.0'].toArray(),
         ]
     }
 
     @Rule
     public final TestProjectRule projectRule
-    private final String sourceSetName;
+    private final String sourceSetName
+    private final String ktlintVersion
 
-    KtlintIntegrationTest(TestProjectRule projectRule, String sourceSetName) {
+    KtlintIntegrationTest(TestProjectRule projectRule, String sourceSetName, String ktlintVersion) {
         this.projectRule = projectRule
         this.sourceSetName = sourceSetName
+        this.ktlintVersion = ktlintVersion
     }
 
     @Test
@@ -88,7 +94,7 @@ class KtlintIntegrationTest {
 
     private TestProject createProjectWith(File sources, int maxErrors = 0) {
         projectRule.newProject()
-                .withPlugin('org.jlleitschuh.gradle.ktlint', '4.1.0')
+                .withPlugin('org.jlleitschuh.gradle.ktlint', ktlintVersion)
                 .withSourceSet('main', sources)
                 .withPenalty("""{
                     maxWarnings = 0

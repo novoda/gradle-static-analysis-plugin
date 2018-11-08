@@ -61,6 +61,9 @@ class KtlintConfigurator implements Configurator {
                 project.plugins.withId("kotlin-platform-common") {
                     configureKotlinProject()
                 }
+                project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+                    configureKotlinProject()
+                }
                 project.plugins.withId('com.android.application') {
                     configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
                 }
