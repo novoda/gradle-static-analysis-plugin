@@ -119,8 +119,9 @@ class DetektConfigurator implements Configurator {
         final boolean isKotlin = project.plugins.hasPlugin('kotlin')
         final boolean isKotlinAndroid = project.plugins.hasPlugin('kotlin-android')
         final boolean isKotlinPlatformCommon = project.plugins.hasPlugin('kotlin-platform-common')
+        final boolean isKotlinMultiplatform = project.plugins.hasPlugin('org.jetbrains.kotlin.multiplatform')
         final boolean isKotlinPlatformJvm = project.plugins.hasPlugin('kotlin-platform-jvm')
         final boolean isKotlinPlatformJs = project.plugins.hasPlugin('kotlin-platform-js')
-        return isKotlin || isKotlinAndroid || isKotlinPlatformCommon || isKotlinPlatformJvm || isKotlinPlatformJs
+        return isKotlin || isKotlinAndroid || isKotlinPlatformCommon || isKotlinMultiplatform || isKotlinPlatformJvm || isKotlinPlatformJs
     }
 }
