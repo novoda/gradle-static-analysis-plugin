@@ -1,6 +1,8 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
-    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC9'
-    id "org.jlleitschuh.gradle.ktlint" version "5.0.0"
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0-RC10'
+    id "org.jlleitschuh.gradle.ktlint"
 }
 
 apply plugin: 'com.android.application'
@@ -17,15 +19,6 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName '1.0'
-    }
-
-    buildTypes {
-        debug {
-        }
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
-        }
     }
 }
 
@@ -73,6 +66,8 @@ staticAnalysis {
 
     ktlint {
         android true
+        reporters = [ReporterType.CHECKSTYLE]
+
         includeVariants { variant -> variant.name.contains('debug') }
     }
 }
