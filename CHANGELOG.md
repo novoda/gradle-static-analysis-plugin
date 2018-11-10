@@ -7,6 +7,7 @@ Change Log
 - Fix Detekt RC9.x and RC10 integrations [PR#144](https://github.com/novoda/gradle-static-analysis-plugin/pull/144)
 - Fix Ktlint integration [PR#145](https://github.com/novoda/gradle-static-analysis-plugin/pull/145)
   - 6.1.0 and 6.2.1 versions are broken for Android plugins because of [a bug in Ktlint](https://github.com/JLLeitschuh/ktlint-gradle/issues/153#issuecomment-437176852)
+- Make Findbugs Html report generation cacheable [PR#148](https://github.com/novoda/gradle-static-analysis-plugin/pull/148)
 - Use Gradle composite builds in sample projects [PR#142](https://github.com/novoda/gradle-static-analysis-plugin/pull/142)
 - Improve docs [PR#128](https://github.com/novoda/gradle-static-analysis-plugin/pull/128), [PR#132](https://github.com/novoda/gradle-static-analysis-plugin/pull/132)
 
