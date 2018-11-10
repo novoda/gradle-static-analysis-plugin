@@ -2,7 +2,7 @@ ext {
     websiteUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
-version = '0.6'
+version = '0.7'
 String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
@@ -56,15 +56,15 @@ apply plugin: 'com.novoda.bintray-release'
 
 publish {
     userOrg = 'novoda'
-    repoName = buildProperties.publish['bintrayRepo'].string
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
+    desc = 'Easy setup of static analysis tools for Android and Java projects.'
 
-    version = project.buildProperties.publish['version'].string
+    repoName = project.buildProperties.publish['bintrayRepo'].string
     publishVersion = project.buildProperties.publish['version'].string
     bintrayUser = project.buildProperties.publish['bintrayUser'].string
     bintrayKey = project.buildProperties.publish['bintrayKey'].string
-    website = websiteUrl
+    website = project.websiteUrl
 }
 
 apply plugin: 'org.ajoberstar.grgit'

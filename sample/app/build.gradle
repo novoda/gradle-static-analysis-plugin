@@ -1,12 +1,14 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
-    id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC8'
-    id "org.jlleitschuh.gradle.ktlint" version "5.0.0"
+    id 'io.gitlab.arturbosch.detekt' version '1.0.0-RC10'
+    id "org.jlleitschuh.gradle.ktlint"
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: com.novoda.staticanalysis.StaticAnalysisPlugin
+apply plugin: 'com.novoda.static-analysis'
 
 android {
     compileSdkVersion 27
@@ -17,15 +19,6 @@ android {
         targetSdkVersion 27
         versionCode 1
         versionName '1.0'
-    }
-
-    buildTypes {
-        debug {
-        }
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
-        }
     }
 }
 
@@ -67,16 +60,14 @@ staticAnalysis {
     }
 
     detekt {
-        profile('main') {
-            input = "$projectDir/src/main/java"
-            config = rootProject.file('team-props/detekt-config.yml')
-            filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
-            output = "$projectDir/build/reports/detekt"
-        }
+        config = rootProject.files('team-props/detekt-config.yml')
+        filters = '.*test.*,.*/resources/.*,.*/tmp/.*'
     }
 
     ktlint {
         android true
+        reporters = [ReporterType.CHECKSTYLE]
+
         includeVariants { variant -> variant.name.contains('debug') }
     }
 }

@@ -9,7 +9,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20'
     }
 }
@@ -26,13 +26,15 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.0'
 
     defaultConfig {
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1
         versionName '1.0'
+    }
+    lintOptions {
+        disable 'OldTargetApi'
     }
     sourceSets {
         ${formatSourceSets(project)}

@@ -17,7 +17,7 @@ import static com.novoda.test.TestProjectSubject.assumeThat
 class FindbugsIntegrationTest {
 
     @Parameterized.Parameters(name = "{0}")
-    public static Iterable<TestProjectRule> rules() {
+    static Iterable<TestProjectRule> rules() {
         return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }
 
@@ -29,7 +29,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildWhenFindbugsWarningsOverTheThreshold() {
+    void shouldFailBuildWhenFindbugsWarningsOverTheThreshold() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withPenalty('''{
@@ -45,7 +45,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildAfterSecondRunWhenFindbugsWarningsStillOverTheThreshold() {
+    void shouldFailBuildAfterSecondRunWhenFindbugsWarningsStillOverTheThreshold() {
         def project = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withPenalty('''{
@@ -68,7 +68,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldDetectMoreWarningsWhenEffortIsMaxAndReportLevelIsLow() {
+    void shouldDetectMoreWarningsWhenEffortIsMaxAndReportLevelIsLow() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withPenalty('''{
@@ -84,7 +84,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldFailBuildWhenFindbugsErrorsOverTheThreshold() {
+    void shouldFailBuildWhenFindbugsErrorsOverTheThreshold() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_HIGH_VIOLATION)
                 .withPenalty('''{
@@ -100,7 +100,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenNoFindbugsWarningsOrErrorsEncounteredAndNoThresholdTrespassed() {
+    void shouldNotFailBuildWhenNoFindbugsWarningsOrErrorsEncounteredAndNoThresholdTrespassed() {
         TestProject.Result result = projectRule.newProject()
                 .withPenalty('''{
                     maxErrors = 0
@@ -114,7 +114,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsWarningsAndErrorsEncounteredAndNoThresholdTrespassed() {
+    void shouldNotFailBuildWhenFindbugsWarningsAndErrorsEncounteredAndNoThresholdTrespassed() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
@@ -132,7 +132,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsConfiguredToNotIgnoreFailures() {
+    void shouldNotFailBuildWhenFindbugsConfiguredToNotIgnoreFailures() {
         projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
@@ -145,7 +145,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsNotConfigured() {
+    void shouldNotFailBuildWhenFindbugsNotConfigured() {
         projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
@@ -157,7 +157,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsConfiguredToExcludePattern() {
+    void shouldNotFailBuildWhenFindbugsConfiguredToExcludePattern() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
                 .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
@@ -174,7 +174,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultySourceFolder() {
+    void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultySourceFolder() {
         TestProject.Result result = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
                 .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
@@ -190,7 +190,8 @@ class FindbugsIntegrationTest {
                 result.buildFileUrl('reports/findbugs/debug.html'))
     }
 
-    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyJavaSourceSets() {
+    @Test
+    void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyJavaSourceSets() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isJavaProject()
 
@@ -210,7 +211,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyAndroidSourceSets() {
+    void shouldNotFailBuildWhenFindbugsConfiguredToIgnoreFaultyAndroidSourceSets() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isAndroidProject()
 
@@ -234,7 +235,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldCollectDuplicatedFindbugsWarningsAndErrorsAcrossAndroidVariantsForSharedSourceSets() {
+    void shouldCollectDuplicatedFindbugsWarningsAndErrorsAcrossAndroidVariantsForSharedSourceSets() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isAndroidProject()
 
@@ -254,7 +255,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldSkipFindbugsTasksForIgnoredFaultyJavaSourceSets() {
+    void shouldSkipFindbugsTasksForIgnoredFaultyJavaSourceSets() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isJavaProject()
 
@@ -275,7 +276,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldSkipFindbugsTasksForIgnoredFaultyAndroidSourceSets() {
+    void shouldSkipFindbugsTasksForIgnoredFaultyAndroidSourceSets() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isAndroidProject()
 
@@ -304,7 +305,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldProvideNoClassesToFindbugsTaskWhenNoJavaSourcesToAnalyse() {
+    void shouldProvideNoClassesToFindbugsTaskWhenNoJavaSourcesToAnalyse() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isJavaProject()
 
@@ -323,7 +324,7 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    public void shouldProvideNoClassesToFindbugsTaskWhenNoAndroidSourcesToAnalyse() {
+    void shouldProvideNoClassesToFindbugsTaskWhenNoAndroidSourcesToAnalyse() {
         TestProject project = projectRule.newProject()
         assumeThat(project).isAndroidProject()
 
@@ -357,6 +358,25 @@ class FindbugsIntegrationTest {
                     }  
                 """)
                 .build('check')
+    }
+
+    @Test
+    void shouldBeUpToDateWhenCheckTaskRunsAgain() {
+        def project = projectRule.newProject()
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
+                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
+                .withPenalty('''{
+                    maxErrors = 10
+                    maxWarnings = 10
+                }''')
+                .withToolsConfig('findbugs {}')
+
+        project.build('check')
+
+        def result = project.build('check')
+
+        Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.UP_TO_DATE)
+        Truth.assertThat(result.outcome(':generateFindbugsDebugHtmlReport')).isEqualTo(TaskOutcome.UP_TO_DATE)
     }
 
     /**

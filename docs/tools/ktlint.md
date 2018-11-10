@@ -1,11 +1,11 @@
 # ktlint
 [Ktlint](https://github.com/shyiko/ktlint) is a linter for Kotlin with a built-in formatter. It does not support Java. Adding 
-this tool only makes sense when you have Kotlin sources in your project. In fact, it will fail to run if you have 0 Kotlin
-files.
+this tool only makes sense when you have Kotlin sources in your project. 
 
 ## Table of contents
  * [IMPORTANT: setup Ktlint](#important-setup-ktlint)
  * [Configure Ktlint](#configure-ktlint)
+ * [Known Issues](#known-issues)
 ---
 
 ## IMPORTANT: setup Ktlint
@@ -25,7 +25,7 @@ In most common cases, adding Ktlint to a project boils down to these simple step
  1. Add this statement to your root `build.gradle` project (change the version according to your needs):
     ```gradle
     plugins {
-        id 'org.jlleitschuh.gradle.ktlint' version '5.0.0'
+        id 'org.jlleitschuh.gradle.ktlint' version '5.1.0'
         // ...
     }
     ```
@@ -56,3 +56,9 @@ For other configuration options and adding custom rules, refer to the
 
 **Note:** Failures and threshold detection is handled by Static Analysis plugin. That is why `ignoreFailures = true` is set by 
 the plugin. Please do not manually override `ignoreFailures` property. 
+
+## Known Issues
+
+6.1.0 and 6.2.1 versions are broken for Android projects because of [a bug in Ktlint](https://github.com/JLLeitschuh/ktlint-gradle/issues/153#issuecomment-437176852)
+
+Because of a behavior change, the `main` sourceSet is not checked. We recommend to use the version 5.1.0 and before.

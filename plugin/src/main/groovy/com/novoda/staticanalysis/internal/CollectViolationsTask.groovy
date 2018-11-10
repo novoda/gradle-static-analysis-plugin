@@ -3,11 +3,15 @@ package com.novoda.staticanalysis.internal
 import com.novoda.staticanalysis.Violations
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.TaskAction
+
+import static org.gradle.api.tasks.PathSensitivity.RELATIVE
 
 abstract class CollectViolationsTask extends DefaultTask {
 
     @InputFile
+    @PathSensitive(RELATIVE)
     private File xmlReportFile
     private File htmlReportFile
     private Violations violations
