@@ -11,6 +11,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
     }
+    ${project.additionalBuildscriptConfiguration}
 }
 plugins {
     ${formatPlugins(project)}

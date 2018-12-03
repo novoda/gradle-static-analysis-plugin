@@ -12,6 +12,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20'
     }
+    ${project.additionalBuildscriptConfiguration}
 }
 plugins {
     ${formatPlugins(project)}   

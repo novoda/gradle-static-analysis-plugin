@@ -20,6 +20,7 @@ ${project.additionalConfiguration}
     private final File projectDir
     private final GradleRunner gradleRunner
     private final Closure<String> template
+    String additionalBuildscriptConfiguration = ''
     String additionalConfiguration = ''
     Map<String, List<File>> sourceSets = [main: []]
     List<String> plugins = []
@@ -80,6 +81,11 @@ ${project.additionalConfiguration}
 
     public T withAdditionalConfiguration(String additionalConfiguration) {
         this.additionalConfiguration = additionalConfiguration
+        return this
+    }
+
+    public T withAdditionalBuildscriptConfiguration(String additionalBuildscriptConfiguration) {
+        this.additionalBuildscriptConfiguration = additionalBuildscriptConfiguration
         return this
     }
 
