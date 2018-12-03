@@ -4,6 +4,7 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
+import com.novoda.staticanalysis.internal.idea.IdeaConfigurator
 import com.novoda.staticanalysis.internal.ktlint.KtlintConfigurator
 import com.novoda.staticanalysis.internal.lint.LintConfigurator
 import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
@@ -42,7 +43,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
                 FindbugsConfigurator.create(project, violationsContainer, evaluateViolations),
                 DetektConfigurator.create(project, violationsContainer, evaluateViolations),
                 KtlintConfigurator.create(project, violationsContainer, evaluateViolations),
-                LintConfigurator.create(project, violationsContainer, evaluateViolations)
+                LintConfigurator.create(project, violationsContainer, evaluateViolations),
+                IdeaConfigurator.create(project, violationsContainer, evaluateViolations)
         ]
     }
 }

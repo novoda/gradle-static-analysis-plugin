@@ -9,11 +9,11 @@ import javax.annotation.Nullable
 abstract class TestProject<T extends TestProject> {
     private static final Closure<String> EXTENSION_TEMPLATE = { TestProject project ->
         """
+${project.additionalConfiguration}
 staticAnalysis {
     ${(project.penalty ?: '').replace('            ', '')}
     ${(project.toolsConfig ?: '').replace('        ', '    ')}
 }
-${project.additionalConfiguration}
 """
     }
 
