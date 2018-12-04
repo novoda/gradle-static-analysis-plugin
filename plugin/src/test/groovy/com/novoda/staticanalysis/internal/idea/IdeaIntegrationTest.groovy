@@ -24,8 +24,8 @@ class IdeaIntegrationTest {
     static def rules() {
         return [
                 [TestProjectRule.forKotlinProject(), '0.2.2'],
-                [TestProjectRule.forAndroidKotlinProject(), '0.2.2'],
-                [TestProjectRule.forJavaProject(), '0.2.2'],
+//                [TestProjectRule.forAndroidKotlinProject(), '0.2.2'],
+//                [TestProjectRule.forJavaProject(), '0.2.2'],
         ]*.toArray()
     }
 
@@ -40,7 +40,8 @@ class IdeaIntegrationTest {
 
     @Test
     void shouldNotFailWhenIdeaIsNotConfigured() {
-        def result = createProject(Fixtures.Ktlint.SOURCES_WITH_ERROR)
+        def result = createProject()
+                .withSourceSet('main', Fixtures.Idea.SOURCES_WITH_WARNINGS)
                 .build('evaluateViolations')
 
         assertThat(result.logs).doesNotContainIdeaViolations()
@@ -48,7 +49,7 @@ class IdeaIntegrationTest {
 
     @Test
     void shouldNotFailWhenIdeaIsConfiguredButHasNoSources() {
-        def result = createProject(Fixtures.Ktlint.SOURCES_WITH_ERROR)
+        def result = createProject()
                 .withToolsConfig(DEFAULT_CONFIG)
                 .build('evaluateViolations')
         
@@ -56,7 +57,7 @@ class IdeaIntegrationTest {
     }
 
     @Test
-    void shouldFailBuildOnConfigurationWhenKtlintConfiguredButNotApplied() {
+    void shouldFailBuildOnConfigurationWhenIdeaConfiguredButNotApplied() {
         def result = projectRule.newProject()
                 .withToolsConfig(DEFAULT_CONFIG)
                 .buildAndFail('evaluateViolations')
@@ -64,7 +65,17 @@ class IdeaIntegrationTest {
         assertThat(result.logs).contains(IDEA_NOT_APPLIED)
     }
 
-    private TestProject createProject(File sources) {
+    @Test
+    void shouldFailWhenIdeaWarningsAreOverThreshold() {
+        def result = createProject()
+                .withSourceSet('main', Fixtures.Idea.SOURCES_WITH_WARNINGS)
+                .withToolsConfig(DEFAULT_CONFIG)
+                .buildAndFail('evaluateViolations')
+
+        assertThat(result.logs).containsIdeaViolations(0, 1, 'reports/inspections/main.xml')
+    }
+
+    private TestProject createProject() {
         projectRule.newProject()
                 .withAdditionalBuildscriptConfiguration("""
                     repositories {
@@ -75,7 +86,6 @@ class IdeaIntegrationTest {
                     }
                 """)
                 .withAdditionalConfiguration("apply plugin: 'org.jetbrains.intellij.inspections'")
-                .withSourceSet('main', sources)
                 .withPenalty('failFast')
     }
 }
