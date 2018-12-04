@@ -3,13 +3,12 @@ package com.novoda.staticanalysis.internal.idea
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-class IdeaConfigurator implements Configurator {
+class IdeaInspectionsConfigurator implements Configurator {
 
     private static final String IDEA_PLUGIN = 'org.jetbrains.intellij.inspections'
     private static final String IDEA_NOT_APPLIED = 'The Idea Inspections plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JetBrains/inspection-plugin'
@@ -18,14 +17,14 @@ class IdeaConfigurator implements Configurator {
     private final Violations violations
     private final Task evaluateViolations
 
-    static IdeaConfigurator create(Project project,
-                                   NamedDomainObjectContainer<Violations> violationsContainer,
-                                   Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('inspections')
-        return new IdeaConfigurator(project, violations, evaluateViolations)
+    static IdeaInspectionsConfigurator create(Project project,
+                                              NamedDomainObjectContainer<Violations> violationsContainer,
+                                              Task evaluateViolations) {
+        Violations violations = violationsContainer.maybeCreate('idea-inspections')
+        return new IdeaInspectionsConfigurator(project, violations, evaluateViolations)
     }
 
-    IdeaConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    IdeaInspectionsConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
         this.violations = violations
         this.evaluateViolations = evaluateViolations
@@ -84,10 +83,10 @@ class IdeaConfigurator implements Configurator {
         }
     }
 
-    private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File txtReportFile) {
-        project.tasks.create("collectInspections${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
+    private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File htmlReportFile) {
+        project.tasks.create("collectInspections${sourceSetName.capitalize()}Violations", CollectIdeaInspectionsViolationsTask) { task ->
             task.xmlReportFile = xmlReportFile
-            task.htmlReportFile = txtReportFile
+            task.htmlReportFile = htmlReportFile
             task.violations = violations
         }
     }

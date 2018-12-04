@@ -20,7 +20,7 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
     private static final String DETEKT_VIOLATIONS_FOUND = 'Detekt violations found'
     private static final String KTLINT_VIOLATIONS_FOUND = 'ktlint violations found'
     private static final String LINT_VIOLATIONS_FOUND = 'Lint violations found'
-    private static final String IDEA_VIOLATIONS_FOUND = 'inspections violations found'
+    private static final String IDEA_INSPECTIONS_VIOLATIONS_FOUND = 'idea-inspections violations found'
 
     private static final SubjectFactory<LogsSubject, Logs> FACTORY = new SubjectFactory<LogsSubject, Logs>() {
         @Override
@@ -82,7 +82,7 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
     }
 
     public void doesNotContainIdeaViolations() {
-        outputSubject.doesNotContain(IDEA_VIOLATIONS_FOUND)
+        outputSubject.doesNotContain(IDEA_INSPECTIONS_VIOLATIONS_FOUND)
     }
 
     public void containsCheckstyleViolations(int errors, int warnings, String... reportUrls) {
@@ -109,8 +109,8 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
         containsToolViolations(LINT_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
-    public void containsIdeaViolations(int errors, int warnings, String... reportUrls) {
-        containsToolViolations(IDEA_VIOLATIONS_FOUND, errors, warnings, reportUrls)
+    public void containsIdeaInspectionsViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(IDEA_INSPECTIONS_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
     private void containsToolViolations(String template, int errors, int warnings, String... reportUrls) {

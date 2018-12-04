@@ -13,6 +13,13 @@ buildscript {
         classpath 'gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:5.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
+
+    repositories {
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-dev' }
+    }
+    dependencies {
+        classpath 'org.jetbrains.intellij.plugins:inspection-plugin:0.2.2'
+    }
 }
 ext.ReporterType = org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 

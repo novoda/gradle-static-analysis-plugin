@@ -11,7 +11,7 @@ import org.junit.runners.Parameterized
 import static com.novoda.test.LogsSubject.assertThat
 
 @RunWith(Parameterized.class)
-class IdeaIntegrationTest {
+class IdeaInspectionsIntegrationTest {
 
     private static final String IDEA_NOT_APPLIED = 'The Idea Inspections plugin is configured but not applied. Please apply the plugin in your build script.'
 
@@ -33,7 +33,7 @@ class IdeaIntegrationTest {
     public final TestProjectRule projectRule
     private final toolsVersion
 
-    IdeaIntegrationTest(TestProjectRule projectRule, toolsVersion) {
+    IdeaInspectionsIntegrationTest(TestProjectRule projectRule, toolsVersion) {
         this.projectRule = projectRule
         this.toolsVersion = toolsVersion
     }
@@ -41,7 +41,7 @@ class IdeaIntegrationTest {
     @Test
     void shouldNotFailWhenIdeaIsNotConfigured() {
         def result = createProject()
-                .withSourceSet('main', Fixtures.Idea.SOURCES_WITH_WARNINGS)
+                .withSourceSet('main', Fixtures.IdeaInspections.SOURCES_WITH_WARNINGS)
                 .build('evaluateViolations')
 
         assertThat(result.logs).doesNotContainIdeaViolations()
@@ -68,11 +68,11 @@ class IdeaIntegrationTest {
     @Test
     void shouldFailWhenIdeaWarningsAreOverThreshold() {
         def result = createProject()
-                .withSourceSet('main', Fixtures.Idea.SOURCES_WITH_WARNINGS)
+                .withSourceSet('main', Fixtures.IdeaInspections.SOURCES_WITH_WARNINGS)
                 .withToolsConfig(DEFAULT_CONFIG)
                 .buildAndFail('evaluateViolations')
 
-        assertThat(result.logs).containsIdeaViolations(0, 1, 'reports/inspections/main.xml')
+        assertThat(result.logs).containsIdeaInspectionsViolations(0, 1, 'reports/inspections/main.xml')
     }
 
     private TestProject createProject() {

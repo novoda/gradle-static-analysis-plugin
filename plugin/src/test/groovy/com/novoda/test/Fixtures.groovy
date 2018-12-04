@@ -62,7 +62,7 @@ public final class Fixtures {
         public static final File RULES = new File(RULES_DIR, 'lint/lint.xml')
     }
 
-    final static class Idea {
+    final static class IdeaInspections {
         static final def SOURCES_WITH_WARNINGS = new File(SOURCES_DIR, 'idea/warnings')
         static final def SOURCES_WITH_ERRORS = new File(SOURCES_DIR, 'idea/errors')
     }
