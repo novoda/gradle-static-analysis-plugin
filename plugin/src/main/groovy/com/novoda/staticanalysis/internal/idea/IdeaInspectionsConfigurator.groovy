@@ -1,21 +1,18 @@
 package com.novoda.staticanalysis.internal.idea
 
-import com.novoda.staticanalysis.StaticAnalysisExtension
+
 import com.novoda.staticanalysis.Violations
-import com.novoda.staticanalysis.internal.Configurator
-import org.gradle.api.GradleException
+import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.plugins.quality.CodeQualityExtension
+import org.gradle.api.tasks.SourceTask
 
-class IdeaInspectionsConfigurator implements Configurator {
+class IdeaInspectionsConfigurator extends CodeQualityConfigurator<SourceTask, CodeQualityExtension> {
 
     private static final String IDEA_PLUGIN = 'org.jetbrains.intellij.inspections'
-    private static final String IDEA_NOT_APPLIED = 'The Idea Inspections plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JetBrains/inspection-plugin'
-
-    private final Project project
-    private final Violations violations
-    private final Task evaluateViolations
 
     static IdeaInspectionsConfigurator create(Project project,
                                               NamedDomainObjectContainer<Violations> violationsContainer,
@@ -25,69 +22,61 @@ class IdeaInspectionsConfigurator implements Configurator {
     }
 
     IdeaInspectionsConfigurator(Project project, Violations violations, Task evaluateViolations) {
-        this.project = project
-        this.violations = violations
-        this.evaluateViolations = evaluateViolations
+        super(project, violations, evaluateViolations)
     }
 
     @Override
-    void execute() {
-        project.extensions.findByType(StaticAnalysisExtension).ext.inspections = { Closure config ->
-            if (!project.plugins.hasPlugin(IDEA_PLUGIN)) {
-                throw new GradleException(IDEA_NOT_APPLIED)
+    protected String getToolName() {
+        'inspections'
+    }
+
+    @Override
+    protected Object getToolPlugin() {
+        return IDEA_PLUGIN
+    }
+
+    @Override
+    protected Class<CodeQualityExtension> getExtensionClass() {
+        Class.forName('org.jetbrains.intellij.extensions.InspectionPluginExtension')
+    }
+
+    @Override
+    protected Action<CodeQualityExtension> getDefaultConfiguration() {
+        return { extension ->
+            extension.ignoreFailures = true
+        }
+    }
+
+    @Override
+    protected Class<SourceTask> getTaskClass() {
+        Class.forName('org.jetbrains.intellij.tasks.InspectionsTask')
+    }
+
+    @Override
+    protected void configureAndroidVariant(variant) {
+        project.with {
+            variant.sourceSets.each { sourceSet ->
+                def task = tasks.maybeCreate("inspections${sourceSet.name.capitalize()}", taskClass)
+                task.description = "Run Idea Inspections analysis for ${sourceSet.name} classes"
+                task.source = sourceSet.java.srcDirs
+                task.classpath = files("$buildDir/intermediates/classes/")
+                task.mustRunAfter variant.javaCompile
             }
-
-            configureExtension(config)
-
-            project.afterEvaluate {
-                project.plugins.withId("kotlin") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("kotlin2js") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("kotlin-platform-common") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
-                    configureKotlinProject()
-                }
-            }
         }
     }
 
-    private void configureExtension(Closure config) {
-        def inspections = project.inspections
-        inspections.ignoreFailures = true
-
-        config.delegate = inspections
-        config()
+    @Override
+    protected void configureReportEvaluation(SourceTask inspectionsTask, Violations violations) {
+        def collectViolations = createCollectViolationsTask(inspectionsTask, violations)
+        collectViolations.dependsOn inspectionsTask
+        evaluateViolations.dependsOn collectViolations
     }
 
-    private void configureKotlinProject() {
-        project.sourceSets.each { configureInspections(it.name) }
-    }
-
-    private void configureInspections(def sourceSetName) {
-        project.tasks.matching {
-            it.name == "inspections${sourceSetName.capitalize()}"
-        }.all { Task inspectionsTask ->
-            def collectViolations = createCollectViolationsTask(
-                    violations,
-                    sourceSetName,
-                    inspectionsTask.reports.xml.destination,
-                    inspectionsTask.reports.html.destination
-            )
-            collectViolations.dependsOn inspectionsTask
-            evaluateViolations.dependsOn collectViolations
-        }
-    }
-
-    private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File htmlReportFile) {
-        project.tasks.create("collectInspections${sourceSetName.capitalize()}Violations", CollectIdeaInspectionsViolationsTask) { task ->
-            task.xmlReportFile = xmlReportFile
-            task.htmlReportFile = htmlReportFile
-            task.violations = violations
-        }
+    private def createCollectViolationsTask(inspectionsTask, Violations violations) {
+        def task = project.tasks.maybeCreate("collect${inspectionsTask.name.capitalize()}Violations", CollectIdeaInspectionsViolationsTask)
+        task.xmlReportFile = inspectionsTask.reports.xml.destination
+        task.htmlReportFile = inspectionsTask.reports.html.destination
+        task.violations = violations
+        task
     }
 }
