@@ -363,12 +363,7 @@ class FindbugsIntegrationTest {
     @Test
     void shouldBeUpToDateWhenCheckTaskRunsAgain() {
         def project = projectRule.newProject()
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 10
-                    maxWarnings = 10
-                }''')
+                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
                 .withToolsConfig('findbugs {}')
 
         project.build('check')
@@ -382,12 +377,7 @@ class FindbugsIntegrationTest {
     @Test
     void shouldNotGenerateHtmlWhenDisabled() {
         def result = projectRule.newProject()
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 10
-                    maxWarnings = 10
-                }''')
+                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
                 .withToolsConfig('''findbugs { 
                     htmlReportEnabled false 
                 }''')
