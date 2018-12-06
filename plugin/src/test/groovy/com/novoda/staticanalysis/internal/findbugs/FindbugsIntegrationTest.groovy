@@ -363,7 +363,12 @@ class FindbugsIntegrationTest {
     @Test
     void shouldBeUpToDateWhenCheckTaskRunsAgain() {
         def project = projectRule.newProject()
-                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
+                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)	                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
+                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)	
+                .withPenalty('''{	
+                    maxErrors = 10	
+                    maxWarnings = 10	
+                }''')
                 .withToolsConfig('findbugs {}')
 
         project.build('check')
