@@ -93,7 +93,6 @@ class KtlintConfigurator implements Configurator {
         variant.sourceSets.each { sourceSet ->
             configureKtlint(sourceSet.name)
         }
-        configureKtlint(variant.name)
     }
 
     private void configureKtlint(String sourceSetName) {
