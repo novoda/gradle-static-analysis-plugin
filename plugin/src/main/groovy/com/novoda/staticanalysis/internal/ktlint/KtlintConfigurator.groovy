@@ -97,12 +97,19 @@ class KtlintConfigurator implements Configurator {
 
     private void configureKtlint(String sourceSetName) {
         project.tasks.matching {
-            it.name == "ktlint${sourceSetName.capitalize()}Check"
+            isKtlintTask(it, sourceSetName.capitalize())
         }.all { Task ktlintTask ->
             def collectViolations = configureKtlintWithOutputFiles(sourceSetName, ktlintTask.reportOutputFiles)
             collectViolations.dependsOn ktlintTask
             evaluateViolations.dependsOn collectViolations
         }
+    }
+
+    /**
+     * KtLint task has the following naming convention and the needed property to resolve the reportOutputFiles
+     */
+    private boolean isKtlintTask(Task task, String sourceSetName) {
+        task.name ==~ /^ktlint$sourceSetName(SourceSet)?Check$/ && task.hasProperty('reportOutputFiles')
     }
 
     private def configureKtlintWithOutputFiles(String sourceSetName, Map<?, RegularFileProperty> reportOutputFiles) {
