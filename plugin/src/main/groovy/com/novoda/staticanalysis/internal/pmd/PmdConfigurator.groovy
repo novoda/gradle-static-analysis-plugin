@@ -42,12 +42,9 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     @Override
     protected Action<PmdExtension> getDefaultConfiguration() {
-        new Action<PmdExtension>() {
-            @Override
-            void execute(PmdExtension pmdExtension) {
-                pmdExtension.toolVersion = '5.5.1'
-                pmdExtension.rulePriority = 5
-            }
+        return { extension ->
+            extension.toolVersion = '5.5.1'
+            extension.rulePriority = 5
         }
     }
 

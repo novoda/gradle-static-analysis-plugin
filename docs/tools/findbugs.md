@@ -17,6 +17,7 @@ findbugs {
     toolVersion // A string, most likely '3.0.1' — the latest Findbugs release (for a long time)
     exclude // A fileTree, such as project.fileTree('src/test/java') to exclude Java unit tests
     excludeFilter // A file containing the Findbugs exclusions, e.g., teamPropsFile('static-analysis/findbugs-excludes.xml')
+    htmlReportEnabled true // Control whether html report generation should be enabled. `true` by default.
     includeVariants { variant -> ... } // A closure to determine which variants (for Android) to include
 }
 ```

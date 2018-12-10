@@ -351,11 +351,11 @@ class FindbugsIntegrationTest {
         projectRule.newProject()
                 .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
                 .withPenalty('none')
-                .withToolsConfig("""  
+                .withToolsConfig("""
                     findbugs { }
                     findbugs {
                         ignoreFailures = false
-                    }  
+                    }
                 """)
                 .build('check')
     }
@@ -377,6 +377,18 @@ class FindbugsIntegrationTest {
 
         Truth.assertThat(result.outcome(':findbugsDebug')).isEqualTo(TaskOutcome.UP_TO_DATE)
         Truth.assertThat(result.outcome(':generateFindbugsDebugHtmlReport')).isEqualTo(TaskOutcome.UP_TO_DATE)
+    }
+
+    @Test
+    void shouldNotGenerateHtmlWhenDisabled() {
+        def result = projectRule.newProject()
+                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
+                .withToolsConfig('''findbugs { 
+                    htmlReportEnabled false 
+                }''')
+                .build('check')
+
+        Truth.assertThat(result.tasksPaths).doesNotContain(':generateFindbugsDebugHtmlReport')
     }
 
     /**
