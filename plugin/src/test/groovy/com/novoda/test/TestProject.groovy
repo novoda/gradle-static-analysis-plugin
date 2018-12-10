@@ -21,7 +21,6 @@ ${project.additionalConfiguration}
     private final GradleRunner gradleRunner
     private final Closure<String> template
     String additionalConfiguration = ''
-    Map<String, List<File>> sourceSets = [main: []]
     List<String> plugins = []
     String penalty
     String toolsConfig = ''
@@ -64,9 +63,14 @@ ${project.additionalConfiguration}
     }
 
     public T withSourceSet(String sourceSet, File... srcDirs) {
-        sourceSets[sourceSet] = srcDirs
+        srcDirs.collectMany {
+            it.listFiles() as List<File>
+        }.each {
+            withFile(it, "src/${sourceSet}/java/${it.name}")
+        }
         return this
     }
+
 
     public T withPenalty(String penalty) {
         this.penalty = "penalty $penalty"

@@ -36,8 +36,8 @@ android {
     lintOptions {
         disable 'OldTargetApi'
     }
-    sourceSets {
-        ${formatSourceSets(project)}
+    sourceSets.main {
+        manifest.srcFile '${Fixtures.ANDROID_MANIFEST}'
     }
     ${project.additionalAndroidConfig}
 }
@@ -53,20 +53,6 @@ ${formatExtension(project)}
         if (localProperties.exists()) {
             withFile(localProperties, 'local.properties')
         }
-    }
-
-    private static String formatSourceSets(TestProject project) {
-        project.sourceSets
-                .entrySet()
-                .collect { Map.Entry<String, List<String>> entry ->
-            """$entry.key {
-            manifest.srcFile '${Fixtures.ANDROID_MANIFEST}'
-            java {
-                ${entry.value.collect { "srcDir '$it'" }.join('\n\t\t\t\t')}
-            }
-        }"""
-        }
-        .join('\n\t\t')
     }
 
     @Override
