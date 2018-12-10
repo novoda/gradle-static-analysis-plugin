@@ -35,8 +35,7 @@ class KtlintIntegrationTest {
                 [TestProjectRule.forKotlinProject(), '5.1.0', 'ktlint-main.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '5.1.0', 'ktlint-debug.txt'],
                 [TestProjectRule.forKotlinProject(), '6.1.0', 'ktlintMainCheck.txt'],
-                // Fails for our test setup since we have custom sourceDirs. https://github.com/JLLeitschuh/ktlint-gradle/issues/153
-                // [TestProjectRule.forAndroidKotlinProject(), '6.1.0', 'ktlintDebugCheck.txt'],
+                [TestProjectRule.forAndroidKotlinProject(), '6.1.0', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '6.3.1', 'ktlintMainCheck.txt'],
@@ -116,7 +115,7 @@ class KtlintIntegrationTest {
     private TestProject createProjectWith(File sources, int maxErrors = 0) {
         projectRule.newProject()
                 .withPlugin('org.jlleitschuh.gradle.ktlint', ktlintVersion)
-                .withSourceSet('main', sources)
+                .copyIntoSourceSet('main', sources)
                 .withPenalty("""{
                     maxWarnings = 0
                     maxErrors = ${maxErrors}
