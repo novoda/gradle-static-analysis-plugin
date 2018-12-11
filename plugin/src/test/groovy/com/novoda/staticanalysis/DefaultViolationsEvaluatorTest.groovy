@@ -2,6 +2,7 @@ package com.novoda.staticanalysis
 
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logger
+import org.gradle.internal.logging.ConsoleRenderer
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -10,8 +11,7 @@ import org.mockito.ArgumentCaptor
 
 import static com.google.common.truth.Truth.assertThat
 import static org.junit.Assert.fail
-import static org.mockito.Mockito.mock
-import static org.mockito.Mockito.verify
+import static org.mockito.Mockito.*
 
 class DefaultViolationsEvaluatorTest {
 
@@ -43,7 +43,11 @@ class DefaultViolationsEvaluatorTest {
 
         evaluator.evaluate(allViolations)
 
-        assertThat(warningLog).contains("$TOOL_NAME violations found (1 errors, 0 warnings).")
+        def expected = """
+            > $TOOL_NAME violations found (1 errors, 0 warnings). See the reports at:
+            - $consoleClickableFileUrl
+            """
+        assertThat(warningLog).isEqualTo(expected.stripIndent())
     }
 
     @Test
@@ -52,7 +56,7 @@ class DefaultViolationsEvaluatorTest {
 
         evaluator.evaluate(allViolations)
 
-        assertThat(warningLog).doesNotContain("$TOOL_NAME violations found")
+        verifyZeroInteractions(logger)
     }
 
     @Test
@@ -63,7 +67,13 @@ class DefaultViolationsEvaluatorTest {
             evaluator.evaluate(allViolations)
             fail('Exception expected but not thrown')
         } catch (GradleException e) {
-            assertThat(e.message).contains('Violations limit exceeded by 0 errors, 1 warnings.')
+            def expected =
+                    """|Violations limit exceeded by 0 errors, 1 warnings.
+                       |
+                       |> $TOOL_NAME violations found (1 errors, 2 warnings). See the reports at:
+                       |- $consoleClickableFileUrl
+                       |"""
+            assertThat(e.message).isEqualTo(expected.stripMargin())
         }
     }
 
@@ -75,5 +85,9 @@ class DefaultViolationsEvaluatorTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String)
         verify(logger).warn(captor.capture())
         captor.getValue()
+    }
+
+    private String getConsoleClickableFileUrl() {
+        new ConsoleRenderer().asClickableFileUrl(reportFile)
     }
 }

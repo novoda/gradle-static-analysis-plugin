@@ -18,7 +18,7 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
     @Override
     void evaluate(Set<Violations> allViolations) {
         Map<String, Integer> total = [errors: 0, warnings: 0]
-        String fullMessage = '\n'
+        String fullMessage = ''
         allViolations.each { Violations violations ->
             if (!violations.isEmpty()) {
                 fullMessage += "> ${getViolationsMessage(violations, reportUrlRenderer)}\n"
@@ -30,9 +30,9 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
         int errorsDiff = Math.max(0, total['errors'] - penalty.maxErrors)
         int warningsDiff = Math.max(0, total['warnings'] - penalty.maxWarnings)
         if (errorsDiff > 0 || warningsDiff > 0) {
-            throw new GradleException("Violations limit exceeded by $errorsDiff errors, $warningsDiff warnings.\n$fullMessage")
-        } else {
-            logger.warn fullMessage
+            throw new GradleException("Violations limit exceeded by $errorsDiff errors, $warningsDiff warnings.\n\n$fullMessage")
+        } else if (!fullMessage.isEmpty()) {
+            logger.warn "\n$fullMessage"
         }
     }
 
