@@ -67,6 +67,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             description = "Run FindBugs analysis for ${variant.name} classes"
             source = androidSourceDirs
             classpath = variant.javaCompile.classpath
+            extraArgs '-auxclasspath', androidJar
             exclude '**/*.kt'
         }
         sourceFilter.applyTo(task)
@@ -164,4 +165,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         task
     }
 
+    private def getAndroidJar() {
+        "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
+    }
 }
