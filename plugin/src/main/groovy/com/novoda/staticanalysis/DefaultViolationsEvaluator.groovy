@@ -17,22 +17,21 @@ class DefaultViolationsEvaluator implements ViolationsEvaluator {
 
     @Override
     void evaluate(Set<Violations> allViolations) {
-        Map<String, Integer> total = [errors: 0, warnings: 0]
         String fullMessage = ''
         allViolations.each { Violations violations ->
             if (!violations.isEmpty()) {
                 fullMessage += "> ${getViolationsMessage(violations, reportUrlRenderer)}\n"
             }
         }
-        total['errors'] = allViolations.collect { it.errors }.sum() as int
-        total['warnings'] = allViolations.collect { it.warnings }.sum() as int
+        int totalErrors = allViolations.collect { it.errors }.sum() as int
+        int totalWarnings = allViolations.collect { it.warnings }.sum() as int
 
-        int errorsDiff = Math.max(0, total['errors'] - penalty.maxErrors)
-        int warningsDiff = Math.max(0, total['warnings'] - penalty.maxWarnings)
+        int errorsDiff = Math.max(0, totalErrors - penalty.maxErrors)
+        int warningsDiff = Math.max(0, totalWarnings - penalty.maxWarnings)
         if (errorsDiff > 0 || warningsDiff > 0) {
             throw new GradleException("Violations limit exceeded by $errorsDiff errors, $warningsDiff warnings.\n\n$fullMessage")
         } else if (!fullMessage.isEmpty()) {
-            logger.warn "\n$fullMessage"
+            logger.warn "\nViolations found ($totalErrors errors, $totalWarnings warnings)\n\n$fullMessage"
         }
     }
 

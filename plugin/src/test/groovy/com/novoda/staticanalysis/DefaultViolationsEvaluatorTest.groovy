@@ -43,7 +43,9 @@ class DefaultViolationsEvaluatorTest {
 
         evaluator.evaluate(allViolations)
 
-        def expected = """
+        def expected = """    
+            Violations found (1 errors, 0 warnings)
+            
             > $TOOL_NAME violations found (1 errors, 0 warnings). See the reports at:
             - $consoleClickableFileUrl
             """
