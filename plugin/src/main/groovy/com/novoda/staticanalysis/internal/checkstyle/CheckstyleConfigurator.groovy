@@ -3,7 +3,10 @@ package com.novoda.staticanalysis.internal.checkstyle
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.QuietLogger
-import org.gradle.api.*
+import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
 
@@ -34,11 +37,8 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
 
     @Override
     protected Action<CheckstyleExtension> getDefaultConfiguration() {
-        new Action<CheckstyleExtension>() {
-            @Override
-            void execute(CheckstyleExtension checkstyleExtension) {
-                checkstyleExtension.toolVersion = '7.1.2'
-            }
+        return { extension ->
+            extension.toolVersion = '7.1.2'
         }
     }
 

@@ -73,10 +73,8 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected abstract Class<E> getExtensionClass()
 
     protected Action<E> getDefaultConfiguration() {
-        new Action<E>() {
-            void execute(E ignored) {
-                // no op
-            }
+        return { ignored ->
+            // no op
         }
     }
 
