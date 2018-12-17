@@ -63,6 +63,13 @@ ${project.additionalConfiguration}
         file.text = text
     }
 
+    public T copyIntoSourceSet(String sourceSet, File srcDir) {
+        srcDir.listFiles().each {
+            withFile(it, "src/${sourceSet}/java/${it.name}")
+        }
+        return this
+    }
+
     public T withSourceSet(String sourceSet, File... srcDirs) {
         sourceSets[sourceSet] = srcDirs
         return this
