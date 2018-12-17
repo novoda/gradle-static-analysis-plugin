@@ -44,10 +44,6 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
         check().that(actual().output)
     }
 
-    public void isEmpty() {
-        outputSubject.isEmpty()
-    }
-
     public void contains(log) {
         outputSubject.contains(log)
     }
