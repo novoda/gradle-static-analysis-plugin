@@ -9,8 +9,9 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.novoda:gradle-static-analysis-plugin:local'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0-RC12'
         classpath 'gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:5.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -22,7 +23,7 @@ subprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = '4.10.2'
     distributionType = Wrapper.DistributionType.ALL
 }
