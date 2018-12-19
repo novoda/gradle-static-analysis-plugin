@@ -25,6 +25,10 @@ class DetektNewIntegrationTest {
                 [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
                 [TestProjectRule.forKotlinProject(), "1.0.0-RC10"],
                 [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC10"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC11"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC11"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC12"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC12"],
         ]*.toArray()
     }
 

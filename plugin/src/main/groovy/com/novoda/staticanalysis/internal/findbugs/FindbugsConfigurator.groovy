@@ -2,7 +2,10 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import org.gradle.api.*
+import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.quality.FindBugs
@@ -12,6 +15,8 @@ import org.gradle.api.tasks.SourceSet
 import java.nio.file.Path
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
+
+    protected boolean htmlReportEnabled = true
 
     static FindbugsConfigurator create(Project project,
                                        NamedDomainObjectContainer<Violations> violationsContainer,
@@ -48,11 +53,9 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected Action<FindBugsExtension> getDefaultConfiguration() {
-        new Action<FindBugsExtension>() {
-            @Override
-            void execute(FindBugsExtension findBugsExtension) {
-                findBugsExtension.toolVersion = '3.0.1'
-            }
+        return { extension ->
+            extension.ext.htmlReportEnabled = { boolean enabled -> this.htmlReportEnabled = enabled }
+            extension.toolVersion = '3.0.1'
         }
     }
 
@@ -64,6 +67,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             description = "Run FindBugs analysis for ${variant.name} classes"
             source = androidSourceDirs
             classpath = variant.javaCompile.classpath
+            extraArgs '-auxclasspath', androidJar
             exclude '**/*.kt'
         }
         sourceFilter.applyTo(task)
@@ -134,11 +138,15 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         findBugs.reports.html.enabled = false
 
         def collectViolations = createViolationsCollectionTask(findBugs, violations)
-        def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
-
         evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn generateHtmlReport
-        generateHtmlReport.dependsOn findBugs
+
+        if (htmlReportEnabled) {
+            def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
+            collectViolations.dependsOn generateHtmlReport
+            generateHtmlReport.dependsOn findBugs
+        } else {
+            collectViolations.dependsOn findBugs
+        }
     }
 
     private CollectFindbugsViolationsTask createViolationsCollectionTask(FindBugs findBugs, Violations violations) {
@@ -157,4 +165,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         task
     }
 
+    private def getAndroidJar() {
+        "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
+    }
 }

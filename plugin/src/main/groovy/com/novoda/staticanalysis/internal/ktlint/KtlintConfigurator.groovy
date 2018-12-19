@@ -84,14 +84,20 @@ class KtlintConfigurator implements Configurator {
     }
 
     private void configureAndroidWithVariants(def mainVariants) {
-        mainVariants.all { configureKtlint(it.name) }
-        variantFilter.filteredTestVariants.all { configureKtlint(it.name) }
-        variantFilter.filteredUnitTestVariants.all { configureKtlint(it.name) }
+        mainVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
     }
 
-    private void configureKtlint(def sourceSetName) {
+    private void configureAndroidVariant(def variant) {
+        variant.sourceSets.each { sourceSet ->
+            configureKtlint(sourceSet.name)
+        }
+    }
+
+    private void configureKtlint(String sourceSetName) {
         project.tasks.matching {
-            it.name == "ktlint${sourceSetName.capitalize()}Check"
+            isKtlintTask(it, sourceSetName.capitalize())
         }.all { Task ktlintTask ->
             def collectViolations = configureKtlintWithOutputFiles(sourceSetName, ktlintTask.reportOutputFiles)
             collectViolations.dependsOn ktlintTask
@@ -99,7 +105,14 @@ class KtlintConfigurator implements Configurator {
         }
     }
 
-    private def configureKtlintWithOutputFiles(def sourceSetName, Map<?, RegularFileProperty> reportOutputFiles) {
+    /**
+     * KtLint task has the following naming convention and the needed property to resolve the reportOutputFiles
+     */
+    private boolean isKtlintTask(Task task, String sourceSetName) {
+        task.name ==~ /^ktlint$sourceSetName(SourceSet)?Check$/ && task.hasProperty('reportOutputFiles')
+    }
+
+    private def configureKtlintWithOutputFiles(String sourceSetName, Map<?, RegularFileProperty> reportOutputFiles) {
         File xmlReportFile = null
         File txtReportFile = null
         reportOutputFiles.each { key, fileProp ->
@@ -120,10 +133,11 @@ class KtlintConfigurator implements Configurator {
     }
 
     private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File txtReportFile) {
-        project.tasks.create("collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
-            task.xmlReportFile = xmlReportFile
-            task.htmlReportFile = txtReportFile
-            task.violations = violations
-        }
+        CollectCheckstyleViolationsTask task =
+                project.tasks.maybeCreate("collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask)
+        task.xmlReportFile = xmlReportFile
+        task.htmlReportFile = txtReportFile
+        task.violations = violations
+        return task
     }
 }

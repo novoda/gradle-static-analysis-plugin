@@ -5,7 +5,6 @@ this tool only makes sense when you have Kotlin sources in your project.
 ## Table of contents
  * [IMPORTANT: setup Ktlint](#important-setup-ktlint)
  * [Configure Ktlint](#configure-ktlint)
- * [Known Issues](#known-issues)
 ---
 
 ## IMPORTANT: setup Ktlint
@@ -56,9 +55,3 @@ For other configuration options and adding custom rules, refer to the
 
 **Note:** Failures and threshold detection is handled by Static Analysis plugin. That is why `ignoreFailures = true` is set by 
 the plugin. Please do not manually override `ignoreFailures` property. 
-
-## Known Issues
-
-6.1.0 and 6.2.1 versions are broken for Android projects because of [a bug in Ktlint](https://github.com/JLLeitschuh/ktlint-gradle/issues/153#issuecomment-437176852)
-
-Because of a behavior change, the `main` sourceSet is not checked. We recommend to use the version 5.1.0 and before.
