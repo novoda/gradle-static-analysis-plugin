@@ -1,6 +1,21 @@
 Change Log
 ==========
 
+[Version 0.8](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.8)
+--------------------------
+
+- Fix integration for all versions of Ktlint plugin [PR#153](https://github.com/novoda/gradle-static-analysis-plugin/pull/153)
+- Make Findbugs Html report generation optional [PR#154](https://github.com/novoda/gradle-static-analysis-plugin/pull/154)
+```
+staticAnalysis {
+    findbugs {
+        htmlReportEnabled false
+    }
+}
+```
+- Display total number of errors and warnings [PR#159](https://github.com/novoda/gradle-static-analysis-plugin/pull/159)
+- Less verbose Findbugs output [PR#160](https://github.com/novoda/gradle-static-analysis-plugin/pull/160)
+
 [Version 0.7](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.7)
 --------------------------
 

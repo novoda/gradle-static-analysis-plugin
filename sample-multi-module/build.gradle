@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.novoda:gradle-static-analysis-plugin:local'
-        classpath 'io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0-RC10'
+        classpath 'io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0-RC12'
         classpath 'gradle.plugin.org.jlleitschuh.gradle:ktlint-gradle:5.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -19,7 +19,6 @@ ext.ReporterType = org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 apply from: rootProject.file('team-props/tasks.gradle')
 
 subprojects {
-
     buildscript {
         repositories {
             jcenter()
@@ -33,7 +32,7 @@ subprojects {
     }
 }
 
-task wrapper(type: Wrapper) {
+wrapper {
     gradleVersion = '4.10.2'
     distributionType = Wrapper.DistributionType.ALL
 }

@@ -2,7 +2,7 @@ ext {
     websiteUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
-version = '0.7'
+version = '0.8'
 String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
