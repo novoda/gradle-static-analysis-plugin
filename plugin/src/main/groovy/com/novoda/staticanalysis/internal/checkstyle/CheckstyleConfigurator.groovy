@@ -10,6 +10,8 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
 
+import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
+
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
     static CheckstyleConfigurator create(Project project,
@@ -75,15 +77,14 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
 
         def collectViolations = createCollectViolationsTask(checkstyle, violations)
-
         evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn checkstyle
     }
 
-    private CollectCheckstyleViolationsTask createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask)
-        task.xmlReportFile = checkstyle.reports.xml.destination
-        task.violations = violations
-        task
+    private def createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {
+        maybeCreateTask(project, "collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
+            task.xmlReportFile = checkstyle.reports.xml.destination
+            task.violations = violations
+            task.dependsOn(checkstyle)
+        }
     }
 }

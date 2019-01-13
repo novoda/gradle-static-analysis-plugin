@@ -10,6 +10,8 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
 
+import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
+
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     static PmdConfigurator create(Project project,
@@ -74,16 +76,14 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
 
         def collectViolations = createViolationsCollectionTask(pmd, violations)
-
         evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn pmd
     }
 
-    private CollectPmdViolationsTask createViolationsCollectionTask(Pmd pmd, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask)
-        task.xmlReportFile = pmd.reports.xml.destination
-        task.violations = violations
-        task
+    private def createViolationsCollectionTask(Pmd pmd, Violations violations) {
+        maybeCreateTask(project, "collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { task ->
+            task.xmlReportFile = pmd.reports.xml.destination
+            task.violations = violations
+            task.dependsOn(pmd)
+        }
     }
-
 }
