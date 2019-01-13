@@ -52,18 +52,12 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     @Override
     protected void configureAndroidVariant(variant) {
-        project.with {
-            variant.sourceSets.each { sourceSet ->
-                def taskName = "pmd${sourceSet.name.capitalize()}"
-                Pmd task = tasks.findByName(taskName)
-                if (task == null) {
-                    task = tasks.create(taskName, Pmd)
-                    task.with {
-                        description = "Run PMD analysis for ${sourceSet.name} classes"
-                        source = sourceSet.java.srcDirs
-                        exclude '**/*.kt'
-                    }
-                }
+        variant.sourceSets.each { sourceSet ->
+            def taskName = "pmd${sourceSet.name.capitalize()}"
+            maybeCreateTask(project, taskName, Pmd) { Pmd task ->
+                task.description = "Run PMD analysis for ${sourceSet.name} classes"
+                task.source = sourceSet.java.srcDirs
+                task.exclude '**/*.kt'
                 sourceFilter.applyTo(task)
                 task.mustRunAfter variant.javaCompile
             }

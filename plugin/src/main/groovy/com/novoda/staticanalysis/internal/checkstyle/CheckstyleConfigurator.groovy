@@ -51,19 +51,14 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
 
     @Override
     protected void configureAndroidVariant(variant) {
-        project.with {
-            variant.sourceSets.each { sourceSet ->
-                def taskName = "checkstyle${sourceSet.name.capitalize()}"
-                Checkstyle task = tasks.findByName(taskName)
-                if (task == null) {
-                    task = tasks.create(taskName, Checkstyle)
-                    task.with {
-                        description = "Run Checkstyle analysis for ${sourceSet.name} classes"
-                        source = sourceSet.java.srcDirs
-                        classpath = files("$buildDir/intermediates/classes/")
-                        exclude '**/*.kt'
-                    }
-                }
+        variant.sourceSets.each { sourceSet ->
+            def taskName = "checkstyle${sourceSet.name.capitalize()}"
+
+            maybeCreateTask(project, taskName, Checkstyle) { Checkstyle task ->
+                task.description = "Run Checkstyle analysis for ${sourceSet.name} classes"
+                task.source = sourceSet.java.srcDirs
+                task.classpath = project.files("$project.buildDir/intermediates/classes/")
+                task.exclude '**/*.kt'
                 sourceFilter.applyTo(task)
                 task.mustRunAfter variant.javaCompile
             }
