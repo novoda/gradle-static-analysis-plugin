@@ -7,7 +7,6 @@ import com.novoda.staticanalysis.internal.VariantFilter
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
 
@@ -15,20 +14,16 @@ class LintConfigurator implements Configurator {
 
     private final Project project
     private final Violations violations
-    private final Task evaluateViolations
     private final VariantFilter variantFilter
 
-    static LintConfigurator create(Project project,
-                                   NamedDomainObjectContainer<Violations> violationsContainer,
-                                   Task evaluateViolations) {
+    static LintConfigurator create(Project project, NamedDomainObjectContainer<Violations> violationsContainer) {
         Violations violations = violationsContainer.maybeCreate('Lint')
-        return new LintConfigurator(project, violations, evaluateViolations)
+        return new LintConfigurator(project, violations)
     }
 
-    private LintConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    private LintConfigurator(Project project, Violations violations) {
         this.project = project
         this.violations = violations
-        this.evaluateViolations = evaluateViolations
         this.variantFilter = new VariantFilter(project)
     }
 
@@ -69,11 +64,6 @@ class LintConfigurator implements Configurator {
     }
 
     private void configureCollectViolationsTask(String taskSuffix = '', String reportFileName) {
-        def collectViolations = createCollectViolationsTask(taskSuffix, reportFileName, violations)
-        evaluateViolations.dependsOn collectViolations
-    }
-
-    private def createCollectViolationsTask(String taskSuffix, String reportFileName, Violations violations) {
         maybeCreateTask(project, "collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask) { task ->
             task.xmlReportFile = xmlOutputFileFor(reportFileName)
             task.htmlReportFile = htmlOutputFileFor(reportFileName)

@@ -5,7 +5,6 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.quality.FindBugs
@@ -18,17 +17,13 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     protected boolean htmlReportEnabled = true
 
-    static FindbugsConfigurator create(Project project,
-                                       NamedDomainObjectContainer<Violations> violationsContainer,
-                                       Task evaluateViolations) {
+    static FindbugsConfigurator create(Project project, NamedDomainObjectContainer<Violations> violationsContainer) {
         Violations violations = violationsContainer.maybeCreate('Findbugs')
-        return new FindbugsConfigurator(project, violations, evaluateViolations)
+        return new FindbugsConfigurator(project, violations)
     }
 
-    private FindbugsConfigurator(Project project,
-                                 Violations violations,
-                                 Task evaluateViolations) {
-        super(project, violations, evaluateViolations)
+    private FindbugsConfigurator(Project project, Violations violations) {
+        super(project, violations)
     }
 
     @Override
@@ -138,7 +133,6 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         findBugs.reports.html.enabled = false
 
         def collectViolations = createViolationsCollectionTask(findBugs, violations)
-        evaluateViolations.dependsOn collectViolations
 
         if (htmlReportEnabled) {
             def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)

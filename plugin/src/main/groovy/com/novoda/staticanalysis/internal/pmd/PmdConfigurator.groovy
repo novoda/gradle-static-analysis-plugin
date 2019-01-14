@@ -6,7 +6,6 @@ import com.novoda.staticanalysis.internal.QuietLogger
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
 
@@ -14,17 +13,13 @@ import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
 
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
-    static PmdConfigurator create(Project project,
-                                  NamedDomainObjectContainer<Violations> violationsContainer,
-                                  Task evaluateViolations) {
+    static PmdConfigurator create(Project project, NamedDomainObjectContainer<Violations> violationsContainer) {
         Violations violations = violationsContainer.maybeCreate('PMD')
-        return new PmdConfigurator(project, violations, evaluateViolations)
+        return new PmdConfigurator(project, violations)
     }
 
-    private PmdConfigurator(Project project,
-                            Violations violations,
-                            Task evaluateViolations) {
-        super(project, violations, evaluateViolations)
+    private PmdConfigurator(Project project, Violations violations) {
+        super(project, violations)
     }
 
     @Override
@@ -69,8 +64,7 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
 
-        def collectViolations = createViolationsCollectionTask(pmd, violations)
-        evaluateViolations.dependsOn collectViolations
+        createViolationsCollectionTask(pmd, violations)
     }
 
     private def createViolationsCollectionTask(Pmd pmd, Violations violations) {

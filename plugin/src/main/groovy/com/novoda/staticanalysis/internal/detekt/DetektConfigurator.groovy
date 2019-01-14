@@ -7,7 +7,6 @@ import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolations
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.Task
 
 import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
 
@@ -22,19 +21,15 @@ class DetektConfigurator implements Configurator {
 
     private final Project project
     private final Violations violations
-    private final Task evaluateViolations
 
-    static DetektConfigurator create(Project project,
-                                     NamedDomainObjectContainer<Violations> violationsContainer,
-                                     Task evaluateViolations) {
+    static DetektConfigurator create(Project project, NamedDomainObjectContainer<Violations> violationsContainer) {
         Violations violations = violationsContainer.maybeCreate('Detekt')
-        return new DetektConfigurator(project, violations, evaluateViolations)
+        return new DetektConfigurator(project, violations)
     }
 
-    private DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    private DetektConfigurator(Project project, Violations violations) {
         this.project = project
         this.violations = violations
-        this.evaluateViolations = evaluateViolations
     }
 
     @Override
@@ -53,8 +48,7 @@ class DetektConfigurator implements Configurator {
             config.delegate = detekt
             config()
 
-            def collectViolations = configureToolTask(detekt)
-            evaluateViolations.dependsOn collectViolations
+            configureToolTask(detekt)
         }
     }
 

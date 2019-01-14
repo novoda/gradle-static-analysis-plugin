@@ -6,7 +6,6 @@ import com.novoda.staticanalysis.internal.QuietLogger
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
 
@@ -14,17 +13,13 @@ import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
 
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
-    static CheckstyleConfigurator create(Project project,
-                                         NamedDomainObjectContainer<Violations> violationsContainer,
-                                         Task evaluateViolations) {
+    static CheckstyleConfigurator create(Project project, NamedDomainObjectContainer<Violations> violationsContainer) {
         Violations violations = violationsContainer.maybeCreate('Checkstyle')
-        return new CheckstyleConfigurator(project, violations, evaluateViolations)
+        return new CheckstyleConfigurator(project, violations)
     }
 
-    private CheckstyleConfigurator(Project project,
-                                   Violations violations,
-                                   Task evaluateViolations) {
-        super(project, violations, evaluateViolations)
+    private CheckstyleConfigurator(Project project, Violations violations) {
+        super(project, violations)
     }
 
     @Override
@@ -71,8 +66,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
         checkstyle.ignoreFailures = true
         checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
 
-        def collectViolations = createCollectViolationsTask(checkstyle, violations)
-        evaluateViolations.dependsOn collectViolations
+        createCollectViolationsTask(checkstyle, violations)
     }
 
     private def createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {

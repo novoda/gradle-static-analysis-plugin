@@ -5,7 +5,6 @@ import com.novoda.staticanalysis.Violations
 import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
 
@@ -13,14 +12,12 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
 
     protected final Project project
     protected final Violations violations
-    protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
     protected final VariantFilter variantFilter
 
-    protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
+    protected CodeQualityConfigurator(Project project, Violations violations) {
         this.project = project
         this.violations = violations
-        this.evaluateViolations = evaluateViolations
         this.sourceFilter = new SourceFilter(project)
         this.variantFilter = new VariantFilter(project)
     }

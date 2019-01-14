@@ -1,6 +1,7 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import com.novoda.staticanalysis.internal.CollectViolationsTask
+import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
@@ -10,7 +11,8 @@ import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
+
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class StaticAnalysisPlugin implements Plugin<Project> {
 
@@ -18,31 +20,36 @@ class StaticAnalysisPlugin implements Plugin<Project> {
     void apply(Project project) {
         def pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
         def evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
-        createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
+        createConfigurators(project, pluginExtension).each { configurator -> configurator.execute() }
         project.afterEvaluate {
             project.tasks['check'].dependsOn evaluateViolations
         }
+
     }
 
-    private static Task createEvaluateViolationsTask(Project project,
-                                                     StaticAnalysisExtension extension) {
-        project.tasks.create('evaluateViolations', EvaluateViolationsTask) { task ->
+    private static def createEvaluateViolationsTask(Project project, StaticAnalysisExtension extension) {
+        createTask(project, 'evaluateViolations', EvaluateViolationsTask) { task ->
             task.evaluator = { extension.evaluator }
             task.allViolations = { extension.allViolations }
+
+            project.tasks.withType(ToolTriggerTask) { toolTrigger ->
+                task.dependsOn(toolTrigger)
+            }
+            project.tasks.withType(CollectViolationsTask) { collectViolations ->
+                task.dependsOn(collectViolations)
+            }
         }
     }
 
-    private static List<CodeQualityConfigurator> createConfigurators(Project project,
-                                                                     StaticAnalysisExtension pluginExtension,
-                                                                     Task evaluateViolations) {
+    private static List<Configurator> createConfigurators(Project project, StaticAnalysisExtension pluginExtension) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
-        [
-                CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),
-                PmdConfigurator.create(project, violationsContainer, evaluateViolations),
-                FindbugsConfigurator.create(project, violationsContainer, evaluateViolations),
-                DetektConfigurator.create(project, violationsContainer, evaluateViolations),
-                KtlintConfigurator.create(project, violationsContainer, evaluateViolations),
-                LintConfigurator.create(project, violationsContainer, evaluateViolations)
+        return [
+                CheckstyleConfigurator.create(project, violationsContainer),
+                PmdConfigurator.create(project, violationsContainer),
+                FindbugsConfigurator.create(project, violationsContainer),
+                DetektConfigurator.create(project, violationsContainer),
+                KtlintConfigurator.create(project, violationsContainer),
+                LintConfigurator.create(project, violationsContainer)
         ]
     }
 }

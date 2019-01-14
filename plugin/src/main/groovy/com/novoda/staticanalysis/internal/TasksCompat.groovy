@@ -25,6 +25,14 @@ class TasksCompat {
         }
     }
 
+    static <T extends Task> Object createTask(Project project, String name, Class<T> type, Action<? super T> configuration) {
+        if (IS_GRADLE_MIN_49) {
+            return project.tasks.register(name, type, configuration)
+        } else {
+            return project.tasks.create(name, type, configuration)
+        }
+    }
+
     static <T extends Task> void configureEach(TaskCollection<T> tasks, Action<? super T> configuration) {
         if (IS_GRADLE_MIN_49) {
             tasks.all(configuration)
