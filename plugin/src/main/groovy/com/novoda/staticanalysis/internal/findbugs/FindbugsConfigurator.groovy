@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
 import org.gradle.api.plugins.quality.FindBugs
@@ -12,6 +13,8 @@ import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
 
 import java.nio.file.Path
+
+import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
@@ -56,21 +59,22 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected void configureAndroidVariant(variant) {
-        FindBugs task = project.tasks.maybeCreate("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
-        List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
-        task.with {
-            description = "Run FindBugs analysis for ${variant.name} classes"
-            source = androidSourceDirs
-            classpath = variant.javaCompile.classpath
-            extraArgs '-auxclasspath', androidJar
-            exclude '**/*.kt'
+        maybeCreateTask(project, "findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task) { task ->
+            List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
+            task.with {
+                description = "Run FindBugs analysis for ${variant.name} classes"
+                source = androidSourceDirs
+                classpath = variant.javaCompile.classpath
+                extraArgs '-auxclasspath', androidJar
+                exclude '**/*.kt'
+            }
+            sourceFilter.applyTo(task)
+            task.conventionMapping.map("classes") {
+                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
+                getAndroidClasses(variant, includes)
+            }
+            task.dependsOn variant.javaCompile
         }
-        sourceFilter.applyTo(task)
-        task.conventionMapping.map("classes") {
-            List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-            getAndroidClasses(variant, includes)
-        }
-        task.dependsOn variant.javaCompile
     }
 
     private FileCollection getAndroidClasses(Object variant, List<String> includes) {
@@ -132,22 +136,23 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         findBugs.reports.xml.enabled = true
         findBugs.reports.html.enabled = false
 
-        def collectViolations = createViolationsCollectionTask(findBugs, violations)
-
-        if (htmlReportEnabled) {
-            def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
-            collectViolations.dependsOn generateHtmlReport
-            generateHtmlReport.dependsOn findBugs
-        } else {
-            collectViolations.dependsOn findBugs
+        createViolationsCollectionTask(findBugs, violations) { collectViolations ->
+            if (htmlReportEnabled) {
+                def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
+                collectViolations.dependsOn generateHtmlReport
+                generateHtmlReport.dependsOn findBugs
+            } else {
+                collectViolations.dependsOn findBugs
+            }
         }
     }
 
-    private CollectFindbugsViolationsTask createViolationsCollectionTask(FindBugs findBugs, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${findBugs.name.capitalize()}Violations", CollectFindbugsViolationsTask)
-        task.xmlReportFile = findBugs.reports.xml.destination
-        task.violations = violations
-        task
+    private def createViolationsCollectionTask(FindBugs findBugs, Violations violations, Action<Task> configuration) {
+        maybeCreateTask(project, "collect${findBugs.name.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
+            task.xmlReportFile = findBugs.reports.xml.destination
+            task.violations = violations
+            configuration.execute(task)
+        }
     }
 
     private GenerateFindBugsHtmlReport createHtmlReportTask(FindBugs findBugs, File xmlReportFile, File htmlReportFile) {
@@ -155,7 +160,6 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         task.xmlReportFile = xmlReportFile
         task.htmlReportFile = htmlReportFile
         task.classpath = findBugs.findbugsClasspath
-        task.onlyIf { xmlReportFile?.exists() }
         task
     }
 
