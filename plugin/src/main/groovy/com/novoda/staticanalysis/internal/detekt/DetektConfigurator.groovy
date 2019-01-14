@@ -4,9 +4,7 @@ import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
-import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.api.Project
+import org.gradle.api.*
 
 import static com.novoda.staticanalysis.internal.TasksCompat.maybeCreateTask
 
@@ -62,32 +60,39 @@ class DetektConfigurator implements Configurator {
     }
 
     private def configureToolTask(detekt) {
-        def detektTask = project.tasks.findByName('detekt')
-        if (detektTask?.hasProperty('reports')) {
-            def reports = detektTask.reports
-            if (!reports.xml.enabled) {
-                throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
+        createCollectViolationsTask { collectViolations ->
+            def detektTask = project.tasks.findByName('detekt')
+            if (detektTask?.hasProperty('reports')) {
+                def reports = detektTask.reports
+                if (!reports.xml.enabled) {
+                    throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
+                }
+                collectViolations.xmlReportFile = reports.xml.destination
+                collectViolations.htmlReportFile = reports.html.destination
+                collectViolations.dependsOn detektTask
+            } else {
+                configureLegacyDetektTask(detekt, collectViolations)
             }
-            return createCollectViolationsTask(
-                    violations,
-                    detektTask,
-                    reports.xml.destination,
-                    reports.html.destination
-            )
         }
+    }
 
-        // Fallback to old Detekt versions
+    private void configureLegacyDetektTask(detekt, collectViolations) {
         def output = resolveOutput(detekt)
         if (!output) {
             throw new IllegalArgumentException(OUTPUT_NOT_DEFINED)
         }
         def outputFolder = project.file(output)
-        return createCollectViolationsTask(
-                violations,
-                project.tasks['detektCheck'],
-                new File(outputFolder, 'detekt-checkstyle.xml'),
-                new File(outputFolder, 'detekt-report.html')
-        )
+
+        collectViolations.xmlReportFile = new File(outputFolder, 'detekt-checkstyle.xml')
+        collectViolations.htmlReportFile = new File(outputFolder, 'detekt-report.html')
+        collectViolations.dependsOn project.tasks['detektCheck']
+    }
+
+    private def createCollectViolationsTask(Action<CollectCheckstyleViolationsTask> configure) {
+        maybeCreateTask(project, 'collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
+            task.violations = violations
+            configure.execute(task)
+        }
     }
 
     private static resolveOutput(detekt) {
@@ -97,15 +102,6 @@ class DetektConfigurator implements Configurator {
             detekt.systemOrDefaultProfile().output
         } else {
             throw new IllegalStateException(DETEKT_CONFIGURATION_ERROR)
-        }
-    }
-
-    private def createCollectViolationsTask(Violations violations, detektTask, File xmlReportFile, File htmlReportFile) {
-        maybeCreateTask(project, 'collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
-            task.xmlReportFile = xmlReportFile
-            task.htmlReportFile = htmlReportFile
-            task.violations = violations
-            task.dependsOn(detektTask)
         }
     }
 
