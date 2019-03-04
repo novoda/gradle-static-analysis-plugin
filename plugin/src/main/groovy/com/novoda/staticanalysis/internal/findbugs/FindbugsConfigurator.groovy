@@ -126,7 +126,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
      * being passed to FindBugs Ant task, resulting in an error
      * */
     private ConfigurableFileTree createClassesTreeFrom(SourceSet sourceSet) {
-        project.fileTree(sourceSet.output.classesDir, {
+        project.fileTree(sourceSet.output.classesDirs, {
             it.builtBy(sourceSet.output)
         })
     }
