@@ -27,13 +27,16 @@ ${project.additionalConfiguration}
     String toolsConfig = ''
 
     TestProject(Closure<String> template) {
+        def projectName = "${System.currentTimeMillis()}"
         this.template = template
-        this.projectDir = createProjectDir("${System.currentTimeMillis()}")
+        this.projectDir = createProjectDir(projectName)
         this.gradleRunner = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
+        createGradleSettings(projectName)
+        createGradleProperties()
     }
 
     private static File createProjectDir(String path) {
@@ -41,6 +44,18 @@ ${project.additionalConfiguration}
         dir.deleteDir()
         dir.mkdirs()
         return dir
+    }
+
+    void createGradleSettings(String projectName) {
+        write("""
+rootProject.name = '${projectName}'
+""", 'settings.gradle')
+    }
+
+    void createGradleProperties() {
+        write("""
+org.gradle.jvmargs=-Xmx2g -XX:MaxMetaspaceSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+""", 'gradle.properties')
     }
 
     List<String> defaultArguments() {
