@@ -27,15 +27,14 @@ ${project.additionalConfiguration}
     String toolsConfig = ''
 
     TestProject(Closure<String> template) {
-        def projectName = "${System.currentTimeMillis()}"
         this.template = template
-        this.projectDir = createProjectDir(projectName)
+        this.projectDir = createProjectDir("${System.currentTimeMillis()}")
         this.gradleRunner = GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .forwardStdOutput(new OutputStreamWriter(System.out))
                 .forwardStdError(new OutputStreamWriter(System.out))
-        createGradleSettings(projectName)
+        createGradleSettings()
         createGradleProperties()
     }
 
@@ -46,10 +45,8 @@ ${project.additionalConfiguration}
         return dir
     }
 
-    void createGradleSettings(String projectName) {
-        write("""
-rootProject.name = '${projectName}'
-""", 'settings.gradle')
+    void createGradleSettings() {
+        write("", 'settings.gradle')
     }
 
     void createGradleProperties() {
