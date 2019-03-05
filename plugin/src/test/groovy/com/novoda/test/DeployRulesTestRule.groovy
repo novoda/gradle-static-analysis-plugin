@@ -48,7 +48,7 @@ class DeployRulesTestRule implements TestRule {
         }
     }
 
-    private void createGradleSettings(File projectDir) {
+    private static void createGradleSettings(File projectDir) {
         new File(projectDir, 'settings.gradle').text = ""
     }
 
