@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.20'
     }
 }
 plugins {
