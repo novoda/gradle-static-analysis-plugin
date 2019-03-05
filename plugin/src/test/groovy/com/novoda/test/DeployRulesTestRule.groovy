@@ -25,6 +25,7 @@ class DeployRulesTestRule implements TestRule {
                 cleanRepo()
                 File projectDir = createProjectDir("${System.currentTimeMillis()}")
                 createBuildScript(projectDir)
+                createGradleSettings(projectDir)
                 GradleRunner.create()
                         .withProjectDir(projectDir)
                         .withDebug(true)
@@ -45,6 +46,10 @@ class DeployRulesTestRule implements TestRule {
         if (artifactDir.exists()) {
             artifactDir.deleteDir()
         }
+    }
+
+    private void createGradleSettings(File projectDir) {
+        new File(projectDir, 'settings.gradle').text = ""
     }
 
     private void createBuildScript(File projectDir) {
