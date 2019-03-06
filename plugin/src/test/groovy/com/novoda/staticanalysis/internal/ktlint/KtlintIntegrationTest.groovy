@@ -40,7 +40,7 @@ class KtlintIntegrationTest {
                 [TestProjectRule.forAndroidKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '6.3.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '6.3.1', 'ktlintMainCheck.txt'],
-                [TestProjectRule.forKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'],
+//                [TestProjectRule.forKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'], // Broken because of https://github.com/JLLeitschuh/ktlint-gradle/issues/201
                 // [TestProjectRule.forAndroidKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'], // Broken because of https://github.com/JLLeitschuh/ktlint-gradle/issues/201
                 [TestProjectRule.forKotlinProject(), '7.1.0', 'ktlintMainSourceSetCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '7.1.0', 'ktlintMainSourceSetCheck.txt'],
