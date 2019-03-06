@@ -40,6 +40,8 @@ class KtlintIntegrationTest {
                 [TestProjectRule.forAndroidKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '6.3.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '6.3.1', 'ktlintMainCheck.txt'],
+                [TestProjectRule.forKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'],
+                [TestProjectRule.forAndroidKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'],
         ]*.toArray()
     }
 
