@@ -29,7 +29,6 @@ class DeployRulesTestRule implements TestRule {
                 GradleRunner.create()
                         .withProjectDir(projectDir)
                         .withDebug(true)
-                        .withTestKitDir(new File(projectDir, "test-kit"))
                         .forwardStdOutput(new OutputStreamWriter(System.out))
                         .forwardStdError(new OutputStreamWriter(System.out))
                         .withArguments('clean', 'publish')
