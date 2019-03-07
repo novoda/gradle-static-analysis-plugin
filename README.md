@@ -1,3 +1,5 @@
+JUST A TEST
+
 # Gradle static analysis plugin
 [![](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin)](https://ci.novoda.com/job/gradle-static-analysis-plugin/lastSuccessfulBuild) [![](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE.txt) [![Bintray](https://api.bintray.com/packages/novoda/maven/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda/maven/gradle-static-analysis-plugin/_latestVersion)
 
