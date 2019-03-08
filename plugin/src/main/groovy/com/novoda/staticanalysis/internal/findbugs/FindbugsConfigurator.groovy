@@ -3,13 +3,11 @@ package com.novoda.staticanalysis.internal.findbugs
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
-import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
-import org.gradle.api.file.FileTree
 import org.gradle.api.plugins.quality.FindBugs
 import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
@@ -81,7 +79,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getAndroidClasses(Object variant, List<String> includes) {
-        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes)
+        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes) as ConfigurableFileTree
     }
 
     @Override
@@ -120,27 +118,15 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getJavaClasses(SourceSet sourceSet, List<String> includes) {
-        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet, includes)
+        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet).include(includes) as ConfigurableFileTree
     }
 
-    /**
-     * The simple "classes = sourceSet.output" may lead to non-existing resources directory
-     * being passed to FindBugs Ant task, resulting in an error
-     * */
-    private FileTree createClassesTreeFrom(SourceSet sourceSet, List<String> includes) {
-        def fileTrees = sourceSet.output.classesDirs.collect { classesDir ->
-            project.fileTree(classesDir) {
-                builtBy(sourceSet.output)
-                include(includes)
-            }
+    private ConfigurableFileTree createClassesTreeFrom(SourceSet sourceSet) {
+        def fileTree = sourceSet.output.classesDirs.inject(null) { cumulativeTree, classesDir ->
+            def tree = project.fileTree(classesDir)
+            cumulativeTree?.plus(tree) ?: tree
         }
-        if (fileTrees.isEmpty()) {
-            throw GradleException("No file tree from ${sourceSet} and filters: ${includes}")
-        } else if (fileTrees.size() == 1) {
-            fileTrees.first()
-        } else {
-            fileTrees.inject(fileTrees.head()) { result, current -> result + current }
-        }
+        fileTree.builtBy(sourceSet.output)
     }
 
     @Override
