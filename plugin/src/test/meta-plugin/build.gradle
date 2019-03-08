@@ -1,0 +1,12 @@
+apply plugin: 'groovy'
+
+sourceSets {
+    main {
+        groovy.srcDir(project.file('../../main/groovy'))
+        resources.srcDir(project.file('../../main/resources'))
+    }
+}
+
+dependencies {
+    implementation gradleApi()
+}
