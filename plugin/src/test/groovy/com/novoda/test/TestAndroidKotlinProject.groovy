@@ -11,11 +11,11 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.20'
+        classpath 'com.novoda:gradle-static-analysis-plugin:local'
     }
 }
 plugins {
     ${formatPlugins(project)}   
-    id 'com.novoda.static-analysis'
 }
 repositories {
     google()
@@ -23,6 +23,7 @@ repositories {
 }
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.novoda.static-analysis'
 
 android {
     compileSdkVersion 27
