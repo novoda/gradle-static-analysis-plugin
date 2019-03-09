@@ -118,12 +118,14 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getJavaClasses(SourceSet sourceSet, List<String> includes) {
-        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet).include(includes) as ConfigurableFileTree
+        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet, includes)
     }
 
-    private ConfigurableFileTree createClassesTreeFrom(SourceSet sourceSet) {
-        return sourceSet.output.classesDirs.inject(null) { cumulativeTree, classesDir ->
-            def tree = project.fileTree(classesDir).builtBy(sourceSet.output)
+    private FileCollection createClassesTreeFrom(SourceSet sourceSet, List<String> includes) {
+        return sourceSet.output.classesDirs.inject(null) { ConfigurableFileTree cumulativeTree, File classesDir ->
+            def tree = project.fileTree(classesDir)
+                    .builtBy(sourceSet.output)
+                    .include(includes) as ConfigurableFileTree
             cumulativeTree?.plus(tree) ?: tree
         }
     }
