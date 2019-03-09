@@ -122,11 +122,10 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private ConfigurableFileTree createClassesTreeFrom(SourceSet sourceSet) {
-        def fileTree = sourceSet.output.classesDirs.inject(null) { cumulativeTree, classesDir ->
-            def tree = project.fileTree(classesDir)
+        return sourceSet.output.classesDirs.inject(null) { cumulativeTree, classesDir ->
+            def tree = project.fileTree(classesDir).builtBy(sourceSet.output)
             cumulativeTree?.plus(tree) ?: tree
         }
-        fileTree.builtBy(sourceSet.output)
     }
 
     @Override
