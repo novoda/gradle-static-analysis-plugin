@@ -24,7 +24,7 @@ class DeployRulesTestRule implements TestRule {
             void evaluate() throws Throwable {
                 cleanRepo()
                 File projectDir = createProjectDir("${System.currentTimeMillis()}")
-                createBuildScript(projectDir)
+                createBuildScripts(projectDir)
                 GradleRunner.create()
                         .withProjectDir(projectDir)
                         .withDebug(true)
@@ -46,40 +46,41 @@ class DeployRulesTestRule implements TestRule {
         }
     }
 
-    private void createBuildScript(File projectDir) {
+    private void createBuildScripts(File projectDir) {
         new File(projectDir, 'build.gradle').text = """
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
-
-version='$version'
-
-apply plugin: 'java'
-
-sourceSets {
-    main {
-        resources {
-            srcDirs = ${resourceDirs.collect { "'$it.path'" }}
-        }
-    }
-}
-
-apply plugin: 'maven-publish'
-
-publishing {
-    repositories {
-        maven { url '${repoDir}' }
-    }
-    publications {
-        mavenJava(MavenPublication) {
-            groupId '$groupId'
-            artifactId '$artifactId'
-            from components.java
-        }
-    }
-}"""
+            buildscript {
+                repositories {
+                    jcenter()
+                }
+            }
+            
+            version='$version'
+            
+            apply plugin: 'java'
+            
+            sourceSets {
+                main {
+                    resources {
+                        srcDirs = ${resourceDirs.collect { "'$it.path'" }}
+                    }
+                }
+            }
+            
+            apply plugin: 'maven-publish'
+            
+            publishing {
+                repositories {
+                    maven { url '${repoDir}' }
+                }
+                publications {
+                    mavenJava(MavenPublication) {
+                        groupId '$groupId'
+                        artifactId '$artifactId'
+                        from components.java
+                    }
+                }
+            }""".stripIndent()
+        new File(projectDir, 'settings.gradle').text = ''''''
     }
 
     private static File createProjectDir(String path) {
