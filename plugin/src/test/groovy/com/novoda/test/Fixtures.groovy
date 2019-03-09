@@ -4,7 +4,7 @@ import com.google.common.io.Resources
 
 public final class Fixtures {
     private static final Exception NO_INSTANCE_ALLOWED = new UnsupportedOperationException("No instance allowed");
-    private static final File ROOT_DIR = new File(Resources.getResource('.').file).parentFile.parentFile.parentFile.parentFile
+    public static final File ROOT_DIR = new File(Resources.getResource('.').file).parentFile.parentFile.parentFile.parentFile
     private static final File FIXTURES_DIR = new File(ROOT_DIR, 'src/test/fixtures')
     private static final File SOURCES_DIR = new File(FIXTURES_DIR, 'sources')
     private static final File REPORTS_DIR = new File(FIXTURES_DIR, 'reports')

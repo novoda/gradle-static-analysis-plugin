@@ -9,16 +9,17 @@ buildscript {
         jcenter()
     }
     dependencies {
+        classpath 'com.novoda:gradle-static-analysis-plugin:local'
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.10'
     }
 }
 
 plugins {
     ${formatPlugins(project)}
-    id 'com.novoda.static-analysis'
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'com.novoda.static-analysis'
 
 repositories { 
     jcenter()

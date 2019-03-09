@@ -4,14 +4,20 @@ final class TestJavaProject extends TestProject<TestJavaProject> {
 
     private static final Closure<String> TEMPLATE = { TestProject project ->
         """
+buildscript {
+    dependencies {
+        classpath 'com.novoda:gradle-static-analysis-plugin:local'
+    }
+}
 plugins {
     ${formatPlugins(project)} 
-    id 'com.novoda.static-analysis'
 }
 repositories {
     jcenter()
 }
 apply plugin: 'java'
+apply plugin: 'com.novoda.static-analysis'
+
 sourceSets {
     ${formatSourceSets(project)}
 }
