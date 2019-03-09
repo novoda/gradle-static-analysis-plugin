@@ -3,7 +3,6 @@ ext {
 }
 
 version = '0.8'
-String tag = "v$project.version"
 groovydoc.docTitle = 'Static Analysis Plugin'
 
 apply plugin: 'com.novoda.build-properties'
@@ -36,17 +35,13 @@ buildProperties {
         }
         using(bintrayCredentials()).or(cli)
         description = '''This should contain the following properties:
-                      | - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
-                      | - bintrayUser: name of the account used to deploy the artifacts
-                      | - bintrayKey: API key of the account used to deploy the artifacts
-        '''.stripMargin()
+                         - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
+                         - bintrayUser: name of the account used to deploy the artifacts
+                         - bintrayKey: API key of the account used to deploy the artifacts'''.stripIndent()
     }
 
     publish {
-        def generateVersion = {
-            return isSnapshot() ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
-        }
-        using(['version': "${generateVersion()}"]).or(buildProperties.bintray)
+        using(['version': "$buildVersion"]).or(buildProperties.bintray)
     }
 
 }
@@ -130,23 +125,34 @@ task prepareRelease {
 
 String extractChangelog() {
     String fullChangelog = rootProject.file('CHANGELOG.md').text
-    def latestChangelog = (fullChangelog =~ /\[Version ${project.version}.*\n-*([\s\S]*?)\[Version.*\n-*/)
+    def latestChangelog = (fullChangelog =~ /\[Version ${buildVersion}.*\n-*([\s\S]*?)\[Version.*\n-*/)
     if (latestChangelog.size() > 0) {
         return latestChangelog[0][1].trim()
     }
 
-    def firstChangelog = (fullChangelog =~ /\[Version ${project.version}.*\n-*([\s\S]*)/)
+    def firstChangelog = (fullChangelog =~ /\[Version ${buildVersion}.*\n-*([\s\S]*)/)
     if (firstChangelog.size() > 0) {
         return firstChangelog[0][1].trim()
     }
-    throw new GradleException("No changelog found for version $project.version")
+    throw new GradleException("No changelog found for version $buildVersion")
 }
 
 task printChangelog {
     group = 'help'
-    description = "Print the provisional changelog for version $project.version"
+    description = "Print the provisional changelog for version $buildVersion"
     doLast {
-        println "\nChangelog for version $project.version:\n${extractChangelog()}\n"
+        println "\nChangelog for version $buildVersion:\n${extractChangelog()}\n"
+    }
+}
+
+task prepareSnapshot {
+    description = 'Prepare changelog and tag for snapshot'
+    group = 'release'
+    dependsOn prepareGhCredentials
+    doLast {
+        grgit.tag.add {
+            name = tag
+        }
     }
 }
 
@@ -171,7 +177,14 @@ task publishRelease {
         dependsOn publishArtifact
     } else {
         dependsOn publishArtifact
-        if (!isSnapshot()) {
+        if (isSnapshot()) {
+            dependsOn prepareSnapshot
+            doLast {
+                grgit.push {
+                    tags = true
+                }
+            }
+        } else {
             dependsOn prepareRelease, publishGroovydoc, publishPlugins
             doLast {
                 grgit.push {
@@ -188,4 +201,12 @@ boolean isDryRun() {
 
 boolean isSnapshot() {
     buildProperties.cli['bintraySnapshot'].or(false).boolean
+}
+
+String getBuildVersion() {
+    return isSnapshot() ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
+}
+
+String getTag() {
+    return "v$buildVersion"
 }
