@@ -16,6 +16,16 @@ abstract class TestProject<T extends TestProject> {
         ${project.additionalConfiguration}
         """.stripIndent()
     }
+    private static final Closure<String> SETTINGS_GRADLE_TEMPLATE = { String projectName ->
+        """
+        rootProject.name = '$projectName'
+        includeBuild('$Fixtures.ROOT_DIR/src/test/test-plugin') {
+            dependencySubstitution {
+                substitute module('com.novoda:gradle-static-analysis-plugin') with project(':')
+            }
+        }
+        """
+    }
 
     private final File projectDir
     private final Closure<String> template
@@ -97,7 +107,7 @@ abstract class TestProject<T extends TestProject> {
 
     private GradleRunner newRunner(String... arguments) {
         new File(projectDir, 'build.gradle').text = template.call(this)
-        new File(projectDir, 'settings.gradle').text = ''''''
+        new File(projectDir, 'settings.gradle').text = SETTINGS_GRADLE_TEMPLATE.call(projectDir.name)
         List<String> defaultArgs = defaultArguments()
         List<String> args = new ArrayList<>(arguments.size() + defaultArgs.size())
         args.addAll(defaultArgs)
@@ -105,7 +115,6 @@ abstract class TestProject<T extends TestProject> {
         return GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withArguments(args)
-                .withPluginClasspath()
                 .forwardOutput()
     }
 
