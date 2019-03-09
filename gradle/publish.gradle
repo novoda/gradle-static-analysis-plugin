@@ -40,10 +40,6 @@ buildProperties {
                          - bintrayKey: API key of the account used to deploy the artifacts'''.stripIndent()
     }
 
-    publish {
-        using(['version': "$buildVersion"]).or(buildProperties.bintray)
-    }
-
 }
 
 apply plugin: 'com.gradle.plugin-publish'
@@ -54,11 +50,11 @@ publish {
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
     desc = 'Easy setup of static analysis tools for Android and Java projects.'
+    publishVersion = buildVersion
 
-    repoName = project.buildProperties.publish['bintrayRepo'].string
-    publishVersion = project.buildProperties.publish['version'].string
-    bintrayUser = project.buildProperties.publish['bintrayUser'].string
-    bintrayKey = project.buildProperties.publish['bintrayKey'].string
+    repoName = project.buildProperties.bintray['bintrayRepo'].string
+    bintrayUser = project.buildProperties.bintray['bintrayUser'].string
+    bintrayKey = project.buildProperties.bintray['bintrayKey'].string
     website = project.websiteUrl
 }
 
