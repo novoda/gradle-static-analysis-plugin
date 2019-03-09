@@ -2,7 +2,7 @@ ext {
     websiteUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
-version = '0.8'
+version = '0.8.1'
 groovydoc.docTitle = 'Static Analysis Plugin'
 
 apply plugin: 'com.novoda.build-properties'

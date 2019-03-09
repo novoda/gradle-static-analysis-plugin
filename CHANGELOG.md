@@ -1,6 +1,17 @@
 Change Log
 ==========
 
+[Version 0.8.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.8.1)
+--------------------------
+
+- Removed use of `classesDir` because deprecated in Gradle 5.x ([PR#174](https://github.com/novoda/gradle-static-analysis-plugin/pull/174),
+[PR#178](https://github.com/novoda/gradle-static-analysis-plugin/pull/178),
+[PR#179](https://github.com/novoda/gradle-static-analysis-plugin/pull/179),
+[PR#180](https://github.com/novoda/gradle-static-analysis-plugin/pull/180))
+- Included new versions of Ktlint in functional tests ([PR#167](https://github.com/novoda/gradle-static-analysis-plugin/pull/167))
+- Added automatic tagging of snapshot releases ([PR#176](https://github.com/novoda/gradle-static-analysis-plugin/pull/176))
+
+
 [Version 0.8](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.8)
 --------------------------
 
