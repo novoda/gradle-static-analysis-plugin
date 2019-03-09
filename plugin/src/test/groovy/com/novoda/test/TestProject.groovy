@@ -19,7 +19,7 @@ abstract class TestProject<T extends TestProject> {
     private static final Closure<String> SETTINGS_GRADLE_TEMPLATE = { String projectName ->
         """
         rootProject.name = '$projectName'
-        includeBuild('$Fixtures.ROOT_DIR/src/test/meta-plugin') {
+        includeBuild('$Fixtures.ROOT_DIR/src/test/test-plugin') {
             dependencySubstitution {
                 substitute module('com.novoda:gradle-static-analysis-plugin') with project(':')
             }
