@@ -105,6 +105,7 @@ abstract class TestProject<T extends TestProject> {
         return GradleRunner.create()
                 .withProjectDir(projectDir)
                 .withArguments(args)
+                .withPluginClasspath()
                 .forwardOutput()
     }
 
