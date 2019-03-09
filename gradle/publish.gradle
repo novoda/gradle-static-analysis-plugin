@@ -204,5 +204,5 @@ String getBuildVersion() {
 }
 
 String getTag() {
-    return "v$buildVersion"
+    return buildVersion
 }
