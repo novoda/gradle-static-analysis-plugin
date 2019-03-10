@@ -79,7 +79,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getAndroidClasses(Object variant, List<String> includes) {
-        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes)
+        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes) as ConfigurableFileTree
     }
 
     @Override
@@ -118,17 +118,16 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getJavaClasses(SourceSet sourceSet, List<String> includes) {
-        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet).include(includes)
+        includes.isEmpty() ? project.files() : createClassesTreeFrom(sourceSet, includes)
     }
 
-    /**
-     * The simple "classes = sourceSet.output" may lead to non-existing resources directory
-     * being passed to FindBugs Ant task, resulting in an error
-     * */
-    private ConfigurableFileTree createClassesTreeFrom(SourceSet sourceSet) {
-        project.fileTree(sourceSet.output.classesDir, {
-            it.builtBy(sourceSet.output)
-        })
+    private FileCollection createClassesTreeFrom(SourceSet sourceSet, List<String> includes) {
+        return sourceSet.output.classesDirs.inject(null) { ConfigurableFileTree cumulativeTree, File classesDir ->
+            def tree = project.fileTree(classesDir)
+                    .builtBy(sourceSet.output)
+                    .include(includes) as ConfigurableFileTree
+            cumulativeTree?.plus(tree) ?: tree
+        }
     }
 
     @Override
