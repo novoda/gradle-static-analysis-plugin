@@ -10,7 +10,11 @@ import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
 
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
+
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
+
+    private final configuredSourceSets = new HashSet<String>()
 
     static PmdConfigurator create(Project project,
                                   NamedDomainObjectContainer<Violations> violationsContainer,
@@ -50,21 +54,32 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     @Override
     protected void configureAndroidVariant(variant) {
-        project.with {
-            variant.sourceSets.each { sourceSet ->
-                def taskName = "pmd${sourceSet.name.capitalize()}"
-                Pmd task = tasks.findByName(taskName)
-                if (task == null) {
-                    task = tasks.create(taskName, Pmd)
-                    task.with {
-                        description = "Run PMD analysis for ${sourceSet.name} classes"
-                        source = sourceSet.java.srcDirs
-                        exclude '**/*.kt'
-                    }
-                }
-                sourceFilter.applyTo(task)
-                task.mustRunAfter variant.javaCompile
-            }
+        variant.sourceSets.each { sourceSet ->
+            createPmdTask(variant, sourceSet)
+        }
+    }
+
+    private void createPmdTask(variant, sourceSet) {
+        def taskName = "pmd${sourceSet.name.capitalize()}"
+        if (configuredSourceSets.contains(taskName)) {
+            return
+        }
+        configuredSourceSets.add(taskName)
+
+        createTask(project, taskName, Pmd) { Pmd task ->
+            task.description = "Run PMD analysis for ${sourceSet.name} classes"
+            task.source = sourceSet.java.srcDirs
+            task.exclude '**/*.kt'
+            sourceFilter.applyTo(task)
+            task.mustRunAfter javaCompile(variant)
+        }
+    }
+
+    private static def javaCompile(variant) {
+        if (variant.hasProperty('javaCompileProvider')) {
+            variant.javaCompileProvider
+        } else {
+            variant.javaCompile
         }
     }
 
@@ -73,17 +88,23 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
         pmd.ignoreFailures = true
         pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
 
+        configureCollectViolations(pmd, violations)
+    }
+
+    private void configureCollectViolations(Pmd pmd, Violations violations) {
+        if (configuredSourceSets.contains(pmd.name)) {
+            return
+        }
+        configuredSourceSets.add(pmd.name)
         def collectViolations = createViolationsCollectionTask(pmd, violations)
-
         evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn pmd
     }
 
-    private CollectPmdViolationsTask createViolationsCollectionTask(Pmd pmd, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask)
-        task.xmlReportFile = pmd.reports.xml.destination
-        task.violations = violations
-        task
+    private def createViolationsCollectionTask(Pmd pmd, Violations violations) {
+        createTask(project, "collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { task ->
+            task.xmlReportFile = pmd.reports.xml.destination
+            task.violations = violations
+            task.dependsOn(pmd)
+        }
     }
-
 }

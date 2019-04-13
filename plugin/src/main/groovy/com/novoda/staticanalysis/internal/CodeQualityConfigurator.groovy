@@ -58,7 +58,8 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     }
 
     def configureToolTasks() {
-        project.tasks.withType(taskClass) { task ->
+        project.tasks.withType(taskClass) { T task ->
+            println task.name
             task.group = 'verification'
             configureReportEvaluation(task, violations)
         }
