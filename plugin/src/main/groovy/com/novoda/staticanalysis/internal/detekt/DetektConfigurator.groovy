@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal.detekt
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
+import com.novoda.staticanalysis.internal.TasksCompat
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
@@ -66,7 +67,7 @@ class DetektConfigurator implements Configurator {
         }
     }
 
-    private CollectCheckstyleViolationsTask configureToolTask(detekt) {
+    private def configureToolTask(detekt) {
         def detektTask = project.tasks.findByName('detekt')
         if (detektTask?.hasProperty('reports')) {
             def reports = detektTask.reports
@@ -105,12 +106,11 @@ class DetektConfigurator implements Configurator {
         }
     }
 
-    private CollectCheckstyleViolationsTask createCollectViolationsTask(Violations violations, detektTask, File xmlReportFile, File htmlReportFile) {
-        project.tasks.create('collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
+    private def createCollectViolationsTask(Violations violations, detektTask, File xmlReportFile, File htmlReportFile) {
+        TasksCompat.createTask(project, 'collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
             task.xmlReportFile = xmlReportFile
             task.htmlReportFile = htmlReportFile
             task.violations = violations
-
             task.dependsOn(detektTask)
         }
     }
