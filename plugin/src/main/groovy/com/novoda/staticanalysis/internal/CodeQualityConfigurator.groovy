@@ -55,6 +55,13 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
+    protected void configureJavaProject() {
+        project.sourceSets.all { sourceSet ->
+            def collectViolations = createCollectViolations(getToolTaskNameFor(sourceSet), violations)
+            evaluateViolations.dependsOn collectViolations
+        }
+    }
+
     def configureAndroidWithVariants(DomainObjectSet variants) {
         project.android.sourceSets.all { sourceSet ->
             createToolTaskForAndroid(sourceSet)
@@ -97,8 +104,6 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    protected abstract void createToolTaskForAndroid(sourceSet)
-
     private static def javaCompile(variant) {
         if (variant.hasProperty('javaCompileProvider')) {
             variant.javaCompileProvider
@@ -107,18 +112,13 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    protected void configureJavaProject() {
-        project.sourceSets.all { sourceSet ->
-            def collectViolations = createCollectViolations(getToolTaskNameFor(sourceSet), violations)
-            evaluateViolations.dependsOn collectViolations
-        }
-    }
-
     protected final String getToolTaskNameFor(sourceSet) {
         "$toolName${sourceSet.name.capitalize()}"
     }
 
     protected abstract Class<T> getTaskClass()
+
+    protected abstract void createToolTaskForAndroid(sourceSet)
 
     protected void configureToolTask(T task) {
         sourceFilter.applyTo(task)
