@@ -50,14 +50,10 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
 
     @Override
     protected void createToolTaskForAndroid(sourceSet) {
-        def taskName = getToolTaskNameFor(sourceSet)
-        Checkstyle checkstyle = project.tasks.findByName(taskName) as Checkstyle
-        if (checkstyle == null) {
-            project.tasks.create(taskName, Checkstyle) { task ->
-                task.description = "Run Checkstyle analysis for ${sourceSet.name} classes"
-                task.source = sourceSet.java.srcDirs
-                task.classpath = project.files("${project.buildDir}/intermediates/classes/")
-            }
+        createTask(project, getToolTaskNameFor(sourceSet), Checkstyle) { task ->
+            task.description = "Run Checkstyle analysis for ${sourceSet.name} classes"
+            task.source = sourceSet.java.srcDirs
+            task.classpath = project.files("${project.buildDir}/intermediates/classes/")
         }
     }
 

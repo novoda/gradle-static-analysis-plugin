@@ -64,16 +64,15 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected void createToolTaskForAndroid(sourceSet) {
-        FindBugs task = project.tasks.maybeCreate(getToolTaskNameFor(sourceSet), QuietFindbugsPlugin.Task)
-        task.with {
-            description = "Run FindBugs analysis for sourceSet ${sourceSet.name} classes"
-            source = sourceSet.java.srcDirs
-            classpath = project.files("${project.buildDir}/intermediates/classes/")
-            extraArgs '-auxclasspath', androidJar
-        }
-        task.conventionMapping.map("classes") {
-            List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-            getAndroidClasses(variant, includes)
+        createTask(project, getToolTaskNameFor(sourceSet), QuietFindbugsPlugin.Task) { task ->
+            task.description = "Run FindBugs analysis for sourceSet ${sourceSet.name} classes"
+            task.source = sourceSet.java.srcDirs
+            task.classpath = project.files("${project.buildDir}/intermediates/classes/")
+            task.extraArgs '-auxclasspath', androidJar
+//            task.conventionMapping.map("classes") {
+//                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
+//                getAndroidClasses(variant, includes)
+//            }
         }
     }
 
@@ -88,13 +87,11 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                 String taskName = sourceSet.getTaskName(toolName, null)
                 FindBugs task = project.tasks.findByName(taskName)
                 if (task != null) {
-                    sourceFilter.applyTo(task)
-                    task.conventionMapping.map("classes", {
+                    task.conventionMapping.map("classes") {
                         List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
                         List<String> includes = createIncludePatterns(task.source, sourceDirs)
                         getJavaClasses(sourceSet, includes)
-                    })
-                    task.exclude '**/*.kt'
+                    }
                 }
             }
         }
@@ -162,6 +159,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             task.xmlReportFile = collectViolations.xmlReportFile
             task.htmlReportFile = collectViolations.htmlReportFile
             task.classpath = findbugs.findbugsClasspath
+            task.dependsOn findbugs
         }
     }
 

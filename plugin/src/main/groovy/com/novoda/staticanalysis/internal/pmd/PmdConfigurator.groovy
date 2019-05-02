@@ -13,8 +13,6 @@ import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
-    private final configuredSourceSets = new HashSet<String>()
-
     static PmdConfigurator create(Project project,
                                   NamedDomainObjectContainer<Violations> violationsContainer,
                                   Task evaluateViolations) {
@@ -53,13 +51,8 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     @Override
     protected void createToolTaskForAndroid(sourceSet) {
-        def taskName = getToolTaskNameFor(sourceSet)
-        if (configuredSourceSets.contains(taskName)) {
-            return
-        }
-        configuredSourceSets.add(taskName)
-        createTask(project, taskName, Pmd) { Pmd task ->
-            task.description = "Run PMD analysis for ${sourceSet.name} classes"
+        createTask(project, getToolTaskNameFor(sourceSet), Pmd) { Pmd task ->
+            task.description = "Run PMD analysis for sourceSet ${sourceSet.name} classes"
             task.source = sourceSet.java.srcDirs
             task.exclude '**/*.kt'
             sourceFilter.applyTo(task)
