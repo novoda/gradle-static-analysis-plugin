@@ -63,22 +63,18 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureAndroidVariant(variant) {
-        FindBugs task = project.tasks.maybeCreate("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
-        List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
+    protected void createToolTaskForAndroid(sourceSet) {
+        FindBugs task = project.tasks.maybeCreate(getToolTaskNameFor(sourceSet), QuietFindbugsPlugin.Task)
         task.with {
-            description = "Run FindBugs analysis for ${variant.name} classes"
-            source = androidSourceDirs
-            classpath = variant.javaCompile.classpath
+            description = "Run FindBugs analysis for sourceSet ${sourceSet.name} classes"
+            source = sourceSet.java.srcDirs
+            classpath = project.files("${project.buildDir}/intermediates/classes/")
             extraArgs '-auxclasspath', androidJar
-            exclude '**/*.kt'
         }
-        sourceFilter.applyTo(task)
         task.conventionMapping.map("classes") {
             List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
             getAndroidClasses(variant, includes)
         }
-        task.dependsOn variant.javaCompile
     }
 
     private FileCollection getAndroidClasses(Object variant, List<String> includes) {
@@ -141,17 +137,10 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureReportEvaluation(String taskName, Violations violations) {
-        def collectViolations = createCollectViolationsTask(taskName, violations)
-        evaluateViolations.dependsOn collectViolations
-    }
-
-    private def createCollectViolationsTask(String taskName, Violations violations) {
-
+    protected def createCollectViolations(String taskName, Violations violations) {
         if (htmlReportEnabled) {
             createHtmlReportTask(taskName)
         }
-
         createTask(project, "collect${taskName.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
             def findbugs = project.tasks[taskName] as FindBugs
             task.xmlReportFile = findbugs.reports.xml.destination
@@ -164,6 +153,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             }
         }
     }
+
 
     private void createHtmlReportTask(String taskName) {
         createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->

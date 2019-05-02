@@ -49,22 +49,14 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureAndroidVariant(variant) {
-        project.with {
-            variant.sourceSets.each { sourceSet ->
-                def taskName = "checkstyle${sourceSet.name.capitalize()}"
-                Checkstyle task = tasks.findByName(taskName)
-                if (task == null) {
-                    task = tasks.create(taskName, Checkstyle)
-                    task.with {
-                        description = "Run Checkstyle analysis for ${sourceSet.name} classes"
-                        source = sourceSet.java.srcDirs
-                        classpath = files("$buildDir/intermediates/classes/")
-                        exclude '**/*.kt'
-                    }
-                }
-                sourceFilter.applyTo(task)
-                task.mustRunAfter variant.javaCompile
+    protected void createToolTaskForAndroid(sourceSet) {
+        def taskName = getToolTaskNameFor(sourceSet)
+        Checkstyle checkstyle = project.tasks.findByName(taskName) as Checkstyle
+        if (checkstyle == null) {
+            project.tasks.create(taskName, Checkstyle) { task ->
+                task.description = "Run Checkstyle analysis for ${sourceSet.name} classes"
+                task.source = sourceSet.java.srcDirs
+                task.classpath = project.files("${project.buildDir}/intermediates/classes/")
             }
         }
     }
@@ -76,12 +68,7 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureReportEvaluation(String taskName, Violations violations) {
-        def collectViolations = createCollectViolationsTask(taskName, violations)
-        evaluateViolations.dependsOn collectViolations
-    }
-
-    private def createCollectViolationsTask(String taskName, Violations violations) {
+    protected def createCollectViolations(String taskName, Violations violations) {
         createTask(project, "collect${taskName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
             def checkstyle = project.tasks[taskName] as Checkstyle
             task.xmlReportFile = checkstyle.reports.xml.destination

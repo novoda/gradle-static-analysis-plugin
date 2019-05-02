@@ -52,43 +52,22 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureAndroidVariant(variant) {
-        variant.sourceSets.each { sourceSet ->
-            createPmdTask(variant, sourceSet)
-        }
-    }
-
-    private void createPmdTask(variant, sourceSet) {
-        def taskName = "pmd${sourceSet.name.capitalize()}"
+    protected void createToolTaskForAndroid(sourceSet) {
+        def taskName = getToolTaskNameFor(sourceSet)
         if (configuredSourceSets.contains(taskName)) {
             return
         }
         configuredSourceSets.add(taskName)
-
         createTask(project, taskName, Pmd) { Pmd task ->
             task.description = "Run PMD analysis for ${sourceSet.name} classes"
             task.source = sourceSet.java.srcDirs
             task.exclude '**/*.kt'
             sourceFilter.applyTo(task)
-            task.mustRunAfter javaCompile(variant)
-        }
-    }
-
-    private static def javaCompile(variant) {
-        if (variant.hasProperty('javaCompileProvider')) {
-            variant.javaCompileProvider
-        } else {
-            variant.javaCompile
         }
     }
 
     @Override
-    protected void configureReportEvaluation(String taskName, Violations violations) {
-        def collectViolations = createViolationsCollectionTask(taskName, violations)
-        evaluateViolations.dependsOn collectViolations
-    }
-
-    private def createViolationsCollectionTask(String taskName, Violations violations) {
+    protected def createCollectViolations(String taskName, Violations violations) {
         createTask(project, "collect${taskName.capitalize()}Violations", CollectPmdViolationsTask) { task ->
             def pmd = project.tasks[taskName] as Pmd
             task.xmlReportFile = pmd.reports.xml.destination

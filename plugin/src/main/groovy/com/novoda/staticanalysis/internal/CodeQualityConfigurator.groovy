@@ -11,6 +11,7 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.VerificationTask
 
 import static com.novoda.staticanalysis.internal.TasksCompat.configureEach
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, E extends CodeQualityExtension> implements Configurator {
 
@@ -48,17 +49,38 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
             project.plugins.withId('java') {
                 configureJavaProject()
             }
-        }
-
-        configureEach(project.tasks.withType(taskClass)) { task ->
-            configureToolTask(task)
+            configureEach(project.tasks.withType(taskClass)) { task ->
+                configureToolTask(task)
+            }
         }
     }
 
     def configureAndroidWithVariants(DomainObjectSet variants) {
-        variants.all { configureAndroidVariant(it) }
-        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
-        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+        project.android.sourceSets.all { sourceSet ->
+            createToolTaskForAndroid(sourceSet)
+            createCollectViolations(getToolTaskNameFor(sourceSet), violations)
+        }
+        variants.all { configureVariant(it) }
+        variantFilter.filteredTestVariants.all { configureVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+    }
+
+    protected configureVariant(variant) {
+        def collectViolations = createVariantMetaTask(variant)
+        evaluateViolations.dependsOn collectViolations
+    }
+
+    private def createVariantMetaTask(variant) {
+        createTask(project, "collectViolationsVariant${variant.name.capitalize()}", Task) { task ->
+            task.group = 'verification'
+            task.description = "Runs $toolName analysis on all sources for android ${variant.name} variant"
+            task.mustRunAfter javaCompile(variant)
+
+            variant.sourceSets.forEach { sourceSet ->
+                def toolTaskName = getToolTaskNameFor(sourceSet)
+                task.dependsOn "collect${toolTaskName.capitalize()}Violations"
+            }
+        }
     }
 
     protected abstract String getToolName()
@@ -75,12 +97,25 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    protected abstract void configureAndroidVariant(variant)
+    protected abstract void createToolTaskForAndroid(sourceSet)
+
+    private static def javaCompile(variant) {
+        if (variant.hasProperty('javaCompileProvider')) {
+            variant.javaCompileProvider
+        } else {
+            variant.javaCompile
+        }
+    }
 
     protected void configureJavaProject() {
         project.sourceSets.all { sourceSet ->
-            configureReportEvaluation("$toolName${sourceSet.name.capitalize()}", violations)
+            def collectViolations = createCollectViolations(getToolTaskNameFor(sourceSet), violations)
+            evaluateViolations.dependsOn collectViolations
         }
+    }
+
+    protected final String getToolTaskNameFor(sourceSet) {
+        "$toolName${sourceSet.name.capitalize()}"
     }
 
     protected abstract Class<T> getTaskClass()
@@ -93,5 +128,5 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         task.metaClass.getLogger = { QuietLogger.INSTANCE }
     }
 
-    protected abstract void configureReportEvaluation(String taskName, Violations violations)
+    protected abstract def createCollectViolations(String taskName, Violations violations)
 }
