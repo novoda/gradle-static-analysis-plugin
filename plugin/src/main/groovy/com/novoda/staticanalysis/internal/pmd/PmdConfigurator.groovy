@@ -2,7 +2,6 @@ package com.novoda.staticanalysis.internal.pmd
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.QuietLogger
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -84,24 +83,14 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureReportEvaluation(Pmd pmd, Violations violations) {
-        pmd.ignoreFailures = true
-        pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
-
-        configureCollectViolations(pmd, violations)
-    }
-
-    private void configureCollectViolations(Pmd pmd, Violations violations) {
-        if (configuredSourceSets.contains(pmd.name)) {
-            return
-        }
-        configuredSourceSets.add(pmd.name)
-        def collectViolations = createViolationsCollectionTask(pmd, violations)
+    protected void configureReportEvaluation(String taskName, Violations violations) {
+        def collectViolations = createViolationsCollectionTask(taskName, violations)
         evaluateViolations.dependsOn collectViolations
     }
 
-    private def createViolationsCollectionTask(Pmd pmd, Violations violations) {
-        createTask(project, "collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask) { task ->
+    private def createViolationsCollectionTask(String taskName, Violations violations) {
+        createTask(project, "collect${taskName.capitalize()}Violations", CollectPmdViolationsTask) { task ->
+            def pmd = project.tasks[taskName] as Pmd
             task.xmlReportFile = pmd.reports.xml.destination
             task.violations = violations
             task.dependsOn(pmd)

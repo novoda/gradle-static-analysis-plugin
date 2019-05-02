@@ -2,6 +2,7 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import com.novoda.staticanalysis.internal.CollectViolationsTask
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -13,6 +14,8 @@ import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
 
 import java.nio.file.Path
+
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
@@ -114,7 +117,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                     .findAll { Path sourceDir -> sourceFile.startsWith(sourceDir) }
                     .collect { Path sourceDir -> sourceDir.relativize(sourceFile) }
         }
-        .flatten()
+                .flatten()
     }
 
     private FileCollection getJavaClasses(SourceSet sourceSet, List<String> includes) {
@@ -131,37 +134,45 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureReportEvaluation(FindBugs findBugs, Violations violations) {
-        findBugs.ignoreFailures = true
-        findBugs.reports.xml.enabled = true
-        findBugs.reports.html.enabled = false
+    protected void configureToolTask(FindBugs task) {
+        super.configureToolTask(task)
+        task.reports.xml.enabled = true
+        task.reports.html.enabled = false
+    }
 
-        def collectViolations = createViolationsCollectionTask(findBugs, violations)
+    @Override
+    protected void configureReportEvaluation(String taskName, Violations violations) {
+        def collectViolations = createCollectViolationsTask(taskName, violations)
         evaluateViolations.dependsOn collectViolations
+    }
+
+    private def createCollectViolationsTask(String taskName, Violations violations) {
 
         if (htmlReportEnabled) {
-            def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
-            collectViolations.dependsOn generateHtmlReport
-            generateHtmlReport.dependsOn findBugs
-        } else {
-            collectViolations.dependsOn findBugs
+            createHtmlReportTask(taskName)
+        }
+
+        createTask(project, "collect${taskName.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
+            def findbugs = project.tasks[taskName] as FindBugs
+            task.xmlReportFile = findbugs.reports.xml.destination
+            task.violations = violations
+
+            if (htmlReportEnabled) {
+                task.dependsOn project.tasks["generate${taskName.capitalize()}HtmlReport"]
+            } else {
+                task.dependsOn findbugs
+            }
         }
     }
 
-    private CollectFindbugsViolationsTask createViolationsCollectionTask(FindBugs findBugs, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${findBugs.name.capitalize()}Violations", CollectFindbugsViolationsTask)
-        task.xmlReportFile = findBugs.reports.xml.destination
-        task.violations = violations
-        task
-    }
-
-    private GenerateFindBugsHtmlReport createHtmlReportTask(FindBugs findBugs, File xmlReportFile, File htmlReportFile) {
-        def task = project.tasks.maybeCreate("generate${findBugs.name.capitalize()}HtmlReport", GenerateFindBugsHtmlReport)
-        task.xmlReportFile = xmlReportFile
-        task.htmlReportFile = htmlReportFile
-        task.classpath = findBugs.findbugsClasspath
-        task.onlyIf { xmlReportFile?.exists() }
-        task
+    private void createHtmlReportTask(String taskName) {
+        createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->
+            def findbugs = project.tasks[taskName] as FindBugs
+            def collectViolations = project.tasks["collect${taskName.capitalize()}Violations"] as CollectViolationsTask
+            task.xmlReportFile = collectViolations.xmlReportFile
+            task.htmlReportFile = collectViolations.htmlReportFile
+            task.classpath = findbugs.findbugsClasspath
+        }
     }
 
     private def getAndroidJar() {

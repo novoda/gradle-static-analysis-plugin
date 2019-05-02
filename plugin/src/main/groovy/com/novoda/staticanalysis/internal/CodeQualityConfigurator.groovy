@@ -8,8 +8,11 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.VerificationTask
 
-abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> implements Configurator {
+import static com.novoda.staticanalysis.internal.TasksCompat.configureEach
+
+abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, E extends CodeQualityExtension> implements Configurator {
 
     protected final Project project
     protected final Violations violations
@@ -38,16 +41,17 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             }
             project.plugins.withId('com.android.application') {
                 configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
-                configureToolTasks()
             }
             project.plugins.withId('com.android.library') {
                 configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
-                configureToolTasks()
             }
             project.plugins.withId('java') {
                 configureJavaProject()
-                configureToolTasks()
             }
+        }
+
+        configureEach(project.tasks.withType(taskClass)) { task ->
+            configureToolTask(task)
         }
     }
 
@@ -55,14 +59,6 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         variants.all { configureAndroidVariant(it) }
         variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
         variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
-    }
-
-    def configureToolTasks() {
-        project.tasks.withType(taskClass) { T task ->
-            println task.name
-            task.group = 'verification'
-            configureReportEvaluation(task, violations)
-        }
     }
 
     protected abstract String getToolName()
@@ -82,14 +78,20 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
     protected abstract void configureAndroidVariant(variant)
 
     protected void configureJavaProject() {
-        project.tasks.withType(taskClass) { task ->
-            sourceFilter.applyTo(task)
-            task.exclude '**/*.kt'
+        project.sourceSets.all { sourceSet ->
+            configureReportEvaluation("$toolName${sourceSet.name.capitalize()}", violations)
         }
     }
 
     protected abstract Class<T> getTaskClass()
 
-    protected abstract void configureReportEvaluation(T task, Violations violations)
+    protected void configureToolTask(T task) {
+        sourceFilter.applyTo(task)
+        task.group = 'verification'
+        task.exclude '**/*.kt'
+        task.ignoreFailures = true
+        task.metaClass.getLogger = { QuietLogger.INSTANCE }
+    }
 
+    protected abstract void configureReportEvaluation(String taskName, Violations violations)
 }
