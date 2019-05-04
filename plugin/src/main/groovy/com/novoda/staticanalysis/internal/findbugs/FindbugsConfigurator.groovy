@@ -4,6 +4,7 @@ import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import com.novoda.staticanalysis.internal.CollectViolationsTask
 import org.gradle.api.Action
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -15,6 +16,7 @@ import org.gradle.api.tasks.SourceSet
 
 import java.nio.file.Path
 
+import static com.novoda.staticanalysis.internal.TasksCompat.configureNamed
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
@@ -63,30 +65,47 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void createToolTaskForAndroid(sourceSet) {
-        createTask(project, getToolTaskNameFor(sourceSet), QuietFindbugsPlugin.Task) { task ->
-            task.description = "Run FindBugs analysis for sourceSet ${sourceSet.name} classes"
-            task.source = sourceSet.java.srcDirs
-            task.classpath = project.files("${project.buildDir}/intermediates/classes/")
+    protected void configureAndroidWithVariants(DomainObjectSet variants) {
+        variants.all { configureVariant(it) }
+        variantFilter.filteredTestVariants.all { configureVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+    }
+
+    @Override
+    protected void configureVariant(variant) {
+        createToolTaskForAndroid(variant)
+        def collectViolations = createCollectViolations(getToolTaskNameFor(variant), violations)
+        evaluateViolations.dependsOn collectViolations
+    }
+
+    @Override
+    protected void createToolTaskForAndroid(variant) {
+        createTask(project, getToolTaskNameFor(variant), QuietFindbugsPlugin.Task) { task ->
+            List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
+            task.description = "Run FindBugs analysis for ${variant.name} classes"
+            task.source = androidSourceDirs
+            task.classpath = variant.javaCompile.classpath
             task.extraArgs '-auxclasspath', androidJar
-//            task.conventionMapping.map("classes") {
-//                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-//                getAndroidClasses(variant, includes)
-//            }
+            task.conventionMapping.map("classes") {
+                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
+                getAndroidClasses(javaCompile(variant), includes)
+            }
+            sourceFilter.applyTo(task)
+            task.dependsOn javaCompile(variant)
         }
     }
 
-    private FileCollection getAndroidClasses(Object variant, List<String> includes) {
-        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes) as ConfigurableFileTree
+    private FileCollection getAndroidClasses(javaCompile, List<String> includes) {
+        includes.isEmpty() ? project.files() : project.fileTree(javaCompile.destinationDir).include(includes) as ConfigurableFileTree
     }
 
     @Override
     protected void configureJavaProject() {
+        super.configureJavaProject()
         project.afterEvaluate {
             project.sourceSets.each { SourceSet sourceSet ->
                 String taskName = sourceSet.getTaskName(toolName, null)
-                FindBugs task = project.tasks.findByName(taskName)
-                if (task != null) {
+                configureNamed(project, taskName) { task ->
                     task.conventionMapping.map("classes") {
                         List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
                         List<String> includes = createIncludePatterns(task.source, sourceDirs)

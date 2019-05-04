@@ -20,9 +20,17 @@ class TasksCompat {
 
     static <T extends Task> void configureEach(TaskCollection<T> tasks, Action<? super T> configuration) {
         if (IS_GRADLE_MIN_49) {
-            tasks.all(configuration)
+            tasks.configureEach(configuration)
         } else {
             tasks.all(configuration)
+        }
+    }
+
+    static <T extends Task> void configureNamed(Project project, String taskName, Action<? super T> configuration) {
+        if (IS_GRADLE_MIN_49) {
+            project.tasks.named(taskName).configure(configuration)
+        } else {
+            project.tasks.getByName(taskName).configure(configuration)
         }
     }
 

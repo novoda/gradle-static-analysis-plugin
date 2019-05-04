@@ -62,7 +62,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    def configureAndroidWithVariants(DomainObjectSet variants) {
+    protected void configureAndroidWithVariants(DomainObjectSet variants) {
         project.android.sourceSets.all { sourceSet ->
             createToolTaskForAndroid(sourceSet)
             createCollectViolations(getToolTaskNameFor(sourceSet), violations)
@@ -72,7 +72,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
     }
 
-    protected configureVariant(variant) {
+    protected void configureVariant(variant) {
         def collectViolations = createVariantMetaTask(variant)
         evaluateViolations.dependsOn collectViolations
     }
@@ -104,9 +104,9 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    private static def javaCompile(variant) {
+    protected static def javaCompile(variant) {
         if (variant.hasProperty('javaCompileProvider')) {
-            variant.javaCompileProvider
+            variant.javaCompileProvider.get()
         } else {
             variant.javaCompile
         }
