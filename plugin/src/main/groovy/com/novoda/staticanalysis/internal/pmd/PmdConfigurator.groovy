@@ -54,8 +54,6 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
         createTask(project, getToolTaskNameFor(sourceSet), Pmd) { Pmd task ->
             task.description = "Run PMD analysis for sourceSet ${sourceSet.name} classes"
             task.source = sourceSet.java.srcDirs
-            task.exclude '**/*.kt'
-            sourceFilter.applyTo(task)
         }
     }
 

@@ -3,12 +3,13 @@ package com.novoda.staticanalysis.internal.detekt
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.TasksCompat
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
+
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class DetektConfigurator implements Configurator {
 
@@ -107,11 +108,11 @@ class DetektConfigurator implements Configurator {
     }
 
     private def createCollectViolationsTask(Violations violations, detektTask, File xmlReportFile, File htmlReportFile) {
-        TasksCompat.createTask(project, 'collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
+        createTask(project, 'collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
             task.xmlReportFile = xmlReportFile
             task.htmlReportFile = htmlReportFile
             task.violations = violations
-            task.dependsOn(detektTask)
+            task.dependsOn detektTask
         }
     }
 
