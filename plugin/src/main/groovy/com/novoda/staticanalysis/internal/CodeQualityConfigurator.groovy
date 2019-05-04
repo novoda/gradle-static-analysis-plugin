@@ -78,7 +78,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
     }
 
     private def createVariantMetaTask(variant) {
-        createTask(project, "collectViolationsVariant${variant.name.capitalize()}", Task) { task ->
+        createTask(project, "collect${getToolTaskNameFor(variant)}VariantViolations", Task) { task ->
             task.group = 'verification'
             task.description = "Runs $toolName analysis on all sources for android ${variant.name} variant"
             task.mustRunAfter javaCompile(variant)
