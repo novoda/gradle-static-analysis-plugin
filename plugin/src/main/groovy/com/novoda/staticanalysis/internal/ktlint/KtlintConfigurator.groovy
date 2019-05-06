@@ -45,26 +45,23 @@ class KtlintConfigurator implements Configurator {
 
             configureKtlintExtension(config)
 
-            project.afterEvaluate {
-
-                project.plugins.withId("kotlin") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("kotlin2js") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("kotlin-platform-common") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId('com.android.application') {
-                    configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
-                }
-                project.plugins.withId('com.android.library') {
-                    configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
-                }
+            project.plugins.withId("kotlin") {
+                configureKotlinProject()
+            }
+            project.plugins.withId("kotlin2js") {
+                configureKotlinProject()
+            }
+            project.plugins.withId("kotlin-platform-common") {
+                configureKotlinProject()
+            }
+            project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+                configureKotlinProject()
+            }
+            project.plugins.withId('com.android.application') {
+                configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
+            }
+            project.plugins.withId('com.android.library') {
+                configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
             }
         }
     }

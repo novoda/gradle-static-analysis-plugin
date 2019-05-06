@@ -30,10 +30,6 @@ class KtlintIntegrationTest {
     @Parameterized.Parameters(name = '{0} with ktlint {1}')
     static def rules() {
         return [
-                [TestProjectRule.forKotlinProject(), '4.1.0', 'ktlint-main.txt'],
-                [TestProjectRule.forAndroidKotlinProject(), '4.1.0', 'ktlint-debug.txt'],
-                [TestProjectRule.forKotlinProject(), '5.1.0', 'ktlint-main.txt'],
-                [TestProjectRule.forAndroidKotlinProject(), '5.1.0', 'ktlint-debug.txt'],
                 [TestProjectRule.forKotlinProject(), '6.1.0', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '6.1.0', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '6.2.1', 'ktlintMainCheck.txt'],
@@ -42,6 +38,8 @@ class KtlintIntegrationTest {
                 [TestProjectRule.forAndroidKotlinProject(), '6.3.1', 'ktlintMainCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '7.0.0', 'ktlintMainSourceSetCheck.txt'],
+                [TestProjectRule.forKotlinProject(), '7.3.0', 'ktlintMainSourceSetCheck.txt'],
+                [TestProjectRule.forAndroidKotlinProject(), '7.3.0', 'ktlintMainSourceSetCheck.txt'],
         ]*.toArray()
     }
 
