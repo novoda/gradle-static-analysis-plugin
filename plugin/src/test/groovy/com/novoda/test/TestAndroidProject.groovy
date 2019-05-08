@@ -9,7 +9,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.android.tools.build:gradle:3.1.4'
         classpath 'com.novoda:gradle-static-analysis-plugin:local'
     }
 }

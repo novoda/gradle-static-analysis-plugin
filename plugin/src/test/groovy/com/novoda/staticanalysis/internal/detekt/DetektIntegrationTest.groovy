@@ -1,6 +1,5 @@
 package com.novoda.staticanalysis.internal.detekt
 
-
 import com.novoda.test.Fixtures
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
@@ -17,7 +16,6 @@ class DetektIntegrationTest {
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.'
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to enable "reports.xml" in your Detekt configuration'
 
-
     @Parameterized.Parameters(name = "{0} with Detekt: {1}")
     static Iterable rules() {
         return [
@@ -29,10 +27,11 @@ class DetektIntegrationTest {
                 [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC11"],
                 [TestProjectRule.forKotlinProject(), "1.0.0-RC12"],
                 [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC12"],
-                [TestProjectRule.forKotlinProject(), "1.0.0-RC13"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC13"],
-                [TestProjectRule.forKotlinProject(), "1.0.0-RC14"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC14"],
+                // Work fine but requires Gradle 5.x to run
+                // [TestProjectRule.forKotlinProject(), "1.0.0-RC13"],
+                // [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC13"],
+                // [TestProjectRule.forKotlinProject(), "1.0.0-RC14"],
+                // [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC14"],
         ]*.toArray()
     }
 
