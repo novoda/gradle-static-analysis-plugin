@@ -4,7 +4,6 @@ import com.google.common.truth.Truth
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -348,7 +347,6 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    @Ignore
     void shouldNotFailBuildWhenFindbugsIsConfiguredMultipleTimes() {
         projectRule.newProject()
                 .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)

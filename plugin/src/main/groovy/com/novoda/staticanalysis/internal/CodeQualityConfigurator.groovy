@@ -20,6 +20,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
     protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
     protected final VariantFilter variantFilter
+    private boolean configured = false
 
     protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
@@ -56,13 +57,18 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
     }
 
     protected void configureJavaProject() {
+        if (configured) return
+
         project.sourceSets.all { sourceSet ->
             def collectViolations = createCollectViolations(getToolTaskNameFor(sourceSet), violations)
             evaluateViolations.dependsOn collectViolations
         }
+        configured = true
     }
 
     protected void configureAndroidWithVariants(DomainObjectSet variants) {
+        if (configured) return
+
         project.android.sourceSets.all { sourceSet ->
             createToolTaskForAndroid(sourceSet)
             createCollectViolations(getToolTaskNameFor(sourceSet), violations)
@@ -70,6 +76,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         variants.all { configureVariant(it) }
         variantFilter.filteredTestVariants.all { configureVariant(it) }
         variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+        configured = true
     }
 
     protected void configureVariant(variant) {

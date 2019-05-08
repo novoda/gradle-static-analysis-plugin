@@ -3,7 +3,6 @@ package com.novoda.staticanalysis.internal.checkstyle
 import com.novoda.test.Fixtures
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -231,7 +230,6 @@ public class CheckstyleIntegrationTest {
     }
 
     @Test
-    @Ignore
     void shouldNotFailBuildWhenCheckstyleIsConfiguredMultipleTimes() {
         projectRule.newProject()
                 .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
