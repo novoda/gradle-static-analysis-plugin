@@ -50,6 +50,7 @@ class DetektConfigurator implements Configurator {
             def detekt = project.extensions.findByName('detekt')
             setDefaultXmlReport(detekt)
             config.delegate = detekt
+            config.resolveStrategy = Closure.DELEGATE_FIRST
             config()
 
             def collectViolations = configureToolTask(detekt)

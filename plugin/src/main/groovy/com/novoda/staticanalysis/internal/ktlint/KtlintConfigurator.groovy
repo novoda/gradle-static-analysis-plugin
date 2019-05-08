@@ -73,6 +73,7 @@ class KtlintConfigurator implements Configurator {
             variantFilter.includeVariantsFilter = filter
         }
         config.delegate = ktlint
+        config.resolveStrategy = Closure.DELEGATE_FIRST
         config()
     }
 
