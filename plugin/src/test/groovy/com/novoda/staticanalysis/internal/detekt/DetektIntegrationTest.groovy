@@ -1,5 +1,6 @@
 package com.novoda.staticanalysis.internal.detekt
 
+
 import com.novoda.test.Fixtures
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
@@ -14,15 +15,24 @@ import static com.novoda.test.LogsSubject.assertThat
 class DetektIntegrationTest {
 
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.'
-    private static final String OUTPUT_NOT_DEFINED = 'Output not defined! To analyze the results, `output` needs to be defined in Detekt profile.'
+    private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to enable "reports.xml" in your Detekt configuration'
+
 
     @Parameterized.Parameters(name = "{0} with Detekt: {1}")
     static Iterable rules() {
         return [
-                [TestProjectRule.forKotlinProject(), "1.0.0.RC6-2"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC6-2"],
-                [TestProjectRule.forKotlinProject(), "1.0.0.RC8"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC8"],
+                [TestProjectRule.forKotlinProject(), "1.0.0.RC9.2"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC10"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC10"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC11"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC11"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC12"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC12"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC13"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC13"],
+                [TestProjectRule.forKotlinProject(), "1.0.0-RC14"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC14"],
         ]*.toArray()
     }
 
@@ -36,17 +46,6 @@ class DetektIntegrationTest {
     }
 
     @Test
-    void shouldFailBuildOnConfigurationWhenNoOutputNotDefined() {
-        def emptyConfiguration = detektWith(detektVersion, "")
-
-        def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
-                .withToolsConfig(emptyConfiguration)
-                .buildAndFail('check')
-
-        assertThat(result.logs).contains(OUTPUT_NOT_DEFINED)
-    }
-
-    @Test
     void shouldFailBuildOnConfigurationWhenDetektConfiguredButNotApplied() {
         def result = projectRule.newProject()
                 .withToolsConfig(detektConfiguration(Fixtures.Detekt.SOURCES_WITH_ERRORS, detektVersion))
@@ -56,13 +55,27 @@ class DetektIntegrationTest {
     }
 
     @Test
+    void shouldFailBuildOnConfigurationWhenDetektConfiguredWithoutXmlReport() {
+        def result = projectRule.newProject()
+                .withPlugin("io.gitlab.arturbosch.detekt", detektVersion)
+                .withToolsConfig('''detekt {      
+                    reports {
+                        xml.enabled = false
+                    }
+                }''')
+                .buildAndFail('check')
+
+        assertThat(result.logs).contains(XML_REPORT_NOT_ENABLED)
+    }
+
+    @Test
     void shouldFailBuildWhenDetektWarningsOverTheThreshold() {
         def result = createProjectWithZeroThreshold(Fixtures.Detekt.SOURCES_WITH_WARNINGS)
                 .buildAndFail('check')
 
         assertThat(result.logs).containsLimitExceeded(0, 1)
         assertThat(result.logs).containsDetektViolations(0, 1,
-                result.buildFileUrl('reports/detekt-report.html'))
+                result.buildFileUrl('reports/detekt/detekt.html'))
     }
 
     @Test
@@ -72,7 +85,7 @@ class DetektIntegrationTest {
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
         assertThat(result.logs).containsDetektViolations(1, 0,
-                result.buildFileUrl('reports/detekt-report.html'))
+                result.buildFileUrl('reports/detekt/detekt.html'))
     }
 
     @Test
@@ -89,7 +102,7 @@ class DetektIntegrationTest {
                 .build('check')
 
         assertThat(result.logs).containsDetektViolations(0, 1,
-                result.buildFileUrl('reports/detekt-report.html'))
+                result.buildFileUrl('reports/detekt/detekt.html'))
     }
 
     @Test
@@ -98,7 +111,7 @@ class DetektIntegrationTest {
                 .build('check')
 
         assertThat(result.logs).containsDetektViolations(1, 0,
-                result.buildFileUrl('reports/detekt-report.html'))
+                result.buildFileUrl('reports/detekt/detekt.html'))
     }
 
     @Test
@@ -145,29 +158,30 @@ class DetektIntegrationTest {
 
     private static String detektConfiguration(File input, String detektVersion) {
         detektWith(detektVersion, """
-            config = '${Fixtures.Detekt.RULES}' 
-            output = "\$buildDir/reports"
+            config = files('${Fixtures.Detekt.RULES}') 
             // The input just needs to be configured for the tests. 
             // Probably detekt doesn't pick up the changed source sets. 
             // In a example project it was not needed.
-            input = "${input}"
+            input = files("${input}")
         """)
     }
 
     private static String detektConfigurationWithoutInput(String detektVersion) {
         detektWith(detektVersion, """
-            config = '${Fixtures.Detekt.RULES}' 
-            output = "\$buildDir/reports"
+            config = files('${Fixtures.Detekt.RULES}') 
         """)
     }
 
-    private static String detektWith(String detektVersion, String mainProfile) {
+    private static String detektWith(String detektVersion, String configuration) {
         """
         detekt {      
-            version '${detektVersion}'
+            toolVersion '${detektVersion}'
             
-            profile('main') { 
-                ${mainProfile.stripIndent()}
+            ${configuration.stripIndent()}  
+
+            reports {
+                xml.enabled = true
+                html.enabled = true
             }
         }
         """
