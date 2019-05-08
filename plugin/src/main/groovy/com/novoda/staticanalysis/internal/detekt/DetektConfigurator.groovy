@@ -52,6 +52,7 @@ class DetektConfigurator implements Configurator {
             config.delegate = detekt
             config.resolveStrategy = Closure.DELEGATE_FIRST
             config()
+            disableFailFast(detekt)
 
             def collectViolations = createCollectViolationsTask(violations)
             evaluateViolations.dependsOn collectViolations
@@ -66,6 +67,12 @@ class DetektConfigurator implements Configurator {
             }
         } catch (Exception exception) {
             throw new GradleException(DETEKT_CONFIGURATION_ERROR, exception)
+        }
+    }
+
+    private static void disableFailFast(detekt) {
+        if (detekt.hasProperty('failFast')) {
+            detekt.failFast = false
         }
     }
 
