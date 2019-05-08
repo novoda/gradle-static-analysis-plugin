@@ -20,7 +20,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
     protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
     protected final VariantFilter variantFilter
-    private boolean configured = false
+    protected boolean configured = false
 
     protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project

@@ -66,9 +66,12 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected void configureAndroidWithVariants(DomainObjectSet variants) {
+        if (configured) return
+
         variants.all { configureVariant(it) }
         variantFilter.filteredTestVariants.all { configureVariant(it) }
         variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+        configured = true
     }
 
     @Override
