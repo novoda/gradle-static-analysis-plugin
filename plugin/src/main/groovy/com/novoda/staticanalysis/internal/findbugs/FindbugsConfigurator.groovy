@@ -42,7 +42,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected Object getToolPlugin() {
+    protected def getToolPlugin() {
         QuietFindbugsPlugin
     }
 

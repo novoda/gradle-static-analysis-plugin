@@ -99,9 +99,11 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
 
     protected abstract String getToolName()
 
-    protected Object getToolPlugin() {
+    protected def getToolPlugin() {
         toolName
     }
+
+    protected abstract Class<T> getTaskClass()
 
     protected abstract Class<E> getExtensionClass()
 
@@ -111,21 +113,9 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    protected static def javaCompile(variant) {
-        if (variant.hasProperty('javaCompileProvider')) {
-            variant.javaCompileProvider.get()
-        } else {
-            variant.javaCompile
-        }
-    }
-
-    protected final String getToolTaskNameFor(named) {
-        "$toolName${named.name.capitalize()}"
-    }
-
-    protected abstract Class<T> getTaskClass()
-
     protected abstract void createToolTaskForAndroid(sourceSet)
+
+    protected abstract def createCollectViolations(String taskName, Violations violations)
 
     protected void configureToolTask(T task) {
         sourceFilter.applyTo(task)
@@ -135,5 +125,15 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         task.metaClass.getLogger = { QuietLogger.INSTANCE }
     }
 
-    protected abstract def createCollectViolations(String taskName, Violations violations)
+    protected final String getToolTaskNameFor(named) {
+        "$toolName${named.name.capitalize()}"
+    }
+
+    protected static def javaCompile(variant) {
+        if (variant.hasProperty('javaCompileProvider')) {
+            variant.javaCompileProvider.get()
+        } else {
+            variant.javaCompile
+        }
+    }
 }
