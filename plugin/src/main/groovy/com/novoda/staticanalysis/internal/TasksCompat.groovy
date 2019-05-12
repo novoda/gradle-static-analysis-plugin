@@ -8,7 +8,7 @@ import org.gradle.util.GradleVersion
 
 class TasksCompat {
 
-    private static boolean IS_GRADLE_MIN_49 = GradleVersion.current() >= GradleVersion.version("4.9")
+    private static boolean IS_GRADLE_MIN_49 = GradleVersion.current() >= GradleVersion.version('4.9')
 
     static <T extends Task> Object createTask(Project project, String name, Class<T> type, Action<? super T> configuration) {
         if (IS_GRADLE_MIN_49) {
