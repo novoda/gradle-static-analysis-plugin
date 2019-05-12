@@ -119,8 +119,8 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
         }
     }
 
-    protected final String getToolTaskNameFor(sourceSet) {
-        "$toolName${sourceSet.name.capitalize()}"
+    protected final String getToolTaskNameFor(named) {
+        "$toolName${named.name.capitalize()}"
     }
 
     protected abstract Class<T> getTaskClass()
