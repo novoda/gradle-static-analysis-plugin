@@ -1,6 +1,6 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
@@ -20,7 +20,7 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         def evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
         createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
         project.afterEvaluate {
-            project.tasks['check'].dependsOn evaluateViolations
+            project.tasks.findByName('check')?.dependsOn evaluateViolations
         }
     }
 
@@ -32,9 +32,9 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         }
     }
 
-    private static List<CodeQualityConfigurator> createConfigurators(Project project,
-                                                                     StaticAnalysisExtension pluginExtension,
-                                                                     Task evaluateViolations) {
+    private static List<Configurator> createConfigurators(Project project,
+                                                          StaticAnalysisExtension pluginExtension,
+                                                          Task evaluateViolations) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
         [
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),

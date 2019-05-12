@@ -27,7 +27,7 @@ final class TestProjectRule<T extends TestProject> implements TestRule {
         new TestProjectRule({ new TestKotlinProject() }, { String name -> "project.sourceSets.$name" }, 'Kotlin project')
     }
 
-    private TestProjectRule(Closure projectFactory, Closure sourceSetNameFactory, String label) {
+    TestProjectRule(Closure projectFactory, Closure sourceSetNameFactory, String label) {
         this.projectFactory = projectFactory
         this.sourceSetNameFactory = sourceSetNameFactory
         this.label = label
