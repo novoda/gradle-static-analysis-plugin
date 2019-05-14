@@ -81,10 +81,7 @@ class DetektConfigurator implements Configurator {
             def detektTask = project.tasks.findByName('detekt')
             try {
                 def reports = detektTask.reports
-                if (!reports.xml.enabled) {
-                    throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
-                }
-
+                checkXmlReportEnabled(reports)
                 task.xmlReportFile = reports.xml.destination
                 task.htmlReportFile = reports.html.destination
             } catch (Exception exception) {
@@ -92,6 +89,12 @@ class DetektConfigurator implements Configurator {
             }
             task.violations = violations
             task.dependsOn detektTask
+        }
+    }
+
+    private void checkXmlReportEnabled(reports) {
+        if (!reports.xml.enabled) {
+            throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
         }
     }
 
