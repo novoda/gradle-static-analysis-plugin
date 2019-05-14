@@ -8,14 +8,19 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.CodeQualityExtension
 import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.VerificationTask
 
-abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQualityExtension> implements Configurator {
+import static com.novoda.staticanalysis.internal.TasksCompat.configureEach
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
+
+abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, E extends CodeQualityExtension> implements Configurator {
 
     protected final Project project
     protected final Violations violations
     protected final Task evaluateViolations
     protected final SourceFilter sourceFilter
     protected final VariantFilter variantFilter
+    protected boolean configured = false
 
     protected CodeQualityConfigurator(Project project, Violations violations, Task evaluateViolations) {
         this.project = project
@@ -39,37 +44,67 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
             }
             project.plugins.withId('com.android.application') {
                 configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
-                configureToolTasks()
             }
             project.plugins.withId('com.android.library') {
                 configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
-                configureToolTasks()
             }
             project.plugins.withId('java') {
                 configureJavaProject()
-                configureToolTasks()
+            }
+            configureEach(project.tasks.withType(taskClass)) { task ->
+                configureToolTask(task)
             }
         }
     }
 
-    def configureAndroidWithVariants(DomainObjectSet variants) {
-        variants.all { configureAndroidVariant(it) }
-        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
-        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+    protected void configureJavaProject() {
+        if (configured) return
+
+        project.sourceSets.all { sourceSet ->
+            def collectViolations = createCollectViolations(getToolTaskNameFor(sourceSet), violations)
+            evaluateViolations.dependsOn collectViolations
+        }
+        configured = true
     }
 
-    def configureToolTasks() {
-        project.tasks.withType(taskClass) { task ->
+    protected void configureAndroidWithVariants(DomainObjectSet variants) {
+        if (configured) return
+
+        project.android.sourceSets.all { sourceSet ->
+            createToolTaskForAndroid(sourceSet)
+            createCollectViolations(getToolTaskNameFor(sourceSet), violations)
+        }
+        variants.all { configureVariant(it) }
+        variantFilter.filteredTestVariants.all { configureVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+        configured = true
+    }
+
+    protected void configureVariant(variant) {
+        def collectViolations = createVariantMetaTask(variant)
+        evaluateViolations.dependsOn collectViolations
+    }
+
+    private def createVariantMetaTask(variant) {
+        createTask(project, "collect${getToolTaskNameFor(variant)}VariantViolations", Task) { task ->
             task.group = 'verification'
-            configureReportEvaluation(task, violations)
+            task.description = "Runs $toolName analysis on all sources for android ${variant.name} variant"
+            task.mustRunAfter javaCompile(variant)
+
+            variant.sourceSets.forEach { sourceSet ->
+                def toolTaskName = getToolTaskNameFor(sourceSet)
+                task.dependsOn "collect${toolTaskName.capitalize()}Violations"
+            }
         }
     }
 
     protected abstract String getToolName()
 
-    protected Object getToolPlugin() {
+    protected def getToolPlugin() {
         toolName
     }
+
+    protected abstract Class<T> getTaskClass()
 
     protected abstract Class<E> getExtensionClass()
 
@@ -79,17 +114,27 @@ abstract class CodeQualityConfigurator<T extends SourceTask, E extends CodeQuali
         }
     }
 
-    protected abstract void configureAndroidVariant(variant)
+    protected abstract void createToolTaskForAndroid(sourceSet)
 
-    protected void configureJavaProject() {
-        project.tasks.withType(taskClass) { task ->
-            sourceFilter.applyTo(task)
-            task.exclude '**/*.kt'
-        }
+    protected abstract def createCollectViolations(String taskName, Violations violations)
+
+    protected void configureToolTask(T task) {
+        sourceFilter.applyTo(task)
+        task.group = 'verification'
+        task.exclude '**/*.kt'
+        task.ignoreFailures = true
+        task.metaClass.getLogger = { QuietLogger.INSTANCE }
     }
 
-    protected abstract Class<T> getTaskClass()
+    protected final String getToolTaskNameFor(named) {
+        "$toolName${named.name.capitalize()}"
+    }
 
-    protected abstract void configureReportEvaluation(T task, Violations violations)
-
+    protected static def javaCompile(variant) {
+        if (variant.hasProperty('javaCompileProvider')) {
+            variant.javaCompileProvider.get()
+        } else {
+            variant.javaCompile
+        }
+    }
 }

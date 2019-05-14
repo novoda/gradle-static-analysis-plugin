@@ -9,6 +9,8 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
+
 class DetektConfigurator implements Configurator {
 
     private static final String DETEKT_PLUGIN = 'io.gitlab.arturbosch.detekt'
@@ -67,7 +69,7 @@ class DetektConfigurator implements Configurator {
         }
     }
 
-    private CollectCheckstyleViolationsTask configureToolTask(detekt) {
+    private def configureToolTask(detekt) {
         def detektTask = project.tasks.findByName('detekt')
         if (detektTask?.hasProperty('reports')) {
             def reports = detektTask.reports
@@ -106,13 +108,12 @@ class DetektConfigurator implements Configurator {
         }
     }
 
-    private CollectCheckstyleViolationsTask createCollectViolationsTask(Violations violations, detektTask, File xmlReportFile, File htmlReportFile) {
-        project.tasks.create('collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
+    private def createCollectViolationsTask(Violations violations, detektTask, File xmlReportFile, File htmlReportFile) {
+        createTask(project, 'collectDetektViolations', CollectCheckstyleViolationsTask) { task ->
             task.xmlReportFile = xmlReportFile
             task.htmlReportFile = htmlReportFile
             task.violations = violations
-
-            task.dependsOn(detektTask)
+            task.dependsOn detektTask
         }
     }
 

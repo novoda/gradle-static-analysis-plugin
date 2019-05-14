@@ -2,13 +2,14 @@ package com.novoda.staticanalysis.internal.pmd
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.QuietLogger
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
 import org.gradle.api.plugins.quality.PmdExtension
+
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
@@ -49,41 +50,20 @@ class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
     }
 
     @Override
-    protected void configureAndroidVariant(variant) {
-        project.with {
-            variant.sourceSets.each { sourceSet ->
-                def taskName = "pmd${sourceSet.name.capitalize()}"
-                Pmd task = tasks.findByName(taskName)
-                if (task == null) {
-                    task = tasks.create(taskName, Pmd)
-                    task.with {
-                        description = "Run PMD analysis for ${sourceSet.name} classes"
-                        source = sourceSet.java.srcDirs
-                        exclude '**/*.kt'
-                    }
-                }
-                sourceFilter.applyTo(task)
-                task.mustRunAfter variant.javaCompile
-            }
+    protected void createToolTaskForAndroid(sourceSet) {
+        createTask(project, getToolTaskNameFor(sourceSet), Pmd) { Pmd task ->
+            task.description = "Run PMD analysis for sourceSet ${sourceSet.name} classes"
+            task.source = sourceSet.java.srcDirs
         }
     }
 
     @Override
-    protected void configureReportEvaluation(Pmd pmd, Violations violations) {
-        pmd.ignoreFailures = true
-        pmd.metaClass.getLogger = { QuietLogger.INSTANCE }
-
-        def collectViolations = createViolationsCollectionTask(pmd, violations)
-
-        evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn pmd
+    protected def createCollectViolations(String taskName, Violations violations) {
+        createTask(project, "collect${taskName.capitalize()}Violations", CollectPmdViolationsTask) { task ->
+            def pmd = project.tasks[taskName] as Pmd
+            task.xmlReportFile = pmd.reports.xml.destination
+            task.violations = violations
+            task.dependsOn(pmd)
+        }
     }
-
-    private CollectPmdViolationsTask createViolationsCollectionTask(Pmd pmd, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${pmd.name.capitalize()}Violations", CollectPmdViolationsTask)
-        task.xmlReportFile = pmd.reports.xml.destination
-        task.violations = violations
-        task
-    }
-
 }
