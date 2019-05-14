@@ -39,6 +39,7 @@ abstract class CodeQualityConfigurator<T extends SourceTask & VerificationTask, 
                 ext.exclude = { Object rule -> sourceFilter.exclude(rule) }
                 ext.includeVariants = { Closure<Boolean> filter -> variantFilter.includeVariantsFilter = filter }
                 config.delegate = it
+                config.resolveStrategy = Closure.DELEGATE_FIRST
                 config()
             }
             project.plugins.withId('com.android.application') {
