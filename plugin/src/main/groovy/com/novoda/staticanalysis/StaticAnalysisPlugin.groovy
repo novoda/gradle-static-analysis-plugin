@@ -12,6 +12,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+import static com.novoda.staticanalysis.internal.TasksCompat.configureEach
+
 class StaticAnalysisPlugin implements Plugin<Project> {
 
     @Override
@@ -19,8 +21,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         def pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
         def evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
         createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
-        project.afterEvaluate {
-            project.tasks.findByName('check')?.dependsOn evaluateViolations
+        configureEach(project.tasks.matching { it.name == 'check' }) { task ->
+            task.dependsOn evaluateViolations
         }
     }
 

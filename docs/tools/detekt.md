@@ -3,6 +3,9 @@
 does not support Java. It can be used in both pure Kotlin, and Android Kotlin projects. It then only makes sense to have Detekt enabled if you
 have Kotlin code in your project. The plugin only runs Detekt on projects that contain the Kotlin or the Kotlin-Android plugin.
 
+> Supported Detekt Gradle Plugin version: **1.0.0.RC9.2 and above** 
+> Recommended Detekt Gradle Plugin version: **1.0.0-RC14 and above** 
+
 ## Table of contents
  * [IMPORTANT: setup Detekt](#important-setup-detekt)
  * [Configure Detekt](#configure-detekt)
@@ -25,7 +28,7 @@ In most common cases, adding Detekt to a project boils down to three simple step
  1. Add this statement to your root `build.gradle` project (change the version according to your needs):
     ```gradle
     plugins {
-        id 'io.gitlab.arturbosch.detekt' version '1.0.0.RC6-2'
+        id 'io.gitlab.arturbosch.detekt' version '1.0.0-RC14'
         // ...
     }
     ```
@@ -39,17 +42,15 @@ In most common cases, adding Detekt to a project boils down to three simple step
 
 ## Configure Detekt
 Enabling and configuring Detekt for a project is done through the `detekt` closure. The closure behaves exactly like the
-[standard Detekt plugin](https://github.com/arturbosch/detekt#using-the-detekt-gradle-plugin) does in Gradle, which is to say, quite differently
+[standard Detekt plugin](https://github.com/arturbosch/detekt#with-gradle) does in Gradle, which is to say, quite differently
 from how the other tools' configurations closures work. For example:
 
 ```gradle
 detekt {
-    profile('main') {
-        input = // A string pointing to a project's sources. E.g., "$projectDir/src/main/java"
-        config = // A file containing the Detekt configuration, e.g., teamPropsFile('static-analysis/detekt-config.yml')
-        filters = // A comma-separated list of regex exclusions, e.g., '.*test.*,.*/resources/.*,.*/tmp/.*'
-        output = // A string pointing to the output directory for the reports, e.g., "$projectDir/build/reports/detekt"
-    }
+    toolVersion = "[version]" // custom toolVersion defined. By default, it is the Gradle plugin version
+    input = files("src/main/kotlin") // Optional: files representing project's Kotlin sources
+    filters = ".*/resources/.*,.*/build/.*" // A comma-separated list of regex exclusions
+    baseline = file("my-detekt-baseline.xml") // Optional: Just if you want to create a baseline file.
 }
 ```
 
@@ -59,7 +60,7 @@ You need to provide **at a minimum** the `config` and `output` values. It's impo
 in the Detekt configuration file as it will interfere with the functioning of the Static Analysis plugin's threshold counting. For the same reason, make
 sure that `failFast` is set to `false` in the Detekt configuration.
 
-For more informations about Detekt rules, refer to the [official website](https://github.com/arturbosch/detekt/tree/master/detekt-generator/documentation).
+For more information about Detekt rules, refer to the [official website](https://arturbosch.github.io/detekt/#quick-start-with-gradle).
 
 ## Exclude files from Detekt analysis
 
