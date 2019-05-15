@@ -65,7 +65,7 @@ staticAnalysis {
     }
 
     ktlint {
-        android true
+        android.set(true)
         reporters = [ReporterType.CHECKSTYLE]
 
         includeVariants { variant -> variant.name.contains('debug') }
