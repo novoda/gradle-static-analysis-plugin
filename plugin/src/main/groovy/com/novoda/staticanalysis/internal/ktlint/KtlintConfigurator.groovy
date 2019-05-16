@@ -3,15 +3,14 @@ package com.novoda.staticanalysis.internal.ktlint
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.TasksCompat
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.RegularFileProperty
 
+import static com.novoda.staticanalysis.internal.Exceptions.handleException
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class KtlintConfigurator implements Configurator {
@@ -19,6 +18,14 @@ class KtlintConfigurator implements Configurator {
     private static final String KTLINT_PLUGIN = 'org.jlleitschuh.gradle.ktlint'
     private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JLLeitschuh/ktlint-gradle/#how-to-use'
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to add "CHECKSTYLE" into reports in your Ktlint configuration'
+
+    private static final String LAST_COMPATIBLE_KTLINT_VERSION = '8.0.0'
+    private static final String MIN_COMPATIBLE_KTLINT_VERSION = '6.2.1'
+    private static final String KTLINT_CONFIGURATION_ERROR = """\
+A problem occurred while configuring Ktlint. Please make sure to use a compatible version:
+Minimum compatible Ktlint Plugin version: $MIN_COMPATIBLE_KTLINT_VERSION
+Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
+"""
 
     private final Project project
     private final Violations violations
@@ -71,14 +78,18 @@ class KtlintConfigurator implements Configurator {
     }
 
     private void configureKtlintExtension(Closure config) {
-        def ktlint = project.ktlint
-        ktlint.ignoreFailures = true
-        ktlint.ext.includeVariants = { Closure<Boolean> filter ->
-            variantFilter.includeVariantsFilter = filter
+        try {
+            def ktlint = project.ktlint
+            ktlint.ignoreFailures = true
+            ktlint.ext.includeVariants = { Closure<Boolean> filter ->
+                variantFilter.includeVariantsFilter = filter
+            }
+            config.delegate = ktlint
+            config.resolveStrategy = Closure.DELEGATE_FIRST
+            config()
+        } catch (Exception exception) {
+            handleException(KTLINT_CONFIGURATION_ERROR, exception)
         }
-        config.delegate = ktlint
-        config.resolveStrategy = Closure.DELEGATE_FIRST
-        config()
     }
 
     private void configureKotlinProject() {
@@ -122,18 +133,22 @@ class KtlintConfigurator implements Configurator {
 
             File xmlReportFile = null
             File txtReportFile = null
-            ktlintTask.reportOutputFiles.each { key, fileProp ->
-                def file = fileProp.get().asFile
-                if (file.name.endsWith('.xml')) {
-                    xmlReportFile = file
+            try {
+                ktlintTask.reportOutputFiles.each { key, fileProp ->
+                    def file = fileProp.get().asFile
+                    if (file.name.endsWith('.xml')) {
+                        xmlReportFile = file
+                    }
+                    if (file.name.endsWith('.txt')) {
+                        txtReportFile = file
+                    }
                 }
-                if (file.name.endsWith('.txt')) {
-                    txtReportFile = file
-                }
-            }
 
-            if (xmlReportFile == null) {
-                throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
+                if (xmlReportFile == null) {
+                    throw new GradleException(XML_REPORT_NOT_ENABLED)
+                }
+            } catch (Exception exception) {
+                handleException(KTLINT_CONFIGURATION_ERROR, exception)
             }
             task.xmlReportFile = xmlReportFile
             task.htmlReportFile = txtReportFile
