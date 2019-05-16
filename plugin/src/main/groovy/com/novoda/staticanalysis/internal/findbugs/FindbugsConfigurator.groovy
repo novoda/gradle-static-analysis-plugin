@@ -177,9 +177,8 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     private void createHtmlReportTask(String taskName) {
         createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->
             def findbugs = project.tasks[taskName] as FindBugs
-            def collectViolations = project.tasks["collect${taskName.capitalize()}Violations"] as CollectViolationsTask
-            task.xmlReportFile = collectViolations.xmlReportFile
-            task.htmlReportFile = collectViolations.htmlReportFile
+            task.xmlReportFile = findbugs.reports.xml.destination
+            task.htmlReportFile = new File(task.xmlReportFile.absolutePath - '.xml' + '.html')
             task.classpath = findbugs.findbugsClasspath
             task.dependsOn findbugs
         }

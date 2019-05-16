@@ -1,4 +1,4 @@
-package com.novoda.buildpropertiesplugin.sample;
+package com.novoda.staticanalysisplugin.sample;
 
 import org.junit.Test;
 
