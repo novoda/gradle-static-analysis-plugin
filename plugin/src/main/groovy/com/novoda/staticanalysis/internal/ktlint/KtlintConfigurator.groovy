@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal.ktlint
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
+import com.novoda.staticanalysis.internal.TasksCompat
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
@@ -10,6 +11,8 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.RegularFileProperty
+
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class KtlintConfigurator implements Configurator {
 
@@ -21,6 +24,7 @@ class KtlintConfigurator implements Configurator {
     private final Violations violations
     private final Task evaluateViolations
     private final VariantFilter variantFilter
+    protected boolean configured = false
 
     static KtlintConfigurator create(Project project,
                                      NamedDomainObjectContainer<Violations> violationsContainer,
@@ -78,64 +82,63 @@ class KtlintConfigurator implements Configurator {
     }
 
     private void configureKotlinProject() {
-        project.sourceSets.each { configureKtlint(it.name) }
-    }
-
-    private void configureAndroidWithVariants(def mainVariants) {
-        mainVariants.all { configureAndroidVariant(it) }
-        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
-        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
-    }
-
-    private void configureAndroidVariant(def variant) {
-        variant.sourceSets.each { sourceSet ->
-            configureKtlint(sourceSet.name)
-        }
-    }
-
-    private void configureKtlint(String sourceSetName) {
-        project.tasks.matching {
-            isKtlintTask(it, sourceSetName.capitalize())
-        }.all { Task ktlintTask ->
-            def collectViolations = configureKtlintWithOutputFiles(sourceSetName, ktlintTask.reportOutputFiles)
-            collectViolations.dependsOn ktlintTask
+        project.sourceSets.each {
+            def collectViolations = createCollectViolationsTask(violations, it.name)
             evaluateViolations.dependsOn collectViolations
         }
     }
 
-    /**
-     * KtLint task has the following naming convention and the needed property to resolve the reportOutputFiles
-     */
-    private boolean isKtlintTask(Task task, String sourceSetName) {
-        task.name ==~ /^ktlint$sourceSetName(SourceSet)?Check$/ && task.hasProperty('reportOutputFiles')
+    private void configureAndroidWithVariants(def mainVariants) {
+        if (configured) return
+
+        project.android.sourceSets.all { sourceSet ->
+            createCollectViolationsTask(violations, sourceSet.name)
+        }
+        mainVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+        configured = true
     }
 
-    private def configureKtlintWithOutputFiles(String sourceSetName, Map<?, RegularFileProperty> reportOutputFiles) {
-        File xmlReportFile = null
-        File txtReportFile = null
-        reportOutputFiles.each { key, fileProp ->
-            def file = fileProp.get().asFile
-            if (file.name.endsWith('.xml')) {
-                xmlReportFile = file
-            }
-            if (file.name.endsWith('.txt')) {
-                txtReportFile = file
-            }
-        }
-
-        if (xmlReportFile == null) {
-            throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
-        }
-
-        createCollectViolationsTask(violations, sourceSetName, xmlReportFile, txtReportFile)
+    private void configureAndroidVariant(def variant) {
+        def collectViolations = createVariantMetaTask(variant)
+        evaluateViolations.dependsOn collectViolations
     }
 
-    private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File txtReportFile) {
-        CollectCheckstyleViolationsTask task =
-                project.tasks.maybeCreate("collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask)
-        task.xmlReportFile = xmlReportFile
-        task.htmlReportFile = txtReportFile
-        task.violations = violations
-        return task
+    private def createVariantMetaTask(variant) {
+        createTask(project, "collectKtlint${variant.name.capitalize()}VariantViolations", Task) { task ->
+            variant.sourceSets.forEach { sourceSet ->
+                task.dependsOn "collectKtlint${sourceSet.name.capitalize()}Violations"
+            }
+        }
+    }
+
+    private def createCollectViolationsTask(Violations violations, def sourceSetName) {
+        createTask(project, "collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
+            Task ktlintTask = project.tasks.findByName("ktlint${sourceSetName.capitalize()}SourceSetCheck")
+            if (ktlintTask == null) {
+                ktlintTask = project.tasks.findByName("ktlint${sourceSetName.capitalize()}Check")
+            }
+
+            File xmlReportFile = null
+            File txtReportFile = null
+            ktlintTask.reportOutputFiles.each { key, fileProp ->
+                def file = fileProp.get().asFile
+                if (file.name.endsWith('.xml')) {
+                    xmlReportFile = file
+                }
+                if (file.name.endsWith('.txt')) {
+                    txtReportFile = file
+                }
+            }
+
+            if (xmlReportFile == null) {
+                throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
+            }
+            task.xmlReportFile = xmlReportFile
+            task.htmlReportFile = txtReportFile
+            task.violations = violations
+            task.dependsOn ktlintTask
+        }
     }
 }
