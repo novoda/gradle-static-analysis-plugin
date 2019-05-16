@@ -2,7 +2,7 @@
 [Ktlint](https://github.com/shyiko/ktlint) is a linter for Kotlin with a built-in formatter. It does not support Java. Adding 
 this tool only makes sense when you have Kotlin sources in your project. 
 
-> Supported Ktlint Gradle Plugin version: **6.0.0 and above** 
+> Supported Ktlint Gradle Plugin version: **6.2.1 and above** 
 
 ## Table of contents
  * [IMPORTANT: setup Ktlint](#important-setup-ktlint)

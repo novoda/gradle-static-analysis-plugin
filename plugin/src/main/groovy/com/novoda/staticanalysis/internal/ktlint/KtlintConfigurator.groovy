@@ -20,7 +20,7 @@ class KtlintConfigurator implements Configurator {
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to add "CHECKSTYLE" into reports in your Ktlint configuration'
 
     private static final String LAST_COMPATIBLE_KTLINT_VERSION = '8.0.0'
-    private static final String MIN_COMPATIBLE_KTLINT_VERSION = '6.2.1'
+    private static final String MIN_COMPATIBLE_KTLINT_VERSION = '6.2.1' // Do not forget to update ktlint.md
     private static final String KTLINT_CONFIGURATION_ERROR = """\
 A problem occurred while configuring Ktlint. Please make sure to use a compatible version:
 Minimum compatible Ktlint Plugin version: $MIN_COMPATIBLE_KTLINT_VERSION
