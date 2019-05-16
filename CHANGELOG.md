@@ -1,6 +1,21 @@
 Change Log
 ==========
 
+[Version 1.0](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v1.0)
+--------------------------
+                      
+- Add support for task configuration avoidance [PR#184](https://github.com/novoda/gradle-static-analysis-plugin/pull/184) [PR#186](https://github.com/novoda/gradle-static-analysis-plugin/pull/186) [PR#189](https://github.com/novoda/gradle-static-analysis-plugin/pull/189)
+  - This is a big performance improvement and a recommended upgrade for all users.
+  - Unless `evaluateViolations` or `check` task is run explicitly, no task will be configured eagerly. 
+  - More info on Gradle: https://docs.gradle.org/current/userguide/task_configuration_avoidance.html
+- Removed support for older versions of Ktlint and Detekt
+  - Minimum supported Ktlint Plugin: `6.2.1`
+  - Minimum supported Detekt Plugin: `1.0.0.RC9.2`
+- Fix: In some cases Groovy closures would use wrong scope [PR#185](https://github.com/novoda/gradle-static-analysis-plugin/pull/185)
+- Fix: check task not found on empty project [PR#187](https://github.com/novoda/gradle-static-analysis-plugin/pull/187)
+- Detekt is automatically configured to disable failFast since failure is handled by Static Analysis Plugin [PR#186](https://github.com/novoda/gradle-static-analysis-plugin/pull/186)
+- Update sample with new versions and make use of task configuration avoidance [PR#188](https://github.com/novoda/gradle-static-analysis-plugin/pull/188)
+
 [Version 0.8.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v0.8.1)
 --------------------------
 
