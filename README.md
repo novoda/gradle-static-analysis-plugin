@@ -3,6 +3,8 @@
 
 A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.
 
+Supports [Task Configuration Avoidance](https://docs.gradle.org/current/userguide/task_configuration_avoidance.html) so that you have zero overhead in build speeds when you use this plugin!
+
 ## Description
 Gradle supports many popular static analysis (Checkstyle, PMD, FindBugs, etc) via a set of built-in plugins.
 Using these plugins in an Android module will require an additional setup to compensate for the differences between
@@ -17,15 +19,24 @@ The `gradle-static-analysis-plugin` aims to provide:
 ### Supported tools
 The plugin supports various static analysis tools for Java, Kotlin and Android projects:
 
- * [`Checkstyle`](https://checkstyle.sourceforge.net)
- * [`PMD`](https://pmd.github.io)
- * [`FindBugs`](http://findbugs.sourceforge.net/)
- * [`Detekt`](https://github.com/arturbosch/detekt)
- * [`Android Lint`](https://developer.android.com/studio/write/lint.html)
- * [`KtLint`](https://github.com/shyiko/ktlint)
+ * [`Checkstyle`](docs/tools/checkstyle.md)
+ * [`PMD`](docs/tools/pmd.md)
+ * [`FindBugs`](docs/tools/findbugs.md)
+ * [`Detekt`](docs/tools/detekt.md)
+ * [`Android Lint`](docs/tools/android_lint.md)
+ * [`KtLint`](docs/tools/ktlint.md)
  
 Please note that the tools availability depends on the project the plugin is applied to. For more details please refer to the
 [supported tools](docs/supported-tools.md) page.
+
+### Tools in-consideration
+                          
+ * `Spotbugs` [#142](https://github.com/novoda/gradle-static-analysis-plugin/issues/142)
+ * `CPD (Duplicate Code Detection) ` [#150](https://github.com/novoda/gradle-static-analysis-plugin/iss (Duplicate Code Detection) ues/150)
+ * `error-prone` [#151](https://github.com/novoda/gradle-static-analysis-plugin/issues/151)
+ * `Jetbrains IDEA Inspections` [#152](https://github.com/novoda/gradle-static-analysis-plugin/issues/152)
+
+For all tools in consideration, please refer to [issues](https://github.com/novoda/gradle-static-analysis-plugin/issues?q=is%3Aissue+is%3Aopen+label%3A%22new+tool%22). 
 
 ### Out-of-the-box support for Android projects
 Android projects use a Gradle model that is not compatible with the Java one, supported by the built-in static analysis tools plugins.
