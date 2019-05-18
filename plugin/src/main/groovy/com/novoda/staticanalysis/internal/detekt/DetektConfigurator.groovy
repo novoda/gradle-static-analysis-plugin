@@ -9,15 +9,22 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+import static com.novoda.staticanalysis.internal.Exceptions.handleException
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class DetektConfigurator implements Configurator {
 
     private static final String DETEKT_PLUGIN = 'io.gitlab.arturbosch.detekt'
-    private static final String LAST_COMPATIBLE_DETEKT_VERSION = '1.0.0-RC14'
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/arturbosch/detekt.'
-    private static final String DETEKT_CONFIGURATION_ERROR = "A problem occurred while configuring Detekt. Please make sure to use a compatible version (All versions up to $LAST_COMPATIBLE_DETEKT_VERSION)"
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to enable "reports.xml" in your Detekt configuration'
+
+    private static final String LAST_COMPATIBLE_DETEKT_VERSION = '1.0.0-RC14'
+    private static final String MIN_COMPATIBLE_DETEKT_VERSION = '1.0.0.RC9.2' // Do not forget to update detekt.md
+    private static final String DETEKT_CONFIGURATION_ERROR = """\
+A problem occurred while configuring Detekt. Please make sure to use a compatible version:
+Minimum compatible Detekt version: $MIN_COMPATIBLE_DETEKT_VERSION
+Last tested compatible version: $LAST_COMPATIBLE_DETEKT_VERSION
+"""
 
     private final Project project
     private final Violations violations
@@ -66,7 +73,7 @@ class DetektConfigurator implements Configurator {
                 xml.destination = new File(project.buildDir, 'reports/detekt/detekt.xml')
             }
         } catch (Exception exception) {
-            throw new GradleException(DETEKT_CONFIGURATION_ERROR, exception)
+            handleException(DETEKT_CONFIGURATION_ERROR, exception)
         }
     }
 
@@ -85,7 +92,7 @@ class DetektConfigurator implements Configurator {
                 task.xmlReportFile = reports.xml.destination
                 task.htmlReportFile = reports.html.destination
             } catch (Exception exception) {
-                throw new GradleException(DETEKT_CONFIGURATION_ERROR, exception)
+                handleException(DETEKT_CONFIGURATION_ERROR, exception)
             }
             task.violations = violations
             task.dependsOn detektTask
@@ -94,7 +101,7 @@ class DetektConfigurator implements Configurator {
 
     private void checkXmlReportEnabled(reports) {
         if (!reports.xml.enabled) {
-            throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
+            throw new GradleException(XML_REPORT_NOT_ENABLED)
         }
     }
 
