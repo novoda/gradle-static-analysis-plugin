@@ -53,8 +53,8 @@ publish {
     desc = 'Easy setup of static analysis tools for Android and Java projects.'
     publishVersion = buildVersion
 
-    repoName = project.buildProperties.publish['bintrayRepo'].string
-    userOrg = project.buildProperties.publish['bintrayOrg'].string
+    repoName = project.buildProperties.bintray['bintrayRepo'].string
+    userOrg = project.buildProperties.bintray['bintrayOrg'].string
     bintrayUser = project.buildProperties.bintray['bintrayUser'].string
     bintrayKey = project.buildProperties.bintray['bintrayKey'].string
     website = project.websiteUrl
