@@ -92,7 +92,7 @@ This will enable all the tools with their default settings. For more advanced co
 There are two sample Android projects available, one consisting of a regular app - available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/sample) - and the other comprising a multi-module setup available [here](https://github.com/novoda/gradle-static-analysis-plugin/tree/master/sample-multi-module). Both sample projects showcase a setup featuring Checkstyle, FindBugs, PMD, Lint and Detekt.
 
 ## Snapshots
-[![CI status](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin-snapshot)](https://ci.novoda.com/job/gradle-static-analysis-plugin-snapshot/lastBuild/console) [![Download from Bintray](https://api.bintray.com/packages/novoda-oss/snapshots/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda-oss/snapshots-oss/gradle-static-analysis-plugin/_latestVersion)
+[![CI status](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin-snapshot)](https://ci.novoda.com/job/gradle-static-analysis-plugin-snapshot/lastBuild/console) [![Download from Bintray](https://api.bintray.com/packages/novoda-oss/snapshots/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda-oss/snapshots/gradle-static-analysis-plugin/_latestVersion)
 
 Snapshot builds from [`develop`](https://github.com/novoda/gradle-static-analysis-plugin/compare/master...develop) are automatically deployed to a [repository](https://bintray.com/novoda-oss/snapshots/gradle-static-analysis-plugin/_latestVersion) that is not synced with JCenter.
 To consume a snapshot build add an additional maven repo as follows:
