@@ -14,13 +14,13 @@ buildProperties {
 
     secrets {
         using rootProject.file('secrets.properties')
-        description = '''
-    This file should contain:
-        - git.username: the username used to push to the repo
-        - git.password: the password used to push to the repo
-        - gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
-        - gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
-		'''
+        description = '''This file should contain:
+                        - git.username: the username used to push to the repo
+                        - git.password: the password used to push to the repo
+                        - gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
+                        - gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository'''
+                .stripIndent()
+
     }
 
     cli {
@@ -38,7 +38,8 @@ buildProperties {
                         - bintrayOrg: name of the Bintray organisation to deploy the artifacts to
                         - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
                         - bintrayUser: name of the account used to deploy the artifacts
-                        - bintrayKey: API key of the account used to deploy the artifacts'''.stripIndent()
+                        - bintrayKey: API key of the account used to deploy the artifacts'''
+                .stripIndent()
     }
 
 }
