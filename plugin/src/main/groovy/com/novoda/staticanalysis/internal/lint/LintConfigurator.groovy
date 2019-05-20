@@ -9,12 +9,15 @@ import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+import static com.novoda.staticanalysis.internal.TasksCompat.*
+
 class LintConfigurator implements Configurator {
 
     private final Project project
     private final Violations violations
     private final Task evaluateViolations
     private final VariantFilter variantFilter
+    private boolean configured = false
 
     static LintConfigurator create(Project project,
                                    NamedDomainObjectContainer<Violations> violationsContainer,
@@ -57,6 +60,8 @@ class LintConfigurator implements Configurator {
     }
 
     private void configureWithVariants(DomainObjectSet variants) {
+        if (configured) return
+
         if (variantFilter.includeVariantsFilter != null) {
             variants.all {
                 configureCollectViolationsTask(it.name, "lint-results-${it.name}")
@@ -67,18 +72,18 @@ class LintConfigurator implements Configurator {
     }
 
     private void configureCollectViolationsTask(String taskSuffix = '', String reportFileName) {
-        def collectViolations = createCollectViolationsTask(taskSuffix, reportFileName, violations).with {
-            it.dependsOn project.tasks.findByName("lint${taskSuffix.capitalize()}")
-        }
+        def collectViolations = createCollectViolationsTask(taskSuffix, reportFileName, violations)
         evaluateViolations.dependsOn collectViolations
+        configured = true
     }
 
-    private CollectLintViolationsTask createCollectViolationsTask(String taskSuffix, String reportFileName, Violations violations) {
-        def task = project.tasks.maybeCreate("collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask)
-        task.xmlReportFile = xmlOutputFileFor(reportFileName)
-        task.htmlReportFile = htmlOutputFileFor(reportFileName)
-        task.violations = violations
-        return task
+    private def createCollectViolationsTask(String taskSuffix, String reportFileName, Violations violations) {
+        createTask(project, "collectLint${taskSuffix.capitalize()}Violations", CollectLintViolationsTask) { task ->
+            task.xmlReportFile = xmlOutputFileFor(reportFileName)
+            task.htmlReportFile = htmlOutputFileFor(reportFileName)
+            task.violations = violations
+            task.dependsOn project.tasks["lint${taskSuffix.capitalize()}"]
+        }
     }
 
     private File xmlOutputFileFor(reportFileName) {

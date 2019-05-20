@@ -2,7 +2,7 @@ ext {
     websiteUrl = 'https://github.com/novoda/gradle-static-analysis-plugin'
 }
 
-version = '0.8.1'
+version = '1.0'
 groovydoc.docTitle = 'Static Analysis Plugin'
 
 apply plugin: 'com.novoda.build-properties'
@@ -14,13 +14,13 @@ buildProperties {
 
     secrets {
         using rootProject.file('secrets.properties')
-        description = '''
-    This file should contain:
-- git.username: the username used to push to the repo
-- git.password: the password used to push to the repo
-- gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
-- gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository
-		'''
+        description = '''This file should contain:
+                        - git.username: the username used to push to the repo
+                        - git.password: the password used to push to the repo
+                        - gradle.publish.key: the key to publish the plugin to the Gradle Plugins Repository
+                        - gradle.publish.secret: the secret to publish the plugin to the Gradle Plugins Repository'''
+                .stripIndent()
+
     }
 
     cli {
@@ -30,14 +30,16 @@ buildProperties {
     bintray {
         def bintrayCredentials = {
             return isDryRun() ?
-                    ['bintrayRepo': 'n/a', 'bintrayUser': 'n/a', 'bintrayKey': 'n/a'] :
+                    ['bintrayOrg': 'n/a', 'bintrayRepo': 'n/a', 'bintrayUser': 'n/a', 'bintrayKey': 'n/a'] :
                     new File("${System.getenv('BINTRAY_PROPERTIES')}")
         }
         using(bintrayCredentials()).or(cli)
         description = '''This should contain the following properties:
-                         - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
-                         - bintrayUser: name of the account used to deploy the artifacts
-                         - bintrayKey: API key of the account used to deploy the artifacts'''.stripIndent()
+                        - bintrayOrg: name of the Bintray organisation to deploy the artifacts to
+                        - bintrayRepo: name of the repo of the organisation to deploy the artifacts to
+                        - bintrayUser: name of the account used to deploy the artifacts
+                        - bintrayKey: API key of the account used to deploy the artifacts'''
+                .stripIndent()
     }
 
 }
@@ -46,13 +48,13 @@ apply plugin: 'com.gradle.plugin-publish'
 apply plugin: 'com.novoda.bintray-release'
 
 publish {
-    userOrg = 'novoda'
     groupId = 'com.novoda'
     artifactId = 'gradle-static-analysis-plugin'
     desc = 'Easy setup of static analysis tools for Android and Java projects.'
     publishVersion = buildVersion
 
     repoName = project.buildProperties.bintray['bintrayRepo'].string
+    userOrg = project.buildProperties.bintray['bintrayOrg'].string
     bintrayUser = project.buildProperties.bintray['bintrayUser'].string
     bintrayKey = project.buildProperties.bintray['bintrayKey'].string
     website = project.websiteUrl
@@ -200,7 +202,7 @@ boolean isSnapshot() {
 }
 
 String getBuildVersion() {
-    return isSnapshot() ? "SNAPSHOT-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
+    return isSnapshot() ? "DEVELOP-${System.getenv('BUILD_NUMBER') ?: 'LOCAL'}" : project.version
 }
 
 String getTag() {

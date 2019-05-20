@@ -9,7 +9,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.RegularFileProperty
+
+import static com.novoda.staticanalysis.internal.Exceptions.handleException
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class KtlintConfigurator implements Configurator {
 
@@ -17,10 +19,19 @@ class KtlintConfigurator implements Configurator {
     private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JLLeitschuh/ktlint-gradle/#how-to-use'
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to add "CHECKSTYLE" into reports in your Ktlint configuration'
 
+    private static final String LAST_COMPATIBLE_KTLINT_VERSION = '8.0.0'
+    private static final String MIN_COMPATIBLE_KTLINT_VERSION = '6.2.1' // Do not forget to update ktlint.md
+    private static final String KTLINT_CONFIGURATION_ERROR = """\
+A problem occurred while configuring Ktlint. Please make sure to use a compatible version:
+Minimum compatible Ktlint Plugin version: $MIN_COMPATIBLE_KTLINT_VERSION
+Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
+"""
+
     private final Project project
     private final Violations violations
     private final Task evaluateViolations
     private final VariantFilter variantFilter
+    protected boolean configured = false
 
     static KtlintConfigurator create(Project project,
                                      NamedDomainObjectContainer<Violations> violationsContainer,
@@ -45,99 +56,104 @@ class KtlintConfigurator implements Configurator {
 
             configureKtlintExtension(config)
 
-            project.afterEvaluate {
-
-                project.plugins.withId("kotlin") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("kotlin2js") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("kotlin-platform-common") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
-                    configureKotlinProject()
-                }
-                project.plugins.withId('com.android.application') {
-                    configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
-                }
-                project.plugins.withId('com.android.library') {
-                    configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
-                }
+            project.plugins.withId("kotlin") {
+                configureKotlinProject()
+            }
+            project.plugins.withId("kotlin2js") {
+                configureKotlinProject()
+            }
+            project.plugins.withId("kotlin-platform-common") {
+                configureKotlinProject()
+            }
+            project.plugins.withId("org.jetbrains.kotlin.multiplatform") {
+                configureKotlinProject()
+            }
+            project.plugins.withId('com.android.application') {
+                configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
+            }
+            project.plugins.withId('com.android.library') {
+                configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
             }
         }
     }
 
     private void configureKtlintExtension(Closure config) {
-        def ktlint = project.ktlint
-        ktlint.ignoreFailures = true
-        ktlint.ext.includeVariants = { Closure<Boolean> filter ->
-            variantFilter.includeVariantsFilter = filter
+        try {
+            def ktlint = project.ktlint
+            ktlint.ignoreFailures = true
+            ktlint.ext.includeVariants = { Closure<Boolean> filter ->
+                variantFilter.includeVariantsFilter = filter
+            }
+            config.delegate = ktlint
+            config.resolveStrategy = Closure.DELEGATE_FIRST
+            config()
+        } catch (Exception exception) {
+            handleException(KTLINT_CONFIGURATION_ERROR, exception)
         }
-        config.delegate = ktlint
-        config()
     }
 
     private void configureKotlinProject() {
-        project.sourceSets.each { configureKtlint(it.name) }
-    }
-
-    private void configureAndroidWithVariants(def mainVariants) {
-        mainVariants.all { configureAndroidVariant(it) }
-        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
-        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
-    }
-
-    private void configureAndroidVariant(def variant) {
-        variant.sourceSets.each { sourceSet ->
-            configureKtlint(sourceSet.name)
-        }
-    }
-
-    private void configureKtlint(String sourceSetName) {
-        project.tasks.matching {
-            isKtlintTask(it, sourceSetName.capitalize())
-        }.all { Task ktlintTask ->
-            def collectViolations = configureKtlintWithOutputFiles(sourceSetName, ktlintTask.reportOutputFiles)
-            collectViolations.dependsOn ktlintTask
+        project.sourceSets.each {
+            def collectViolations = createCollectViolationsTask(violations, it.name)
             evaluateViolations.dependsOn collectViolations
         }
     }
 
-    /**
-     * KtLint task has the following naming convention and the needed property to resolve the reportOutputFiles
-     */
-    private boolean isKtlintTask(Task task, String sourceSetName) {
-        task.name ==~ /^ktlint$sourceSetName(SourceSet)?Check$/ && task.hasProperty('reportOutputFiles')
+    private void configureAndroidWithVariants(def mainVariants) {
+        if (configured) return
+
+        project.android.sourceSets.all { sourceSet ->
+            createCollectViolationsTask(violations, sourceSet.name)
+        }
+        mainVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredTestVariants.all { configureAndroidVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureAndroidVariant(it) }
+        configured = true
     }
 
-    private def configureKtlintWithOutputFiles(String sourceSetName, Map<?, RegularFileProperty> reportOutputFiles) {
-        File xmlReportFile = null
-        File txtReportFile = null
-        reportOutputFiles.each { key, fileProp ->
-            def file = fileProp.get().asFile
-            if (file.name.endsWith('.xml')) {
-                xmlReportFile = file
-            }
-            if (file.name.endsWith('.txt')) {
-                txtReportFile = file
-            }
-        }
-
-        if (xmlReportFile == null) {
-            throw new IllegalStateException(XML_REPORT_NOT_ENABLED)
-        }
-
-        createCollectViolationsTask(violations, sourceSetName, xmlReportFile, txtReportFile)
+    private void configureAndroidVariant(def variant) {
+        def collectViolations = createVariantMetaTask(variant)
+        evaluateViolations.dependsOn collectViolations
     }
 
-    private def createCollectViolationsTask(Violations violations, def sourceSetName, File xmlReportFile, File txtReportFile) {
-        CollectCheckstyleViolationsTask task =
-                project.tasks.maybeCreate("collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask)
-        task.xmlReportFile = xmlReportFile
-        task.htmlReportFile = txtReportFile
-        task.violations = violations
-        return task
+    private def createVariantMetaTask(variant) {
+        createTask(project, "collectKtlint${variant.name.capitalize()}VariantViolations", Task) { task ->
+            variant.sourceSets.forEach { sourceSet ->
+                task.dependsOn "collectKtlint${sourceSet.name.capitalize()}Violations"
+            }
+        }
+    }
+
+    private def createCollectViolationsTask(Violations violations, def sourceSetName) {
+        createTask(project, "collectKtlint${sourceSetName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
+            Task ktlintTask = project.tasks.findByName("ktlint${sourceSetName.capitalize()}SourceSetCheck")
+            if (ktlintTask == null) {
+                ktlintTask = project.tasks.findByName("ktlint${sourceSetName.capitalize()}Check")
+            }
+
+            File xmlReportFile = null
+            File txtReportFile = null
+            try {
+                ktlintTask.reportOutputFiles.each { key, fileProp ->
+                    def file = fileProp.get().asFile
+                    if (file.name.endsWith('.xml')) {
+                        xmlReportFile = file
+                    }
+                    if (file.name.endsWith('.txt')) {
+                        txtReportFile = file
+                    }
+                }
+
+                if (xmlReportFile == null) {
+                    throw new GradleException(XML_REPORT_NOT_ENABLED)
+                }
+            } catch (Exception exception) {
+                handleException(KTLINT_CONFIGURATION_ERROR, exception)
+            }
+            task.xmlReportFile = xmlReportFile
+            task.htmlReportFile = txtReportFile
+            task.violations = violations
+            task.dependsOn ktlintTask
+        }
     }
 }

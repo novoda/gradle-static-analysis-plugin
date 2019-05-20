@@ -6,8 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.novoda.buildpropertiesplugin.sample.R;
-
 public class SomeOtherActivity extends AppCompatActivity {
 
     @Override

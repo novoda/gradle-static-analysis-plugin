@@ -2,13 +2,14 @@ package com.novoda.staticanalysis.internal.checkstyle
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.QuietLogger
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
+
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
@@ -48,42 +49,27 @@ class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, Checkst
     }
 
     @Override
-    protected void configureAndroidVariant(variant) {
-        project.with {
-            variant.sourceSets.each { sourceSet ->
-                def taskName = "checkstyle${sourceSet.name.capitalize()}"
-                Checkstyle task = tasks.findByName(taskName)
-                if (task == null) {
-                    task = tasks.create(taskName, Checkstyle)
-                    task.with {
-                        description = "Run Checkstyle analysis for ${sourceSet.name} classes"
-                        source = sourceSet.java.srcDirs
-                        classpath = files("$buildDir/intermediates/classes/")
-                        exclude '**/*.kt'
-                    }
-                }
-                sourceFilter.applyTo(task)
-                task.mustRunAfter variant.javaCompile
-            }
+    protected void createToolTaskForAndroid(sourceSet) {
+        createTask(project, getToolTaskNameFor(sourceSet), Checkstyle) { task ->
+            task.description = "Run Checkstyle analysis for ${sourceSet.name} classes"
+            task.source = sourceSet.java.srcDirs
+            task.classpath = project.files("${project.buildDir}/intermediates/classes/")
         }
     }
 
     @Override
-    protected void configureReportEvaluation(Checkstyle checkstyle, Violations violations) {
-        checkstyle.showViolations = false
-        checkstyle.ignoreFailures = true
-        checkstyle.metaClass.getLogger = { QuietLogger.INSTANCE }
-
-        def collectViolations = createCollectViolationsTask(checkstyle, violations)
-
-        evaluateViolations.dependsOn collectViolations
-        collectViolations.dependsOn checkstyle
+    protected void configureToolTask(Checkstyle task) {
+        super.configureToolTask(task)
+        task.showViolations = false
     }
 
-    private CollectCheckstyleViolationsTask createCollectViolationsTask(Checkstyle checkstyle, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${checkstyle.name.capitalize()}Violations", CollectCheckstyleViolationsTask)
-        task.xmlReportFile = checkstyle.reports.xml.destination
-        task.violations = violations
-        task
+    @Override
+    protected def createCollectViolations(String taskName, Violations violations) {
+        createTask(project, "collect${taskName.capitalize()}Violations", CollectCheckstyleViolationsTask) { task ->
+            def checkstyle = project.tasks[taskName] as Checkstyle
+            task.xmlReportFile = checkstyle.reports.xml.destination
+            task.violations = violations
+            task.dependsOn(checkstyle)
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.novoda.staticanalysis
 
-import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
 import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
@@ -12,6 +12,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 
+import static com.novoda.staticanalysis.internal.TasksCompat.configureEach
+
 class StaticAnalysisPlugin implements Plugin<Project> {
 
     @Override
@@ -19,8 +21,8 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         def pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
         def evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
         createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
-        project.afterEvaluate {
-            project.tasks['check'].dependsOn evaluateViolations
+        configureEach(project.tasks.matching { it.name == 'check' }) { task ->
+            task.dependsOn evaluateViolations
         }
     }
 
@@ -32,9 +34,9 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         }
     }
 
-    private static List<CodeQualityConfigurator> createConfigurators(Project project,
-                                                                     StaticAnalysisExtension pluginExtension,
-                                                                     Task evaluateViolations) {
+    private static List<Configurator> createConfigurators(Project project,
+                                                          StaticAnalysisExtension pluginExtension,
+                                                          Task evaluateViolations) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
         [
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),

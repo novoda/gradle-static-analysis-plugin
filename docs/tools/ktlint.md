@@ -2,6 +2,8 @@
 [Ktlint](https://github.com/shyiko/ktlint) is a linter for Kotlin with a built-in formatter. It does not support Java. Adding 
 this tool only makes sense when you have Kotlin sources in your project. 
 
+> Supported Ktlint Gradle Plugin version: **6.2.1 and above** 
+
 ## Table of contents
  * [IMPORTANT: setup Ktlint](#important-setup-ktlint)
  * [Configure Ktlint](#configure-ktlint)
@@ -24,7 +26,7 @@ In most common cases, adding Ktlint to a project boils down to these simple step
  1. Add this statement to your root `build.gradle` project (change the version according to your needs):
     ```gradle
     plugins {
-        id 'org.jlleitschuh.gradle.ktlint' version '5.1.0'
+        id 'org.jlleitschuh.gradle.ktlint' version '7.3.0'
         // ...
     }
     ```

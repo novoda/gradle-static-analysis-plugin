@@ -2,7 +2,9 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
+import com.novoda.staticanalysis.internal.CollectViolationsTask
 import org.gradle.api.Action
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -13,6 +15,9 @@ import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
 
 import java.nio.file.Path
+
+import static com.novoda.staticanalysis.internal.TasksCompat.configureNamed
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
@@ -37,7 +42,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected Object getToolPlugin() {
+    protected def getToolPlugin() {
         QuietFindbugsPlugin
     }
 
@@ -60,42 +65,55 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureAndroidVariant(variant) {
-        FindBugs task = project.tasks.maybeCreate("findbugs${variant.name.capitalize()}", QuietFindbugsPlugin.Task)
-        List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
-        task.with {
-            description = "Run FindBugs analysis for ${variant.name} classes"
-            source = androidSourceDirs
-            classpath = variant.javaCompile.classpath
-            extraArgs '-auxclasspath', androidJar
-            exclude '**/*.kt'
-        }
-        sourceFilter.applyTo(task)
-        task.conventionMapping.map("classes") {
-            List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
-            getAndroidClasses(variant, includes)
-        }
-        task.dependsOn variant.javaCompile
+    protected void configureAndroidWithVariants(DomainObjectSet variants) {
+        if (configured) return
+
+        variants.all { configureVariant(it) }
+        variantFilter.filteredTestVariants.all { configureVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+        configured = true
     }
 
-    private FileCollection getAndroidClasses(Object variant, List<String> includes) {
-        includes.isEmpty() ? project.files() : project.fileTree(variant.javaCompile.destinationDir).include(includes) as ConfigurableFileTree
+    @Override
+    protected void configureVariant(variant) {
+        createToolTaskForAndroid(variant)
+        def collectViolations = createCollectViolations(getToolTaskNameFor(variant), violations)
+        evaluateViolations.dependsOn collectViolations
+    }
+
+    @Override
+    protected void createToolTaskForAndroid(variant) {
+        createTask(project, getToolTaskNameFor(variant), QuietFindbugsPlugin.Task) { task ->
+            List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
+            task.description = "Run FindBugs analysis for ${variant.name} classes"
+            task.source = androidSourceDirs
+            task.classpath = variant.javaCompile.classpath
+            task.extraArgs '-auxclasspath', androidJar
+            task.conventionMapping.map("classes") {
+                List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
+                getAndroidClasses(javaCompile(variant), includes)
+            }
+            sourceFilter.applyTo(task)
+            task.dependsOn javaCompile(variant)
+        }
+    }
+
+    private FileCollection getAndroidClasses(javaCompile, List<String> includes) {
+        includes.isEmpty() ? project.files() : project.fileTree(javaCompile.destinationDir).include(includes) as ConfigurableFileTree
     }
 
     @Override
     protected void configureJavaProject() {
+        super.configureJavaProject()
         project.afterEvaluate {
             project.sourceSets.each { SourceSet sourceSet ->
                 String taskName = sourceSet.getTaskName(toolName, null)
-                FindBugs task = project.tasks.findByName(taskName)
-                if (task != null) {
-                    sourceFilter.applyTo(task)
-                    task.conventionMapping.map("classes", {
+                configureNamed(project, taskName) { task ->
+                    task.conventionMapping.map("classes") {
                         List<File> sourceDirs = sourceSet.allJava.srcDirs.findAll { it.exists() }.toList()
                         List<String> includes = createIncludePatterns(task.source, sourceDirs)
                         getJavaClasses(sourceSet, includes)
-                    })
-                    task.exclude '**/*.kt'
+                    }
                 }
             }
         }
@@ -114,7 +132,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
                     .findAll { Path sourceDir -> sourceFile.startsWith(sourceDir) }
                     .collect { Path sourceDir -> sourceDir.relativize(sourceFile) }
         }
-        .flatten()
+                .flatten()
     }
 
     private FileCollection getJavaClasses(SourceSet sourceSet, List<String> includes) {
@@ -131,37 +149,39 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     @Override
-    protected void configureReportEvaluation(FindBugs findBugs, Violations violations) {
-        findBugs.ignoreFailures = true
-        findBugs.reports.xml.enabled = true
-        findBugs.reports.html.enabled = false
+    protected void configureToolTask(FindBugs task) {
+        super.configureToolTask(task)
+        task.reports.xml.enabled = true
+        task.reports.html.enabled = false
+    }
 
-        def collectViolations = createViolationsCollectionTask(findBugs, violations)
-        evaluateViolations.dependsOn collectViolations
-
+    @Override
+    protected def createCollectViolations(String taskName, Violations violations) {
         if (htmlReportEnabled) {
-            def generateHtmlReport = createHtmlReportTask(findBugs, collectViolations.xmlReportFile, collectViolations.htmlReportFile)
-            collectViolations.dependsOn generateHtmlReport
-            generateHtmlReport.dependsOn findBugs
-        } else {
-            collectViolations.dependsOn findBugs
+            createHtmlReportTask(taskName)
+        }
+        createTask(project, "collect${taskName.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
+            def findbugs = project.tasks[taskName] as FindBugs
+            task.xmlReportFile = findbugs.reports.xml.destination
+            task.violations = violations
+
+            if (htmlReportEnabled) {
+                task.dependsOn project.tasks["generate${taskName.capitalize()}HtmlReport"]
+            } else {
+                task.dependsOn findbugs
+            }
         }
     }
 
-    private CollectFindbugsViolationsTask createViolationsCollectionTask(FindBugs findBugs, Violations violations) {
-        def task = project.tasks.maybeCreate("collect${findBugs.name.capitalize()}Violations", CollectFindbugsViolationsTask)
-        task.xmlReportFile = findBugs.reports.xml.destination
-        task.violations = violations
-        task
-    }
 
-    private GenerateFindBugsHtmlReport createHtmlReportTask(FindBugs findBugs, File xmlReportFile, File htmlReportFile) {
-        def task = project.tasks.maybeCreate("generate${findBugs.name.capitalize()}HtmlReport", GenerateFindBugsHtmlReport)
-        task.xmlReportFile = xmlReportFile
-        task.htmlReportFile = htmlReportFile
-        task.classpath = findBugs.findbugsClasspath
-        task.onlyIf { xmlReportFile?.exists() }
-        task
+    private void createHtmlReportTask(String taskName) {
+        createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->
+            def findbugs = project.tasks[taskName] as FindBugs
+            task.xmlReportFile = findbugs.reports.xml.destination
+            task.htmlReportFile = new File(task.xmlReportFile.absolutePath - '.xml' + '.html')
+            task.classpath = findbugs.findbugsClasspath
+            task.dependsOn findbugs
+        }
     }
 
     private def getAndroidJar() {
