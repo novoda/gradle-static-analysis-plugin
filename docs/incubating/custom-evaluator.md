@@ -66,8 +66,8 @@ For example, this custom evaluator fails the build if PMD errors are greater tha
 ```gradle
 evaluator { Set allViolations ->
     allViolations.each { violation ->
-        if (violation.name == "PMD" && (violation.errors > 5)) {
-            throw new GradleException("PMD Violations exceeded \n")
+        if (violation.name == "PMD" && violation.errors > 5) {
+            throw new GradleException("PMD Violations exceeded")
         }
     }
 }
