@@ -40,7 +40,7 @@ can be provided as a closure as well:
 
 ```gradle
 staticAnalysis {
-    evaluator { Set<Violations> allViolations ->
+    evaluator { Set allViolations ->
        // add your evaluation logic here
     }
     //...
