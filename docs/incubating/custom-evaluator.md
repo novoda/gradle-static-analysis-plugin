@@ -74,7 +74,7 @@ evaluator { Set allViolations ->
 ```    
 The properties you can read from a [`Violation`][violationscode] result are:
 
-* `toolName`: Possible values are: `"PMD"`, `"Checkstyle"`, `"Findbugs"`, `"KTlint"`, `"Detekt"` and `"Lint"`.
+* `name`: Possible values are: `"PMD"`, `"Checkstyle"`, `"Findbugs"`, `"KTlint"`, `"Detekt"` and `"Lint"`.
 * `errors`: Represents the number of errors found during the analysis.
 * `warnings`: Represents the number of warnings found during the analysis.
 * `reports`: Contains a list of the generated report files.
