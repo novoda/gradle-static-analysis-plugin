@@ -40,7 +40,7 @@ can be provided as a closure as well:
 
 ```gradle
 staticAnalysis {
-    evaluator { Set<Violations> allViolations ->
+    evaluator { Set allViolations ->
        // add your evaluation logic here
     }
     //...
@@ -61,10 +61,29 @@ Anything that respect such contract is valid. For example, a custom evaluator mi
  * Only break the build if there are errors or warnings in one specific report
  * Or anything else that you can think of
 
+For example, this custom evaluator fails the build if PMD errors are greater than five:
+
+```gradle
+evaluator { Set allViolations ->
+    allViolations.each { violation ->
+        if (violation.name == "PMD" && violation.errors > 5) {
+            throw new GradleException("PMD Violations exceeded")
+        }
+    }
+}
+```    
+The properties you can read from a [`Violation`][violationscode] result are:
+
+* `name`: Possible values are: `"PMD"`, `"Checkstyle"`, `"Findbugs"`, `"KTlint"`, `"Detekt"` and `"Lint"`.
+* `errors`: Represents the number of errors found during the analysis.
+* `warnings`: Represents the number of warnings found during the analysis.
+* `reports`: Contains a list of the generated report files.
+
+---
 Please note that the presence of an `evaluator` property will make the plugin ignore the `penalty` closure and its thresholds. If you
 want to provide behaviour on top of the default [`DefaultViolationsEvaluator`][defaultviolationsevaluatorcode], you can have your own
 evaluator run its logic and then delegate the thresholds counting to an instance of `DefaultViolationsEvaluator` you create.
 
 [violationsevaluatorcode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/ViolationsEvaluator.groovy
 [defaultviolationsevaluatorcode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/DefaultViolationsEvaluator.groovy
-[violationscode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/internal/Violations.groovy
+[violationscode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/Violations.groovy
