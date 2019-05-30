@@ -67,4 +67,4 @@ evaluator run its logic and then delegate the thresholds counting to an instance
 
 [violationsevaluatorcode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/ViolationsEvaluator.groovy
 [defaultviolationsevaluatorcode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/DefaultViolationsEvaluator.groovy
-[violationscode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/internal/Violations.groovy
+[violationscode]: https://github.com/novoda/gradle-static-analysis-plugin/blob/master/plugin/src/main/groovy/com/novoda/staticanalysis/Violations.groovy
