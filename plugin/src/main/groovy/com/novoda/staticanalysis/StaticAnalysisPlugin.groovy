@@ -39,12 +39,21 @@ class StaticAnalysisPlugin implements Plugin<Project> {
                                                           Task evaluateViolations) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
         [
-                CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),
-                PmdConfigurator.create(project, violationsContainer, evaluateViolations),
-                FindbugsConfigurator.create(project, violationsContainer, evaluateViolations),
-                DetektConfigurator.create(project, violationsContainer, evaluateViolations),
-                KtlintConfigurator.create(project, violationsContainer, evaluateViolations),
-                LintConfigurator.create(project, violationsContainer, evaluateViolations)
+                CheckstyleConfigurator.create(project, violationsContainer, createTask('evaluateCheckstyleViolations', project, pluginExtension, evaluateViolations)),
+                PmdConfigurator.create(project, violationsContainer, createTask('evaluatePMDViolations', project, pluginExtension, evaluateViolations)),
+                FindbugsConfigurator.create(project, violationsContainer, createTask('evaluateFindbugsViolations', project, pluginExtension, evaluateViolations)),
+                DetektConfigurator.create(project, violationsContainer, createTask('evaluateDetektViolations', project, pluginExtension, evaluateViolations)),
+                KtlintConfigurator.create(project, violationsContainer, createTask('evaluateKtLintViolations', project, pluginExtension, evaluateViolations)),
+                LintConfigurator.create(project, violationsContainer, createTask('evaluateLintViolations', project, pluginExtension, evaluateViolations))
         ]
+    }
+
+    private static Task createTask(String name, Project project, StaticAnalysisExtension extension, Task evaluateViolations) {
+        def task = project.tasks.create(name, EvaluateViolationsTask) { task ->
+            task.evaluator = { extension.evaluator }
+            task.allViolations = { extension.allViolations }
+        }
+        evaluateViolations.dependsOn.add(task)
+        return task
     }
 }
