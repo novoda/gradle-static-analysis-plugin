@@ -1,11 +1,10 @@
 package com.novoda.staticanalysis.internal.findbugs
 
+import com.novoda.staticanalysis.EvaluateToolViolationsTask
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.CollectViolationsTask
 import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.ConfigurableFileTree
@@ -24,9 +23,8 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     protected boolean htmlReportEnabled = true
 
     static FindbugsConfigurator create(Project project,
-                                       Violations violations,
-                                       Task evaluateViolations) {
-        return new FindbugsConfigurator(project, violations, evaluateViolations)
+                                       EvaluateToolViolationsTask evaluateViolations) {
+        return new FindbugsConfigurator(project, evaluateViolations.toolViolations, evaluateViolations)
     }
 
     private FindbugsConfigurator(Project project,

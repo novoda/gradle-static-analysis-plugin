@@ -1,12 +1,12 @@
 package com.novoda.staticanalysis.internal.ktlint
 
+import com.novoda.staticanalysis.EvaluateToolViolationsTask
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -34,9 +34,8 @@ Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
     protected boolean configured = false
 
     static KtlintConfigurator create(Project project,
-                                     Violations violations,
-                                     Task evaluateViolations) {
-        return new KtlintConfigurator(project, violations, evaluateViolations)
+                                     EvaluateToolViolationsTask evaluateViolations) {
+        return new KtlintConfigurator(project, evaluateViolations.toolViolations, evaluateViolations)
     }
 
     KtlintConfigurator(Project project, Violations violations, Task evaluateViolations) {

@@ -20,7 +20,7 @@ class StaticAnalysisPlugin implements Plugin<Project> {
     void apply(Project project) {
         def pluginExtension = project.extensions.create('staticAnalysis', StaticAnalysisExtension, project)
         def evaluateViolations = createEvaluateViolationsTask(project, pluginExtension)
-        createConfigurators(project, pluginExtension, evaluateViolations).each { configurator -> configurator.execute() }
+        createConfigurators(project, pluginExtension).each { configurator -> configurator.execute() }
         configureEach(project.tasks.matching { it.name == 'check' }) { task ->
             task.dependsOn evaluateViolations
         }
@@ -34,47 +34,33 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         }
     }
 
-    private static List<Configurator> createConfigurators(Project project,
-                                                          StaticAnalysisExtension pluginExtension,
-                                                          Task evaluateViolations) {
+    private static List<Configurator> createConfigurators(Project project, StaticAnalysisExtension pluginExtension) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
 
-        Violations checkstyleViolations = violationsContainer.maybeCreate('Checkstyle')
-        Violations pmdViolations = violationsContainer.maybeCreate('PMD')
-        Violations findBugsViolations = violationsContainer.maybeCreate('Findbugs')
-        Violations detektViolations = violationsContainer.maybeCreate('Detekt')
-        Violations ktLintViolations = violationsContainer.maybeCreate('ktlint')
-        Violations lintViolations = violationsContainer.maybeCreate('Lint')
-
-        List<Task> violationsTasks = [
-                createTask('evaluateCheckstyleViolations', project, pluginExtension, checkstyleViolations),
-                createTask('evaluatePMDViolations', project, pluginExtension, pmdViolations),
-                createTask('evaluateFindbugsViolations', project, pluginExtension, findBugsViolations),
-                createTask('evaluateDetektViolations', project, pluginExtension, detektViolations),
-                createTask('evaluateKtLintViolations', project, pluginExtension, ktLintViolations),
-                createTask('evaluateLintViolations', project, pluginExtension, lintViolations)
-        ].each { task -> evaluateViolations.dependsOn(task) }
-
-        def configuratorList = [
-                CheckstyleConfigurator.create(project, checkstyleViolations, violationsTasks.get(0)),
-                PmdConfigurator.create(project, pmdViolations, violationsTasks.get(1)),
-                FindbugsConfigurator.create(project, findBugsViolations, violationsTasks.get(2)),
-                DetektConfigurator.create(project, detektViolations, violationsTasks.get(3)),
-                KtlintConfigurator.create(project, ktLintViolations, violationsTasks.get(4)),
-                LintConfigurator.create(project, lintViolations, violationsTasks.get(5))
+        return [
+                CheckstyleConfigurator.create(project, createTaskForTool('Checkstyle', project, pluginExtension, violationsContainer)),
+                PmdConfigurator.create(project, createTaskForTool('PMD', project, pluginExtension, violationsContainer)),
+                FindbugsConfigurator.create(project, createTaskForTool('Findbugs', project, pluginExtension, violationsContainer)),
+                DetektConfigurator.create(project, createTaskForTool('Detekt', project, pluginExtension, violationsContainer)),
+                KtlintConfigurator.create(project, createTaskForTool('ktlint', project, pluginExtension, violationsContainer)),
+                LintConfigurator.create(project, createTaskForTool('Lint', project, pluginExtension, violationsContainer))
         ]
-        return configuratorList
     }
 
-    private static Task createTask(String name,
-                                   Project project,
-                                   StaticAnalysisExtension extension,
-                                   Violations violationsContainer
+    private static EvaluateToolViolationsTask createTaskForTool(
+            String toolName,
+            Project project,
+            StaticAnalysisExtension extension,
+            NamedDomainObjectContainer<Violations> violationsContainer
     ) {
-        project.tasks.create(name, EvaluateToolViolationsTask) { task ->
+        def task = project.tasks.create("evaluate${toolName}Violations", EvaluateToolViolationsTask) { task ->
             task.evaluator = { extension.evaluator }
             task.allViolations = { extension.allViolations }
-            task.toolViolations = { violationsContainer } as Closure<Violations>
-        }
+            task.toolViolations = violationsContainer.maybeCreate(toolName)
+        } as EvaluateToolViolationsTask
+
+        project.tasks['evaluateViolations'].dependsOn task
+
+        return task
     }
 }

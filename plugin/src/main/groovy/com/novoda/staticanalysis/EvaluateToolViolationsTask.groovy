@@ -7,7 +7,7 @@ class EvaluateToolViolationsTask extends DefaultTask {
 
     Closure<ViolationsEvaluator> evaluator
     Closure<Set<Violations>> allViolations
-    Closure<Violations> toolViolations
+    Violations toolViolations
 
     EvaluateToolViolationsTask() {
         group = 'verification'
@@ -16,7 +16,7 @@ class EvaluateToolViolationsTask extends DefaultTask {
 
     @TaskAction
     void run() {
-        Set violationsSet = [toolViolations()]
+        Set violationsSet = [toolViolations]
         evaluator().evaluate(violationsSet)
     }
 }

@@ -1,15 +1,15 @@
 package com.novoda.staticanalysis.internal.lint
 
+import com.novoda.staticanalysis.EvaluateToolViolationsTask
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.VariantFilter
 import org.gradle.api.DomainObjectSet
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
-import static com.novoda.staticanalysis.internal.TasksCompat.*
+import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
 class LintConfigurator implements Configurator {
 
@@ -20,9 +20,8 @@ class LintConfigurator implements Configurator {
     private boolean configured = false
 
     static LintConfigurator create(Project project,
-                                   Violations violations,
-                                   Task evaluateViolations) {
-        return new LintConfigurator(project, violations, evaluateViolations)
+                                   EvaluateToolViolationsTask evaluateViolations) {
+        return new LintConfigurator(project, evaluateViolations.toolViolations, evaluateViolations)
     }
 
     private LintConfigurator(Project project, Violations violations, Task evaluateViolations) {

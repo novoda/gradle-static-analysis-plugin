@@ -1,9 +1,9 @@
 package com.novoda.staticanalysis.internal.checkstyle
 
+import com.novoda.staticanalysis.EvaluateToolViolationsTask
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Checkstyle
@@ -14,9 +14,8 @@ import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
     static CheckstyleConfigurator create(Project project,
-                                         Violations violations,
-                                         Task evaluateViolations) {
-        return new CheckstyleConfigurator(project, violations, evaluateViolations)
+                                         EvaluateToolViolationsTask evaluateViolations) {
+        return new CheckstyleConfigurator(project, evaluateViolations.toolViolations, evaluateViolations)
     }
 
     private CheckstyleConfigurator(Project project,

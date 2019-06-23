@@ -1,11 +1,11 @@
 package com.novoda.staticanalysis.internal.detekt
 
+import com.novoda.staticanalysis.EvaluateToolViolationsTask
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.checkstyle.CollectCheckstyleViolationsTask
 import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -31,9 +31,8 @@ Last tested compatible version: $LAST_COMPATIBLE_DETEKT_VERSION
     private final Task evaluateViolations
 
     static DetektConfigurator create(Project project,
-                                     Violations violations,
-                                     Task evaluateViolations) {
-        return new DetektConfigurator(project, violations, evaluateViolations)
+                                     EvaluateToolViolationsTask evaluateViolations) {
+        return new DetektConfigurator(project, evaluateViolations.toolViolations, evaluateViolations)
     }
 
     private DetektConfigurator(Project project, Violations violations, Task evaluateViolations) {

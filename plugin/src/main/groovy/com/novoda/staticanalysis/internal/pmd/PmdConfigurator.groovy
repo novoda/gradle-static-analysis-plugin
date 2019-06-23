@@ -1,9 +1,9 @@
 package com.novoda.staticanalysis.internal.pmd
 
+import com.novoda.staticanalysis.EvaluateToolViolationsTask
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.plugins.quality.Pmd
@@ -14,8 +14,8 @@ import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     static PmdConfigurator create(Project project,
-                                  Violations violations,
-                                  Task evaluateViolations) {
+                                  EvaluateToolViolationsTask evaluateViolations) {
+        def violations = evaluateViolations.toolViolations
         return new PmdConfigurator(project, violations, evaluateViolations)
     }
 
