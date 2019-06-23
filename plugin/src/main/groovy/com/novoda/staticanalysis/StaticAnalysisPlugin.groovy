@@ -55,7 +55,6 @@ class StaticAnalysisPlugin implements Plugin<Project> {
     ) {
         def task = project.tasks.create("evaluate${toolName}Violations", EvaluateToolViolationsTask) { task ->
             task.evaluator = { extension.evaluator }
-            task.allViolations = { extension.allViolations }
             task.toolViolations = violationsContainer.maybeCreate(toolName)
         } as EvaluateToolViolationsTask
 

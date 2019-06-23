@@ -6,7 +6,6 @@ import org.gradle.api.tasks.TaskAction
 class EvaluateToolViolationsTask extends DefaultTask {
 
     Closure<ViolationsEvaluator> evaluator
-    Closure<Set<Violations>> allViolations
     Violations toolViolations
 
     EvaluateToolViolationsTask() {
