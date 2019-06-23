@@ -14,9 +14,8 @@ import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 class CheckstyleConfigurator extends CodeQualityConfigurator<Checkstyle, CheckstyleExtension> {
 
     static CheckstyleConfigurator create(Project project,
-                                         NamedDomainObjectContainer<Violations> violationsContainer,
+                                         Violations violations,
                                          Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('Checkstyle')
         return new CheckstyleConfigurator(project, violations, evaluateViolations)
     }
 

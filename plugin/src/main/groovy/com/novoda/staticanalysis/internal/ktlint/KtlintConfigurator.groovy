@@ -34,9 +34,8 @@ Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
     protected boolean configured = false
 
     static KtlintConfigurator create(Project project,
-                                     NamedDomainObjectContainer<Violations> violationsContainer,
+                                     Violations violations,
                                      Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('ktlint')
         return new KtlintConfigurator(project, violations, evaluateViolations)
     }
 

@@ -31,9 +31,8 @@ Last tested compatible version: $LAST_COMPATIBLE_DETEKT_VERSION
     private final Task evaluateViolations
 
     static DetektConfigurator create(Project project,
-                                     NamedDomainObjectContainer<Violations> violationsContainer,
+                                     Violations violations,
                                      Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('Detekt')
         return new DetektConfigurator(project, violations, evaluateViolations)
     }
 

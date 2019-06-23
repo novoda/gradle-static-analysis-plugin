@@ -24,9 +24,8 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     protected boolean htmlReportEnabled = true
 
     static FindbugsConfigurator create(Project project,
-                                       NamedDomainObjectContainer<Violations> violationsContainer,
+                                       Violations violations,
                                        Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('Findbugs')
         return new FindbugsConfigurator(project, violations, evaluateViolations)
     }
 

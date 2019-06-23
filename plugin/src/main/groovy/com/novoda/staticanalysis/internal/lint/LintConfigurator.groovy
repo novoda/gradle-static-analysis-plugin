@@ -20,9 +20,8 @@ class LintConfigurator implements Configurator {
     private boolean configured = false
 
     static LintConfigurator create(Project project,
-                                   NamedDomainObjectContainer<Violations> violationsContainer,
+                                   Violations violations,
                                    Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('Lint')
         return new LintConfigurator(project, violations, evaluateViolations)
     }
 

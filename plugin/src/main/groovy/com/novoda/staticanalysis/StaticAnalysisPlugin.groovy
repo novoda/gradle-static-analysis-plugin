@@ -38,22 +38,43 @@ class StaticAnalysisPlugin implements Plugin<Project> {
                                                           StaticAnalysisExtension pluginExtension,
                                                           Task evaluateViolations) {
         NamedDomainObjectContainer<Violations> violationsContainer = pluginExtension.allViolations
-        [
-                CheckstyleConfigurator.create(project, violationsContainer, createTask('evaluateCheckstyleViolations', project, pluginExtension, evaluateViolations)),
-                PmdConfigurator.create(project, violationsContainer, createTask('evaluatePMDViolations', project, pluginExtension, evaluateViolations)),
-                FindbugsConfigurator.create(project, violationsContainer, createTask('evaluateFindbugsViolations', project, pluginExtension, evaluateViolations)),
-                DetektConfigurator.create(project, violationsContainer, createTask('evaluateDetektViolations', project, pluginExtension, evaluateViolations)),
-                KtlintConfigurator.create(project, violationsContainer, createTask('evaluateKtLintViolations', project, pluginExtension, evaluateViolations)),
-                LintConfigurator.create(project, violationsContainer, createTask('evaluateLintViolations', project, pluginExtension, evaluateViolations))
+
+        Violations checkstyleViolations = violationsContainer.maybeCreate('Checkstyle')
+        Violations pmdViolations = violationsContainer.maybeCreate('PMD')
+        Violations findBugsViolations = violationsContainer.maybeCreate('Findbugs')
+        Violations detektViolations = violationsContainer.maybeCreate('Detekt')
+        Violations ktLintViolations = violationsContainer.maybeCreate('ktlint')
+        Violations lintViolations = violationsContainer.maybeCreate('Lint')
+
+        List<Task> violationsTasks = [
+                createTask('evaluateCheckstyleViolations', project, pluginExtension, checkstyleViolations),
+                createTask('evaluatePMDViolations', project, pluginExtension, pmdViolations),
+                createTask('evaluateFindbugsViolations', project, pluginExtension, findBugsViolations),
+                createTask('evaluateDetektViolations', project, pluginExtension, detektViolations),
+                createTask('evaluateKtLintViolations', project, pluginExtension, ktLintViolations),
+                createTask('evaluateLintViolations', project, pluginExtension, lintViolations)
+        ].each { task -> evaluateViolations.dependsOn(task) }
+
+        def configuratorList = [
+                CheckstyleConfigurator.create(project, checkstyleViolations, violationsTasks.get(0)),
+                PmdConfigurator.create(project, pmdViolations, violationsTasks.get(1)),
+                FindbugsConfigurator.create(project, findBugsViolations, violationsTasks.get(2)),
+                DetektConfigurator.create(project, detektViolations, violationsTasks.get(3)),
+                KtlintConfigurator.create(project, ktLintViolations, violationsTasks.get(4)),
+                LintConfigurator.create(project, lintViolations, violationsTasks.get(5))
         ]
+        return configuratorList
     }
 
-    private static Task createTask(String name, Project project, StaticAnalysisExtension extension, Task evaluateViolations) {
-        def task = project.tasks.create(name, EvaluateViolationsTask) { task ->
+    private static Task createTask(String name,
+                                   Project project,
+                                   StaticAnalysisExtension extension,
+                                   Violations violationsContainer
+    ) {
+        project.tasks.create(name, EvaluateToolViolationsTask) { task ->
             task.evaluator = { extension.evaluator }
             task.allViolations = { extension.allViolations }
+            task.toolViolations = { violationsContainer } as Closure<Violations>
         }
-        evaluateViolations.dependsOn.add(task)
-        return task
     }
 }

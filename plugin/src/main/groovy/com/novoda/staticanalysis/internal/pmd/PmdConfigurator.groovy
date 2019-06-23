@@ -14,9 +14,8 @@ import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 class PmdConfigurator extends CodeQualityConfigurator<Pmd, PmdExtension> {
 
     static PmdConfigurator create(Project project,
-                                  NamedDomainObjectContainer<Violations> violationsContainer,
+                                  Violations violations,
                                   Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('PMD')
         return new PmdConfigurator(project, violations, evaluateViolations)
     }
 
