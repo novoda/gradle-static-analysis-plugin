@@ -15,7 +15,6 @@ class EvaluateToolViolationsTask extends DefaultTask {
 
     @TaskAction
     void run() {
-        Set violationsSet = [toolViolations]
-        evaluator().evaluate(violationsSet)
+        evaluator().evaluate([toolViolations] as Set)
     }
 }
