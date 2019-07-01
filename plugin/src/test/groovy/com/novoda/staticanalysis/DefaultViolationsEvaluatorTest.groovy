@@ -44,10 +44,8 @@ class DefaultViolationsEvaluatorTest {
         evaluator.evaluate(allViolations)
 
         def expected = """    
-            Violations found (1 errors, 0 warnings)
-            
             > $TOOL_NAME violations found (1 errors, 0 warnings). See the reports at:
-            - $consoleClickableFileUrl
+              $consoleClickableFileUrl
             """
         assertThat(warningLog).isEqualTo(expected.stripIndent())
     }
@@ -73,7 +71,7 @@ class DefaultViolationsEvaluatorTest {
                     """|Violations limit exceeded by 0 errors, 1 warnings.
                        |
                        |> $TOOL_NAME violations found (1 errors, 2 warnings). See the reports at:
-                       |- $consoleClickableFileUrl
+                       |  $consoleClickableFileUrl
                        |"""
             assertThat(e.message).isEqualTo(expected.stripMargin())
         }
