@@ -85,7 +85,7 @@ staticAnalysis {
 }
 ```
 
-This will enable all the tools with their default settings. For more advanced configurations, please refer to the
+This will enable all the tools with their default settings and create `evaluateViolations` task. Running `./gradlew evaluateViolations` task will run all configured tools and print the reports to console. For more advanced configurations, please refer to the
 [advanced usage](docs/advanced-usage.md) and to the [supported tools](docs/supported-tools.md) pages.
 
 ## Sample app
