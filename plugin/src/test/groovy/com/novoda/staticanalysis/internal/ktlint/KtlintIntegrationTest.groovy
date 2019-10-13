@@ -27,6 +27,17 @@ class KtlintIntegrationTest {
                     }
                     '''
 
+    public static final String DEFAULT_CONFIG_V9 = '''
+                    ktlint {
+                        reporters {
+                            reporter "plain"
+                            reporter "checkstyle"
+                        }
+                        
+                        includeVariants { it.name == "debug" }
+                    }
+                    '''
+
     @Parameterized.Parameters(name = '{0} with ktlint {1}')
     static def rules() {
         return [
@@ -43,6 +54,8 @@ class KtlintIntegrationTest {
                 [TestProjectRule.forAndroidKotlinProject(), '7.3.0', 'ktlintMainSourceSetCheck.txt'],
                 [TestProjectRule.forKotlinProject(), '8.0.0', 'ktlintMainSourceSetCheck.txt'],
                 [TestProjectRule.forAndroidKotlinProject(), '8.0.0', 'ktlintMainSourceSetCheck.txt'],
+                [TestProjectRule.forKotlinProject(), '9.0.0', 'ktlintMainSourceSetCheck.txt'],
+                [TestProjectRule.forAndroidKotlinProject(), '9.0.0', 'ktlintMainSourceSetCheck.txt'],
         ]*.toArray()
     }
 
@@ -78,7 +91,7 @@ class KtlintIntegrationTest {
     @Test
     void shouldFailBuildOnConfigurationWhenKtlintConfiguredButNotApplied() {
         def result = projectRule.newProject()
-                .withToolsConfig(DEFAULT_CONFIG)
+                .withToolsConfig(getDefaultConfig())
                 .buildAndFail('evaluateViolations')
 
         assertThat(result.logs).contains(KTLINT_NOT_APPLIED)
@@ -87,7 +100,7 @@ class KtlintIntegrationTest {
     @Test
     void shouldFailBuildWhenKtlintErrorsOverTheThreshold() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_WITH_ERROR)
-                .withToolsConfig(DEFAULT_CONFIG)
+                .withToolsConfig(getDefaultConfig())
                 .buildAndFail('evaluateViolations')
 
         assertThat(result.logs).containsLimitExceeded(1, 0)
@@ -98,7 +111,7 @@ class KtlintIntegrationTest {
     @Test
     void shouldNotFailWhenErrorsAreWithinThreshold() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_WITH_ERROR, 1)
-                .withToolsConfig(DEFAULT_CONFIG)
+                .withToolsConfig(getDefaultConfig())
                 .build('evaluateViolations')
 
         assertThat(result.logs).containsKtlintViolations(1,
@@ -108,7 +121,7 @@ class KtlintIntegrationTest {
     @Test
     void shouldNotFailBuildWhenNoErrorsEncounteredAndNoThresholdTrespassed() {
         def result = createProjectWith(Fixtures.Ktlint.SOURCES_NO_ERROR, 0)
-                .withToolsConfig(DEFAULT_CONFIG)
+                .withToolsConfig(getDefaultConfig())
                 .build('evaluateViolations')
 
         assertThat(result.logs).doesNotContainLimitExceeded()
@@ -123,5 +136,13 @@ class KtlintIntegrationTest {
                     maxWarnings = 0
                     maxErrors = ${maxErrors}
                 }""")
+    }
+
+    private String getDefaultConfig() {
+        if (ktlintVersion >= "9.0.0") {
+            return DEFAULT_CONFIG_V9
+        } else {
+            return DEFAULT_CONFIG
+        }
     }
 }

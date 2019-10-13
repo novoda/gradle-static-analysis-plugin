@@ -9,6 +9,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.file.RegularFileProperty
 
 import static com.novoda.staticanalysis.internal.Exceptions.handleException
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
@@ -18,6 +19,7 @@ class KtlintConfigurator implements Configurator {
     private static final String KTLINT_PLUGIN = 'org.jlleitschuh.gradle.ktlint'
     private static final String KTLINT_NOT_APPLIED = 'The Ktlint plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/JLLeitschuh/ktlint-gradle/#how-to-use'
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to add "CHECKSTYLE" into reports in your Ktlint configuration'
+    private static final String KTLINT_OUTPUT_FILES_NOT_DEFINED = 'No property for KtLint output files. Please check if the KtLint plugin has changed.'
 
     private static final String LAST_COMPATIBLE_KTLINT_VERSION = '8.0.0'
     private static final String MIN_COMPATIBLE_KTLINT_VERSION = '6.2.1' // Do not forget to update ktlint.md
@@ -134,7 +136,21 @@ Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
             File xmlReportFile = null
             File txtReportFile = null
             try {
-                ktlintTask.reportOutputFiles.each { key, fileProp ->
+                Map<String, RegularFileProperty> outputFiles = null
+
+                /**
+                 * This change was made to support version 9.0.0 of the JLLeitschuh/ktlint-gradle plugin which renamed
+                 * this property: https://github.com/JLLeitschuh/ktlint-gradle/blob/master/CHANGELOG.md#900---2019-09-30
+                 */
+                if (ktlintTask.hasProperty("allReportsOutputFiles")) {
+                    outputFiles = ktlintTask.allReportsOutputFiles
+                } else if(ktlintTask.hasProperty("reportOutputFiles")) {
+                    outputFiles = ktlintTask.reportOutputFiles
+                } else {
+                    throw new GradleException(KTLINT_OUTPUT_FILES_NOT_DEFINED)
+                }
+
+                outputFiles.each { key, fileProp ->
                     def file = fileProp.get().asFile
                     if (file.name.endsWith('.xml')) {
                         xmlReportFile = file
