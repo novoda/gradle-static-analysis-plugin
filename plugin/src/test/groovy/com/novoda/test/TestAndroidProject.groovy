@@ -43,14 +43,17 @@ ${formatExtension(project)}
 """
     }
 
+    private final boolean shouldDisableAndroidLint
+
     private String additionalAndroidConfig = ''
 
-    TestAndroidProject() {
+    TestAndroidProject(boolean shouldDisableAndroidLint) {
         super(TEMPLATE)
         File localProperties = Fixtures.LOCAL_PROPERTIES
         if (localProperties.exists()) {
             withFile(localProperties, 'local.properties')
         }
+        this.shouldDisableAndroidLint = shouldDisableAndroidLint
     }
 
     private static String formatSourceSets(TestProject project) {
@@ -65,6 +68,15 @@ ${formatExtension(project)}
         }"""
         }
         .join('\n\t\t')
+    }
+
+    @Override
+    List<String> defaultArguments() {
+        defaultAndroidArguments() + super.defaultArguments()
+    }
+
+    private List<String> defaultAndroidArguments() {
+        shouldDisableAndroidLint ? ['-x', 'lint'] : []
     }
 
     TestAndroidProject withAdditionalAndroidConfig(String additionalAndroidConfig) {
