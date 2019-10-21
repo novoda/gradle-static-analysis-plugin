@@ -52,7 +52,7 @@ buildscript {
        jcenter()
     }
     dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:0.8'
+        classpath 'com.novoda:gradle-static-analysis-plugin:1.1'
     }
 }
 
@@ -63,7 +63,7 @@ or from the [Gradle Plugins Repository](https://plugins.gradle.org/):
 
 ```gradle
 plugins {
-    id 'com.novoda.static-analysis' version '0.8'
+    id 'com.novoda.static-analysis' version '1.1'
 }
 
 ```
@@ -107,9 +107,7 @@ repositories {
 You can find the latest snapshot version following this [link](https://bintray.com/novoda-oss/snapshots/gradle-static-analysis-plugin/_latestVersion).
 
 ## Roadmap
-The plugin is under active development and to be considered in **beta stage**. It is routinely used by many Novoda projects and
-by other external projects with no known critical issues. The API is supposed to be relatively stable, but there still may be
-breaking changes as we move towards version 1.0.
+This project is routinely used by many Novoda projects and by other external projects with no known critical issues.
 
-Future improvements can be found on the repository's
+Future improvements and new tool integrations can be found on the repository's
 [issue tracker](https://github.com/novoda/gradle-static-analysis-plugin/issues?q=is%3Aopen+is%3Aissue+label%3Aenhancement).
