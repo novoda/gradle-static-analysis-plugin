@@ -136,19 +136,7 @@ Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
             File xmlReportFile = null
             File txtReportFile = null
             try {
-                Map<String, RegularFileProperty> outputFiles = null
-
-                /**
-                 * This change was made to support version 9.0.0 of the JLLeitschuh/ktlint-gradle plugin which renamed
-                 * this property: https://github.com/JLLeitschuh/ktlint-gradle/blob/master/CHANGELOG.md#900---2019-09-30
-                 */
-                if (ktlintTask.hasProperty("allReportsOutputFiles")) {
-                    outputFiles = ktlintTask.allReportsOutputFiles
-                } else if(ktlintTask.hasProperty("reportOutputFiles")) {
-                    outputFiles = ktlintTask.reportOutputFiles
-                } else {
-                    throw new GradleException(KTLINT_OUTPUT_FILES_NOT_DEFINED)
-                }
+                Map<String, RegularFileProperty> outputFiles = getOutputFilesMap(ktlintTask)
 
                 outputFiles.each { key, fileProp ->
                     def file = fileProp.get().asFile
@@ -170,6 +158,23 @@ Last tested compatible version: $LAST_COMPATIBLE_KTLINT_VERSION
             task.htmlReportFile = txtReportFile
             task.violations = violations
             task.dependsOn ktlintTask
+        }
+    }
+
+    /**
+     * This change was made to support version 9.0.0 of the JLLeitschuh/ktlint-gradle plugin which renamed
+     * `reportOutputFiles` to `allReportsOutputFiles`
+     *
+     * https://github.com/JLLeitschuh/ktlint-gradle/blob/master/CHANGELOG.md#900---2019-09-30
+     */
+    private static Map<String, RegularFileProperty> getOutputFilesMap(Task ktlintTask) {
+
+        if (ktlintTask.hasProperty("allReportsOutputFiles")) {
+            return ktlintTask.allReportsOutputFiles
+        } else if(ktlintTask.hasProperty("reportOutputFiles")) {
+            return ktlintTask.reportOutputFiles
+        } else {
+            throw new GradleException(KTLINT_OUTPUT_FILES_NOT_DEFINED)
         }
     }
 }
