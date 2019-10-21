@@ -14,7 +14,6 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
-ext.ReporterType = org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 apply from: rootProject.file('team-props/tasks.gradle')
 
