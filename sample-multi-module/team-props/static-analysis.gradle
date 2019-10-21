@@ -39,7 +39,9 @@ staticAnalysis {
     }
 
     ktlint {
-        reporters = [ReporterType.CHECKSTYLE]
+        reporters {
+            reporter "checkstyle"
+        }
         
         includeVariants { variant -> variant.name.contains('debug') }
     }
