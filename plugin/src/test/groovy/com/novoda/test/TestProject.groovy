@@ -26,6 +26,7 @@ abstract class TestProject<T extends TestProject> {
         }
         """
     }
+    private static final String GRADLE_MEMORY_SETTINGS = 'org.gradle.jvmargs=-Xmx3g -XX:MaxMetaspaceSize=512m'
 
     private final File projectDir
     private final Closure<String> template
@@ -108,6 +109,7 @@ abstract class TestProject<T extends TestProject> {
     private GradleRunner newRunner(String... arguments) {
         new File(projectDir, 'build.gradle').text = template.call(this)
         new File(projectDir, 'settings.gradle').text = SETTINGS_GRADLE_TEMPLATE.call(projectDir.name)
+        new File(projectDir, 'gradle.properties').text = GRADLE_MEMORY_SETTINGS
         List<String> defaultArgs = defaultArguments()
         List<String> args = new ArrayList<>(arguments.size() + defaultArgs.size())
         args.addAll(defaultArgs)

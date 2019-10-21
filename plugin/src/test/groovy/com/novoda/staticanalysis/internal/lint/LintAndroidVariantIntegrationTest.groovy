@@ -13,7 +13,7 @@ import static com.novoda.test.LogsSubject.assertThat
 class LintAndroidVariantIntegrationTest {
 
     @Rule
-    public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidProject()
+    public final TestProjectRule<TestAndroidProject> projectRule = TestProjectRule.forAndroidLintProject()
 
     @Test
     void shouldFailBuildWhenLintViolationsOverThreshold() {

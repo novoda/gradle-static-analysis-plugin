@@ -63,14 +63,13 @@ class LintIntegrationTest {
     }
 
     private static TestProject createAndroidProjectWith(File sources, int maxWarnings = 0, int maxErrors = 0) {
-        def testProject = new TestAndroidProject()
+        return new TestAndroidProject(false)
                 .withSourceSet('main', sources)
                 .withPenalty("""{
                     maxWarnings = ${maxWarnings}
                     maxErrors = ${maxErrors}
                 }""")
-
-        testProject.withToolsConfig(LINT_CONFIGURATION)
+                .withToolsConfig(LINT_CONFIGURATION)
     }
 
 }
