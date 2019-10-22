@@ -287,7 +287,7 @@ class SpotBugsIntegrationTest {
         def result = project.build('check')
 
         Truth.assertThat(result.outcome(':spotbugsDebug')).isEqualTo(TaskOutcome.UP_TO_DATE)
-//        Truth.assertThat(result.outcome(':generateSpotBugsDebugHtmlReport')).isEqualTo(TaskOutcome.UP_TO_DATE) // todo
+        Truth.assertThat(result.outcome(':generateSpotbugsDebugHtmlReport')).isEqualTo(TaskOutcome.UP_TO_DATE)
     }
 
     @Test

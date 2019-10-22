@@ -5,6 +5,7 @@ import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.findbugs.CollectFindbugsViolationsTask
+import com.novoda.staticanalysis.internal.findbugs.GenerateFindBugsHtmlReport
 import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -23,6 +24,7 @@ class SpotBugsConfigurator implements Configurator {
     private final Violations violations
     private final Task evaluateViolations
     private final VariantFilter variantFilter
+    protected boolean htmlReportEnabled = true
     protected boolean configured = false
 
     static SpotBugsConfigurator create(Project project,
@@ -60,6 +62,7 @@ class SpotBugsConfigurator implements Configurator {
             spotbugs.ext.includeVariants = { Closure<Boolean> filter ->
                 variantFilter.includeVariantsFilter = filter
             }
+            spotbugs.ext.htmlReportEnabled = { boolean enabled -> this.htmlReportEnabled = enabled }
             config.delegate = spotbugs
             config.resolveStrategy = Closure.DELEGATE_FIRST
             config()
@@ -80,23 +83,33 @@ class SpotBugsConfigurator implements Configurator {
     }
 
     private def createCollectViolations(String taskName, Violations violations) {
-//        if (htmlReportEnabled) {
-//            createHtmlReportTask(taskName)
-//        }
+        if (htmlReportEnabled) {
+            createHtmlReportTask(taskName)
+        }
         createTask(project, "collect${taskName.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
             def spotbugs = project.tasks[taskName]
             task.xmlReportFile = spotbugs.reports.xml.destination
             task.violations = violations
 
-//            if (htmlReportEnabled) {
-//                task.dependsOn project.tasks["generate${taskName.capitalize()}HtmlReport"]
-//            } else {
+            if (htmlReportEnabled) {
+                task.dependsOn project.tasks["generate${taskName.capitalize()}HtmlReport"]
+            } else {
                 task.dependsOn spotbugs
-//            }
+            }
         }
     }
 
-    protected static final String getToolTaskNameFor(named) {
+    private void createHtmlReportTask(String taskName) {
+        createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->
+            def spotbugs = project.tasks[taskName]
+            task.xmlReportFile = spotbugs.reports.xml.destination
+            task.htmlReportFile = new File(task.xmlReportFile.absolutePath - '.xml' + '.html')
+            task.classpath = spotbugs.spotbugsClasspath
+            task.dependsOn spotbugs
+        }
+    }
+
+    private static String getToolTaskNameFor(named) {
         "spotbugs${named.name.capitalize()}"
     }
 }
