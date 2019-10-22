@@ -3,6 +3,7 @@ package com.novoda.staticanalysis.internal.spotbugs
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
+import com.novoda.staticanalysis.internal.QuietLogger
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.findbugs.CollectFindbugsViolationsTask
 import com.novoda.staticanalysis.internal.findbugs.GenerateFindBugsHtmlReport
@@ -10,6 +11,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.tasks.SourceTask
 
 import static com.novoda.staticanalysis.internal.Exceptions.handleException
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
@@ -66,7 +68,6 @@ class SpotBugsConfigurator implements Configurator {
             config.delegate = spotbugs
             config.resolveStrategy = Closure.DELEGATE_FIRST
             config()
-            spotbugs.ignoreFailures = true
         } catch (Exception exception) {
             handleException(SPOTBUGS_CONFIGURATION_ERROR, exception)
         }
@@ -88,6 +89,7 @@ class SpotBugsConfigurator implements Configurator {
         }
         createTask(project, "collect${taskName.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
             def spotbugs = project.tasks[taskName]
+            configureToolTask(spotbugs)
             task.xmlReportFile = spotbugs.reports.xml.destination
             task.violations = violations
 
@@ -107,6 +109,15 @@ class SpotBugsConfigurator implements Configurator {
             task.classpath = spotbugs.spotbugsClasspath
             task.dependsOn spotbugs
         }
+    }
+
+    private void configureToolTask(SourceTask task) {
+        task.group = 'verification'
+        task.exclude '**/*.kt'
+        task.ignoreFailures = true
+        task.metaClass.getLogger = { QuietLogger.INSTANCE }
+        task.reports.xml.enabled = true
+        task.reports.html.enabled = false
     }
 
     private static String getToolTaskNameFor(named) {
