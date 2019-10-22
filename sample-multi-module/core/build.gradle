@@ -1,3 +1,6 @@
+plugins {
+    id 'com.github.spotbugs' version '2.0.0'
+}
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
 
@@ -22,3 +25,7 @@ compileTestKotlin {
 }
 
 apply from: rootProject.file('team-props/static-analysis.gradle')
+
+staticAnalysis {
+    spotbugs {}
+}
