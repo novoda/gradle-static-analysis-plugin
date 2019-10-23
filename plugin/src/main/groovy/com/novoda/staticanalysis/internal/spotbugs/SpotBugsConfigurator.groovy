@@ -3,7 +3,6 @@ package com.novoda.staticanalysis.internal.spotbugs
 import com.novoda.staticanalysis.StaticAnalysisExtension
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.Configurator
-import com.novoda.staticanalysis.internal.QuietLogger
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.findbugs.CollectFindbugsViolationsTask
 import com.novoda.staticanalysis.internal.findbugs.GenerateFindBugsHtmlReport
@@ -150,7 +149,6 @@ class SpotBugsConfigurator implements Configurator {
         task.group = 'verification'
         task.exclude '**/*.kt'
         task.ignoreFailures = true
-        task.metaClass.getLogger = { QuietLogger.INSTANCE }
         task.reports.xml.enabled = true
         task.reports.html.enabled = false
     }
