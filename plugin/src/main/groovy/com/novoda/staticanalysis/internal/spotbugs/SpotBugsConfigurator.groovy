@@ -92,13 +92,13 @@ class SpotBugsConfigurator implements Configurator {
     }
 
     private void createToolTaskForAndroid(variant) {
-        createTask(project, getToolTaskNameFor(variant), Class.forName('com.github.spotbugs.SpotBugsTask')) { task ->
+        createTask(project, getToolTaskNameFor(variant), Class.forName('com.github.spotbugs.SpotBugsTask')) { SourceTask task ->
             def javaCompile = javaCompile(variant)
             def androidSourceDirs = variant.sourceSets.collect {
                 it.javaDirectories
-            }.flatten() as List<File>
+            }.flatten()
             task.description = "Run SpotBugs analysis for ${variant.name} classes"
-            task.source = androidSourceDirs
+            task.setSource(androidSourceDirs)
             task.classpath = javaCompile.classpath
             task.extraArgs '-auxclasspath', androidJar
             task.conventionMapping.map("classes") {

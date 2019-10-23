@@ -4,7 +4,6 @@ import com.google.common.truth.Truth
 import com.novoda.test.TestProject
 import com.novoda.test.TestProjectRule
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.Ignore
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,7 +11,6 @@ import org.junit.runners.Parameterized
 
 import static com.novoda.test.Fixtures.Findbugs.*
 import static com.novoda.test.LogsSubject.assertThat
-import static com.novoda.test.TestProjectSubject.assumeThat
 
 @RunWith(Parameterized.class)
 class SpotBugsIntegrationTest {
@@ -146,118 +144,6 @@ class SpotBugsIntegrationTest {
     }
 
     @Test
-    @Ignore
-    void shouldNotFailBuildWhenSpotBugsConfiguredToExcludePattern() {
-        TestProject.Result result = createProjectWith()
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
-                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 10
-                }''')
-                .withToolsConfig('spotbugs { exclude "com/novoda/test/HighPriorityViolator.java" }')
-                .build('check')
-
-        assertThat(result.logs).doesNotContainLimitExceeded()
-        assertThat(result.logs).containsSpotBugsViolations(0, 2,
-                result.buildFileUrl('reports/spotbugs/debug.html'))
-    }
-
-    @Test
-    @Ignore
-    void shouldNotFailBuildWhenSpotBugsConfiguredToExcludeFaultySourceFolder() {
-        TestProject.Result result = createProjectWith()
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withSourceSet('release', SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 10
-                }''')
-                .withToolsConfig("spotbugs { exclude project.fileTree('${SOURCES_WITH_HIGH_VIOLATION}') }")
-                .build('check')
-
-        assertThat(result.logs).doesNotContainLimitExceeded()
-        assertThat(result.logs).containsSpotBugsViolations(0, 2,
-                result.buildFileUrl('reports/spotbugs/debug.html'))
-    }
-
-    @Test
-    @Ignore
-    void shouldNotFailBuildWhenSpotBugsConfiguredToIgnoreFaultyJavaSourceSets() {
-        TestProject project = createProjectWith()
-        assumeThat(project).isJavaProject()
-
-        TestProject.Result result = project
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
-                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 10
-                }''')
-                .withToolsConfig('spotbugs { exclude project.sourceSets.test.java.srcDirs }')
-                .build('check')
-
-        assertThat(result.logs).doesNotContainLimitExceeded()
-        assertThat(result.logs).containsSpotBugsViolations(0, 2,
-                result.buildFileUrl('reports/spotbugs/debug.html'))
-    }
-
-    @Test
-    @Ignore
-    void shouldNotFailBuildWhenSpotBugsConfiguredToIgnoreFaultyAndroidSourceSets() {
-        TestProject project = createProjectWith()
-        assumeThat(project).isAndroidProject()
-
-        TestProject.Result result = project
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
-                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
-                .withSourceSet('androidTest', SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 1
-                }''')
-                .withToolsConfig('''spotbugs {
-                    exclude project.android.sourceSets.test.java.srcDirs
-                    exclude project.android.sourceSets.androidTest.java.srcDirs
-                }''')
-                .build('check')
-
-        assertThat(result.logs).doesNotContainLimitExceeded()
-        assertThat(result.logs).containsSpotBugsViolations(0, 1,
-                result.buildFileUrl('reports/spotbugs/debug.html'))
-    }
-
-    @Test
-    @Ignore
-    void shouldSkipSpotBugsTasksForIgnoredFaultyAndroidSourceSets() {
-        TestProject project = createProjectWith()
-        assumeThat(project).isAndroidProject()
-
-        TestProject.Result result = project
-                .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION)
-                .withSourceSet('test', SOURCES_WITH_HIGH_VIOLATION)
-                .withSourceSet('androidTest', SOURCES_WITH_HIGH_VIOLATION)
-                .withPenalty('''{
-                    maxErrors = 0
-                    maxWarnings = 1
-                }''')
-                .withToolsConfig('''spotbugs {
-                    exclude project.android.sourceSets.test.java.srcDirs
-                    exclude project.android.sourceSets.androidTest.java.srcDirs
-                }''')
-                .build('check')
-
-        Truth.assertThat(result.outcome(':spotbugsDebugAndroidTest')).isEqualTo(TaskOutcome.NO_SOURCE)
-        Truth.assertThat(result.outcome(':generateSpotBugsDebugAndroidTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
-        Truth.assertThat(result.outcome(':spotbugsDebug')).isEqualTo(TaskOutcome.SUCCESS)
-        Truth.assertThat(result.outcome(':generateSpotBugsDebugHtmlReport')).isEqualTo(TaskOutcome.SUCCESS)
-        Truth.assertThat(result.outcome(':spotbugsDebugUnitTest')).isEqualTo(TaskOutcome.NO_SOURCE)
-        Truth.assertThat(result.outcome(':generateSpotBugsDebugUnitTestHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
-        Truth.assertThat(result.outcome(':spotbugsRelease')).isEqualTo(TaskOutcome.NO_SOURCE)
-        Truth.assertThat(result.outcome(':generateSpotBugsReleaseHtmlReport')).isEqualTo(TaskOutcome.SKIPPED)
-    }
-
-    @Test
     void shouldNotFailBuildWhenSpotBugsIsConfiguredMultipleTimes() {
         createProjectWith()
                 .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
@@ -291,7 +177,6 @@ class SpotBugsIntegrationTest {
     }
 
     @Test
-    @Ignore
     void shouldNotGenerateHtmlWhenDisabled() {
         def result = createProjectWith()
                 .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
