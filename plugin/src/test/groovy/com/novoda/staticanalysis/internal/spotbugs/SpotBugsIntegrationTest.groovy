@@ -19,7 +19,7 @@ class SpotBugsIntegrationTest {
 
     @Parameterized.Parameters(name = "{0}")
     static Iterable<TestProjectRule> rules() {
-        return [TestProjectRule.forJavaProject()/*, TestProjectRule.forAndroidProject()*/]
+        return [TestProjectRule.forJavaProject(), TestProjectRule.forAndroidProject()]
     }
 
     @Rule

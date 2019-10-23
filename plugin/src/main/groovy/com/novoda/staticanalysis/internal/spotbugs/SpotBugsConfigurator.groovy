@@ -7,10 +7,7 @@ import com.novoda.staticanalysis.internal.QuietLogger
 import com.novoda.staticanalysis.internal.VariantFilter
 import com.novoda.staticanalysis.internal.findbugs.CollectFindbugsViolationsTask
 import com.novoda.staticanalysis.internal.findbugs.GenerateFindBugsHtmlReport
-import org.gradle.api.GradleException
-import org.gradle.api.NamedDomainObjectContainer
-import org.gradle.api.Project
-import org.gradle.api.Task
+import org.gradle.api.*
 import org.gradle.api.tasks.SourceTask
 
 import static com.novoda.staticanalysis.internal.Exceptions.handleException
@@ -30,8 +27,8 @@ class SpotBugsConfigurator implements Configurator {
     protected boolean configured = false
 
     static SpotBugsConfigurator create(Project project,
-                                     NamedDomainObjectContainer<Violations> violationsContainer,
-                                     Task evaluateViolations) {
+                                       NamedDomainObjectContainer<Violations> violationsContainer,
+                                       Task evaluateViolations) {
         Violations violations = violationsContainer.maybeCreate('SpotBugs')
         return new SpotBugsConfigurator(project, violations, evaluateViolations)
     }
@@ -42,7 +39,7 @@ class SpotBugsConfigurator implements Configurator {
         this.evaluateViolations = evaluateViolations
         this.variantFilter = new VariantFilter(project)
     }
-    
+
     @Override
     void execute() {
         project.extensions.findByType(StaticAnalysisExtension).ext.spotbugs = { Closure config ->
@@ -52,6 +49,12 @@ class SpotBugsConfigurator implements Configurator {
 
             configureSpotBugsExtension(config)
 
+            project.plugins.withId('com.android.application') {
+                configureAndroidWithVariants(variantFilter.filteredApplicationVariants)
+            }
+            project.plugins.withId('com.android.library') {
+                configureAndroidWithVariants(variantFilter.filteredLibraryVariants)
+            }
             project.plugins.withId('java') {
                 configureJavaProject()
             }
@@ -73,7 +76,39 @@ class SpotBugsConfigurator implements Configurator {
         }
     }
 
-    protected void configureJavaProject() {
+    protected void configureAndroidWithVariants(DomainObjectSet variants) {
+        if (configured) return
+
+        variants.all { configureVariant(it) }
+        variantFilter.filteredTestVariants.all { configureVariant(it) }
+        variantFilter.filteredUnitTestVariants.all { configureVariant(it) }
+        configured = true
+    }
+
+    private void configureVariant(variant) {
+        createToolTaskForAndroid(variant)
+        def collectViolations = createCollectViolations(getToolTaskNameFor(variant), violations)
+        evaluateViolations.dependsOn collectViolations
+    }
+
+    private void createToolTaskForAndroid(variant) {
+        createTask(project, getToolTaskNameFor(variant), Class.forName('com.github.spotbugs.SpotBugsTask')) { task ->
+            def javaCompile = javaCompile(variant)
+            def androidSourceDirs = variant.sourceSets.collect {
+                it.javaDirectories
+            }.flatten() as List<File>
+            task.description = "Run SpotBugs analysis for ${variant.name} classes"
+            task.source = androidSourceDirs
+            task.classpath = javaCompile.classpath
+            task.extraArgs '-auxclasspath', androidJar
+            task.conventionMapping.map("classes") {
+                project.fileTree(javaCompile.destinationDir)
+            }
+            task.dependsOn javaCompile
+        }
+    }
+
+    private void configureJavaProject() {
         if (configured) return
 
         project.sourceSets.all { sourceSet ->
@@ -88,7 +123,7 @@ class SpotBugsConfigurator implements Configurator {
             createHtmlReportTask(taskName)
         }
         createTask(project, "collect${taskName.capitalize()}Violations", CollectFindbugsViolationsTask) { task ->
-            def spotbugs = project.tasks[taskName]
+            def spotbugs = project.tasks[taskName] as SourceTask
             configureToolTask(spotbugs)
             task.xmlReportFile = spotbugs.reports.xml.destination
             task.violations = violations
@@ -111,7 +146,7 @@ class SpotBugsConfigurator implements Configurator {
         }
     }
 
-    private void configureToolTask(SourceTask task) {
+    private static void configureToolTask(SourceTask task) {
         task.group = 'verification'
         task.exclude '**/*.kt'
         task.ignoreFailures = true
@@ -122,5 +157,17 @@ class SpotBugsConfigurator implements Configurator {
 
     private static String getToolTaskNameFor(named) {
         "spotbugs${named.name.capitalize()}"
+    }
+
+    private static def javaCompile(variant) {
+        if (variant.hasProperty('javaCompileProvider')) {
+            variant.javaCompileProvider.get()
+        } else {
+            variant.javaCompile
+        }
+    }
+
+    private def getAndroidJar() {
+        "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
     }
 }
