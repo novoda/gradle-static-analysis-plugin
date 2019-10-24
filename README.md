@@ -1,5 +1,5 @@
 # Gradle static analysis plugin
-[![](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin)](https://ci.novoda.com/job/gradle-static-analysis-plugin/lastSuccessfulBuild) [![](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE.txt) [![Bintray](https://api.bintray.com/packages/novoda/maven/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda-oss/maven/gradle-static-analysis-plugin/_latestVersion)
+[![](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin)](https://ci.novoda.com/job/gradle-static-analysis-plugin/lastSuccessfulBuild) [![](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE.txt) [![Bintray](https://api.bintray.com/packages/novoda-oss/maven/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda-oss/maven/gradle-static-analysis-plugin/_latestVersion)
 
 A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.
 
@@ -32,7 +32,7 @@ Please note that the tools availability depends on the project the plugin is app
 ### Tools in-consideration
                           
  * `Spotbugs` [#142](https://github.com/novoda/gradle-static-analysis-plugin/issues/142)
- * `CPD (Duplicate Code Detection) ` [#150](https://github.com/novoda/gradle-static-analysis-plugin/iss (Duplicate Code Detection) ues/150)
+ * `CPD (Duplicate Code Detection) ` [#150](https://github.com/novoda/gradle-static-analysis-plugin/issues/150)
  * `error-prone` [#151](https://github.com/novoda/gradle-static-analysis-plugin/issues/151)
  * `Jetbrains IDEA Inspections` [#152](https://github.com/novoda/gradle-static-analysis-plugin/issues/152)
 
@@ -85,7 +85,7 @@ staticAnalysis {
 }
 ```
 
-This will enable all the tools with their default settings. For more advanced configurations, please refer to the
+This will enable all the tools with their default settings and create `evaluateViolations` task. Running `./gradlew evaluateViolations` task will run all configured tools and print the reports to console. For more advanced configurations, please refer to the
 [advanced usage](docs/advanced-usage.md) and to the [supported tools](docs/supported-tools.md) pages.
 
 ## Sample app
@@ -107,6 +107,7 @@ repositories {
 You can find the latest snapshot version following this [link](https://bintray.com/novoda-oss/snapshots/gradle-static-analysis-plugin/_latestVersion).
 
 ## Roadmap
+
 This project is routinely used by many Novoda projects and by other external projects with no known critical issues.
 
 Future improvements and new tool integrations can be found on the repository's
