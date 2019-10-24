@@ -16,7 +16,15 @@ final class TestProjectRule<T extends TestProject> implements TestRule {
     }
 
     static TestProjectRule<TestAndroidProject> forAndroidProject() {
-        new TestProjectRule({ new TestAndroidProject() }, { String name -> "project.android.sourceSets.$name" }, 'Android project')
+        new TestProjectRule({ new TestAndroidProject(true) }, { String name -> "project.android.sourceSets.$name" }, 'Android project')
+    }
+
+    static TestProjectRule<TestAndroidProject> forAndroidLintProject() {
+        new TestProjectRule(
+            { new TestAndroidProject(false) },
+            { String name -> "project.android.sourceSets.$name" },
+            'Android Lint project'
+        )
     }
 
     static TestProjectRule<TestAndroidKotlinProject> forAndroidKotlinProject() {
