@@ -1,6 +1,14 @@
 Change Log
 ==========
 
+[Version 1.1](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v1.1)
+--------------------------
+
+- Add support for Ktlint Plugin: `9.0.0`. Thanks [Adam McNeilly](https://github.com/AdamMc331) for the contribution [PR#202](https://github.com/novoda/gradle-static-analysis-plugin/pull/202)
+- Update project to use Gradle 5.6.3. [PR#203](https://github.com/novoda/gradle-static-analysis-plugin/pull/203)
+  - Note: Minimum supported Gradle version is still 4.x (tested with 4.3.1)
+- Update docs [PR#194](https://github.com/novoda/gradle-static-analysis-plugin/pull/194)
+
 [Version 1.0](https://github.com/novoda/gradle-static-analysis-plugin/releases/tag/v1.0)
 --------------------------
                       
