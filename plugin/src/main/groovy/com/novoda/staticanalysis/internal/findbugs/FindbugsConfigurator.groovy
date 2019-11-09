@@ -2,7 +2,6 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.CollectViolationsTask
 import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
@@ -87,7 +86,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
             task.description = "Run FindBugs analysis for ${variant.name} classes"
             task.source = androidSourceDirs
-            task.classpath = variant.javaCompile.classpath
+            task.classpath = javaCompile(variant).classpath
             task.extraArgs '-auxclasspath', androidJar
             task.conventionMapping.map("classes") {
                 List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
