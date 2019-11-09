@@ -144,20 +144,6 @@ class SpotBugsIntegrationTest {
     }
 
     @Test
-    void shouldNotFailBuildWhenSpotBugsIsConfiguredMultipleTimes() {
-        createProjectWith()
-                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
-                .withPenalty('none')
-                .withToolsConfig("""
-                    spotbugs { }
-                    spotbugs {
-                        effort = "max"
-                    }
-                """)
-                .build('check')
-    }
-
-    @Test
     void shouldBeUpToDateWhenCheckTaskRunsAgain() {
         def project = createProjectWith()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)

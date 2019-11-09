@@ -23,6 +23,7 @@ repositories {
 }
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt' // adding kapt since we face compat issues before
 apply plugin: 'com.novoda.static-analysis'
 
 android {

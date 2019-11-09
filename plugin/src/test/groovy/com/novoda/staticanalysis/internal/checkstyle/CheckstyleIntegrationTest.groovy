@@ -229,22 +229,6 @@ public class CheckstyleIntegrationTest {
                 result.buildFileUrl('reports/checkstyle/main.html'))
     }
 
-    @Test
-    void shouldNotFailBuildWhenCheckstyleIsConfiguredMultipleTimes() {
-        projectRule.newProject()
-                .withSourceSet('main', Fixtures.Checkstyle.SOURCES_WITH_WARNINGS)
-                .withPenalty('none')
-                .withToolsConfig("""  
-                    checkstyle {
-                        configFile new File('${Fixtures.Checkstyle.MODULES.path}') 
-                    }
-                    checkstyle {
-                        ignoreFailures = false
-                    }  
-                """)
-                .build('check', '--dry-run')
-    }
-
     private static String checkstyle(String configFile, String... configs) {
         """checkstyle {
             ${configFile}

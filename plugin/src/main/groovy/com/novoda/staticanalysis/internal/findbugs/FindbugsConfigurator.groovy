@@ -7,8 +7,8 @@ import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
 import org.gradle.api.plugins.quality.FindBugs
 import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
@@ -98,7 +98,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getAndroidClasses(javaCompile, List<String> includes) {
-        includes.isEmpty() ? project.files() : project.fileTree(javaCompile.destinationDir).include(includes) as ConfigurableFileTree
+        includes.isEmpty() ? project.files() : project.fileTree(javaCompile.destinationDir).include(includes) as FileCollection
     }
 
     @Override
@@ -139,10 +139,10 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection createClassesTreeFrom(SourceSet sourceSet, List<String> includes) {
-        return sourceSet.output.classesDirs.inject(null) { ConfigurableFileTree cumulativeTree, File classesDir ->
+        return sourceSet.output.classesDirs.inject(null) { FileTree cumulativeTree, File classesDir ->
             def tree = project.fileTree(classesDir)
                     .builtBy(sourceSet.output)
-                    .include(includes) as ConfigurableFileTree
+                    .include(includes) as FileCollection
             cumulativeTree?.plus(tree) ?: tree
         }
     }

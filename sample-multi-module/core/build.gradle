@@ -1,12 +1,13 @@
 apply plugin: 'java-library'
 apply plugin: 'kotlin'
+apply plugin: 'kotlin-kapt'
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+dependencies {                
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
 
 compileKotlin {
