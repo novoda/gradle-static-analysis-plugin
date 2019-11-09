@@ -12,16 +12,19 @@ import org.gradle.api.file.FileTree
 import org.gradle.api.plugins.quality.FindBugs
 import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
+import org.gradle.util.DeprecationLogger
 
 import java.nio.file.Path
 
 import static com.novoda.staticanalysis.internal.TasksCompat.configureNamed
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
+@Deprecated
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
     protected boolean htmlReportEnabled = true
 
+    @Deprecated
     static FindbugsConfigurator create(Project project,
                                        NamedDomainObjectContainer<Violations> violationsContainer,
                                        Task evaluateViolations) {
@@ -66,6 +69,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     @Override
     protected void configureAndroidWithVariants(DomainObjectSet variants) {
         if (configured) return
+        logDeprecatedMessage()
 
         variants.all { configureVariant(it) }
         variantFilter.filteredTestVariants.all { configureVariant(it) }
@@ -103,6 +107,9 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     @Override
     protected void configureJavaProject() {
+        if (!configured) {
+            logDeprecatedMessage()
+        }
         super.configureJavaProject()
         project.afterEvaluate {
             project.sourceSets.each { SourceSet sourceSet ->
@@ -172,7 +179,6 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         }
     }
 
-
     private void createHtmlReportTask(String taskName) {
         createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->
             def findbugs = project.tasks[taskName] as FindBugs
@@ -185,5 +191,14 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     private def getAndroidJar() {
         "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
+    }
+
+    private def logDeprecatedMessage() {
+        DeprecationLogger.nagUserWith(
+                "Novoda Static Analysis Plugin Findbugs support is deprecated.",
+                "This is scheduled to be removed in version 2.0",
+                "Please use SpotBugs instead. https://github.com/novoda/gradle-static-analysis-plugin/blob/master/docs/tools/spotbugs.md",
+                null
+        )
     }
 }
