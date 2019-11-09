@@ -15,6 +15,7 @@ Enabling and configuring PMD for a project is done through the `pmd` closure:
 ```gradle
 pmd {
     toolVersion // A string, as per https://pmd.github.io/pmd-6.0.1/pmd_release_notes.html, e.g., '6.0.1'
+    incrementalAnalysis = true // Available as of Gradle 5.6
     exclude // A fileTree, such as project.fileTree('src/test/java') to exclude Java unit tests
     ruleSetFiles // A set of files containing PMD rulesets, e.g., rootProject.files('team-props/static-analysis/pmd-rules.xml')
     ruleSets = []   // Note: this is a workaround to make the <exclude-pattern>s in pmd-rules.xml actually work
