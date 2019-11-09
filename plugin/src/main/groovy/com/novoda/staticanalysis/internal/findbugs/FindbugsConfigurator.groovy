@@ -86,7 +86,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
             task.description = "Run FindBugs analysis for ${variant.name} classes"
             task.source = androidSourceDirs
-            task.classpath = variant.javaCompile.classpath
+            task.classpath = javaCompile(variant).classpath
             task.extraArgs '-auxclasspath', androidJar
             task.conventionMapping.map("classes") {
                 List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
