@@ -21,7 +21,7 @@ The plugin supports various static analysis tools for Java, Kotlin and Android p
 
  * [`Checkstyle`](docs/tools/checkstyle.md)
  * [`PMD`](docs/tools/pmd.md)
- * [`FindBugs`](docs/tools/findbugs.md)
+ * [`FindBugs`](docs/tools/findbugs.md) [DEPRECATED] [Removed in Gradle 6.0]
  * [`SpotBugs`](docs/tools/spotbugs.md)
  * [`Detekt`](docs/tools/detekt.md)
  * [`Android Lint`](docs/tools/android_lint.md)
@@ -52,7 +52,7 @@ buildscript {
        jcenter()
     }
     dependencies {
-        classpath 'com.novoda:gradle-static-analysis-plugin:1.1'
+        classpath 'com.novoda:gradle-static-analysis-plugin:1.2'
     }
 }
 
@@ -63,7 +63,7 @@ or from the [Gradle Plugins Repository](https://plugins.gradle.org/):
 
 ```gradle
 plugins {
-    id 'com.novoda.static-analysis' version '1.1'
+    id 'com.novoda.static-analysis' version '1.2'
 }
 
 ```

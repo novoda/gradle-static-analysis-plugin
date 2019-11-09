@@ -1,4 +1,7 @@
-# Findbugs
+# Findbugs [DEPRECATED]
+
+**Disclaimer:** FindBugs is completely removed as of Gradle 6.0 and replaced by [`SpotBugs`](/docs/tools/spotbugs.md). FindBugs support in Static Analysis Plugin is now deprecated and will be removed in the next major version. 
+
 [Findbugs](http://findbugs.sourceforge.net/) is a static analysis tool that looks for potential bugs in Java code. It does not support Kotlin.
 It can be used in both pure Java, and Android Java projects. It then only makes sense to have Findbugs enabled if you have Java code in your project.
 The plugin only runs Findbugs on projects that contain the Java or the Android plugin.
