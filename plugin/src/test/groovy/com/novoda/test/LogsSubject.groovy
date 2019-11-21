@@ -17,6 +17,7 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
     private static final String CHECKSTYLE_VIOLATIONS_FOUND = 'Checkstyle violations found'
     private static final String PMD_VIOLATIONS_FOUND = 'PMD violations found'
     private static final String FINDBUGS_VIOLATIONS_FOUND = 'Findbugs violations found'
+    private static final String SPOTBUGS_VIOLATIONS_FOUND = 'SpotBugs violations found'
     private static final String DETEKT_VIOLATIONS_FOUND = 'Detekt violations found'
     private static final String KTLINT_VIOLATIONS_FOUND = 'ktlint violations found'
     private static final String LINT_VIOLATIONS_FOUND = 'Lint violations found'
@@ -68,6 +69,10 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
         outputSubject.doesNotContain(FINDBUGS_VIOLATIONS_FOUND)
     }
 
+    public void doesNotContainSpotBugsViolations() {
+        outputSubject.doesNotContain(SPOTBUGS_VIOLATIONS_FOUND)
+    }
+
     public void doesNotContainDetektViolations() {
         outputSubject.doesNotContain(DETEKT_VIOLATIONS_FOUND)
     }
@@ -90,6 +95,10 @@ class LogsSubject extends Subject<LogsSubject, Logs> {
 
     public void containsFindbugsViolations(int errors, int warnings, String... reportUrls) {
         containsToolViolations(FINDBUGS_VIOLATIONS_FOUND, errors, warnings, reportUrls)
+    }
+
+    public void containsSpotBugsViolations(int errors, int warnings, String... reportUrls) {
+        containsToolViolations(SPOTBUGS_VIOLATIONS_FOUND, errors, warnings, reportUrls)
     }
 
     public void containsDetektViolations(int errors, int warnings, String... reportUrls) {

@@ -2,27 +2,29 @@ package com.novoda.staticanalysis.internal.findbugs
 
 import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
-import com.novoda.staticanalysis.internal.CollectViolationsTask
 import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.file.ConfigurableFileTree
 import org.gradle.api.file.FileCollection
+import org.gradle.api.file.FileTree
 import org.gradle.api.plugins.quality.FindBugs
 import org.gradle.api.plugins.quality.FindBugsExtension
 import org.gradle.api.tasks.SourceSet
+import org.gradle.util.DeprecationLogger
 
 import java.nio.file.Path
 
 import static com.novoda.staticanalysis.internal.TasksCompat.configureNamed
 import static com.novoda.staticanalysis.internal.TasksCompat.createTask
 
+@Deprecated
 class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExtension> {
 
     protected boolean htmlReportEnabled = true
 
+    @Deprecated
     static FindbugsConfigurator create(Project project,
                                        NamedDomainObjectContainer<Violations> violationsContainer,
                                        Task evaluateViolations) {
@@ -67,6 +69,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     @Override
     protected void configureAndroidWithVariants(DomainObjectSet variants) {
         if (configured) return
+        logDeprecatedMessage()
 
         variants.all { configureVariant(it) }
         variantFilter.filteredTestVariants.all { configureVariant(it) }
@@ -87,7 +90,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
             List<File> androidSourceDirs = variant.sourceSets.collect { it.javaDirectories }.flatten()
             task.description = "Run FindBugs analysis for ${variant.name} classes"
             task.source = androidSourceDirs
-            task.classpath = variant.javaCompile.classpath
+            task.classpath = javaCompile(variant).classpath
             task.extraArgs '-auxclasspath', androidJar
             task.conventionMapping.map("classes") {
                 List<String> includes = createIncludePatterns(task.source, androidSourceDirs)
@@ -99,11 +102,14 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection getAndroidClasses(javaCompile, List<String> includes) {
-        includes.isEmpty() ? project.files() : project.fileTree(javaCompile.destinationDir).include(includes) as ConfigurableFileTree
+        includes.isEmpty() ? project.files() : project.fileTree(javaCompile.destinationDir).include(includes) as FileCollection
     }
 
     @Override
     protected void configureJavaProject() {
+        if (!configured) {
+            logDeprecatedMessage()
+        }
         super.configureJavaProject()
         project.afterEvaluate {
             project.sourceSets.each { SourceSet sourceSet ->
@@ -140,10 +146,10 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
     }
 
     private FileCollection createClassesTreeFrom(SourceSet sourceSet, List<String> includes) {
-        return sourceSet.output.classesDirs.inject(null) { ConfigurableFileTree cumulativeTree, File classesDir ->
+        return sourceSet.output.classesDirs.inject(null) { FileTree cumulativeTree, File classesDir ->
             def tree = project.fileTree(classesDir)
                     .builtBy(sourceSet.output)
-                    .include(includes) as ConfigurableFileTree
+                    .include(includes) as FileCollection
             cumulativeTree?.plus(tree) ?: tree
         }
     }
@@ -173,7 +179,6 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
         }
     }
 
-
     private void createHtmlReportTask(String taskName) {
         createTask(project, "generate${taskName.capitalize()}HtmlReport", GenerateFindBugsHtmlReport) { GenerateFindBugsHtmlReport task ->
             def findbugs = project.tasks[taskName] as FindBugs
@@ -186,5 +191,14 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     private def getAndroidJar() {
         "${project.android.sdkDirectory}/platforms/${project.android.compileSdkVersion}/android.jar"
+    }
+
+    private def logDeprecatedMessage() {
+        DeprecationLogger.nagUserWith(
+                "Novoda Static Analysis Plugin Findbugs support is deprecated.",
+                "This is scheduled to be removed in version 2.0",
+                "Please use SpotBugs instead. https://github.com/novoda/gradle-static-analysis-plugin/blob/master/docs/tools/spotbugs.md",
+                null
+        )
     }
 }

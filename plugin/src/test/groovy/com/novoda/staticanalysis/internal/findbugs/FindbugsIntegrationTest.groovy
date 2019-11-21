@@ -347,20 +347,6 @@ class FindbugsIntegrationTest {
     }
 
     @Test
-    void shouldNotFailBuildWhenFindbugsIsConfiguredMultipleTimes() {
-        projectRule.newProject()
-                .withSourceSet('main', SOURCES_WITH_LOW_VIOLATION)
-                .withPenalty('none')
-                .withToolsConfig("""
-                    findbugs { }
-                    findbugs {
-                        ignoreFailures = false
-                    }
-                """)
-                .build('check')
-    }
-
-    @Test
     void shouldBeUpToDateWhenCheckTaskRunsAgain() {
         def project = projectRule.newProject()
                 .withSourceSet('debug', SOURCES_WITH_LOW_VIOLATION, SOURCES_WITH_MEDIUM_VIOLATION)
@@ -395,7 +381,7 @@ class FindbugsIntegrationTest {
      * The custom task created in the snippet below will check whether {@code Findbugs} tasks with
      * empty {@code source} will have empty {@code classes} too. </p>
      */
-    private String addCheckFindbugsClassesTask() {
+    private static String addCheckFindbugsClassesTask() {
         '''
         project.task('checkFindbugsClasses') {
             dependsOn project.tasks.findByName('evaluateViolations')

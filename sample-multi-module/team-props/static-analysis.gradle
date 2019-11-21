@@ -1,6 +1,7 @@
 apply plugin: 'com.novoda.static-analysis'
 apply plugin: 'io.gitlab.arturbosch.detekt'
 apply plugin: 'org.jlleitschuh.gradle.ktlint'
+apply plugin: 'com.github.spotbugs'
 
 staticAnalysis {
 
@@ -23,6 +24,11 @@ staticAnalysis {
 
     findbugs {
         toolVersion '3.0.1'
+        excludeFilter rootProject.file('team-props/findbugs-excludes.xml')
+        includeVariants { variant -> variant.name.contains('debug') }
+    }
+
+    spotbugs {
         excludeFilter rootProject.file('team-props/findbugs-excludes.xml')
         includeVariants { variant -> variant.name.contains('debug') }
     }
