@@ -4,7 +4,6 @@ import com.novoda.staticanalysis.Violations
 import com.novoda.staticanalysis.internal.CodeQualityConfigurator
 import org.gradle.api.Action
 import org.gradle.api.DomainObjectSet
-import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
@@ -24,17 +23,7 @@ class FindbugsConfigurator extends CodeQualityConfigurator<FindBugs, FindBugsExt
 
     protected boolean htmlReportEnabled = true
 
-    @Deprecated
-    static FindbugsConfigurator create(Project project,
-                                       NamedDomainObjectContainer<Violations> violationsContainer,
-                                       Task evaluateViolations) {
-        Violations violations = violationsContainer.maybeCreate('Findbugs')
-        return new FindbugsConfigurator(project, violations, evaluateViolations)
-    }
-
-    private FindbugsConfigurator(Project project,
-                                 Violations violations,
-                                 Task evaluateViolations) {
+    FindbugsConfigurator(Project project, Violations violations, Task evaluateViolations) {
         super(project, violations, evaluateViolations)
     }
 

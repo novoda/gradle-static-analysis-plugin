@@ -3,7 +3,7 @@ package com.novoda.staticanalysis
 import com.novoda.staticanalysis.internal.Configurator
 import com.novoda.staticanalysis.internal.checkstyle.CheckstyleConfigurator
 import com.novoda.staticanalysis.internal.detekt.DetektConfigurator
-import com.novoda.staticanalysis.internal.findbugs.FindbugsConfigurator
+import com.novoda.staticanalysis.internal.findbugs.FindbugsConfiguratorFactory
 import com.novoda.staticanalysis.internal.ktlint.KtlintConfigurator
 import com.novoda.staticanalysis.internal.lint.LintConfigurator
 import com.novoda.staticanalysis.internal.pmd.PmdConfigurator
@@ -42,7 +42,7 @@ class StaticAnalysisPlugin implements Plugin<Project> {
         [
                 CheckstyleConfigurator.create(project, violationsContainer, evaluateViolations),
                 PmdConfigurator.create(project, violationsContainer, evaluateViolations),
-                FindbugsConfigurator.create(project, violationsContainer, evaluateViolations),
+                FindbugsConfiguratorFactory.create(project, violationsContainer, evaluateViolations),
                 SpotBugsConfigurator.create(project, violationsContainer, evaluateViolations),
                 DetektConfigurator.create(project, violationsContainer, evaluateViolations),
                 KtlintConfigurator.create(project, violationsContainer, evaluateViolations),
