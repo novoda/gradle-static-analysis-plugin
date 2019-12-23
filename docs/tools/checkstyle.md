@@ -21,11 +21,11 @@ checkstyle {
 }
 ```
 
-(assuming you're using the Novoda scaffolding system, see [Example configurations](#example-configurations) for more details)
-
 You can have multiple `exclude` statements.
 
-For more informations about Checkstyle rules, refer to the [official website](http://checkstyle.sourceforge.net/checks.html).
+For more information about `checkstyle {}` Gradle properties, refer to [official Gradle docs](https://docs.gradle.org/current/dsl/org.gradle.api.plugins.quality.CheckstyleExtension.html).
+
+For more information about **Checkstyle rules**, refer to the [official website](http://checkstyle.sourceforge.net/checks.html).
 
 ## Checkstyle in mixed-language projects
 If your project mixes Java and Kotlin code, you most likely want to have an exclusion in place for all `*.kt` files. You can use the `exclude`
