@@ -4,7 +4,7 @@ does not support Java. It can be used in both pure Kotlin, and Android Kotlin pr
 have Kotlin code in your project. The plugin only runs Detekt on projects that contain the Kotlin or the Kotlin-Android plugin.
 
 > Supported Detekt Gradle Plugin version: **1.0.0.RC9.2 and above** 
-> Recommended Detekt Gradle Plugin version: **1.0.0-RC14 and above** 
+> Last tested Detekt Gradle Plugin version: **1.3.1**
 
 ## Table of contents
  * [IMPORTANT: setup Detekt](#important-setup-detekt)

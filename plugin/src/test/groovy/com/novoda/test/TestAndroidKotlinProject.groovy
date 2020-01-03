@@ -42,7 +42,12 @@ android {
         ${formatSourceSets(project)}
     }
     ${project.additionalAndroidConfig}
+}         
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.3.21'
 }
+
 ${formatExtension(project)}
 """
     }

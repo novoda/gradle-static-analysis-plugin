@@ -1,27 +1,4 @@
-autoCorrect: true
-failFast: false
-
-test-pattern: # Configure exclusions for test sources
-  active: true
-  patterns: # Test file regexes
-    - '.*/test/.*'
-    - '.*Test.kt'
-    - '.*Spec.kt'
-  exclude-rule-sets:
-     - 'comments'
-  exclude-rules:
-    - 'NamingRules'
-    - 'WildcardImport'
-    - 'MagicNumber'
-    - 'MaxLineLength'
-    - 'LateinitUsage'
-    - 'StringLiteralDuplication'
-    - 'SpreadOperator'
-    - 'TooManyFunctions'
-
 build:
-  warningThreshold: 5
-  failThreshold: 10
   weights:
     complexity: 2
     formatting: 1
@@ -33,12 +10,6 @@ processors:
 
 console-reports:
   active: false
-
-output-reports:
-  active: true
-  exclude:
-  #  - 'PlainOutputReport'
-  #  - 'XmlOutputReport'
 
 comments:
   active: true
@@ -158,23 +129,8 @@ exceptions:
     active: false
   TooGenericExceptionCaught:
     active: true
-    exceptions:
-     - ArrayIndexOutOfBoundsException
-     - Error
-     - Exception
-     - IllegalMonitorStateException
-     - NullPointerException
-     - IndexOutOfBoundsException
-     - RuntimeException
-     - Throwable
   TooGenericExceptionThrown:
     active: true
-    exceptions:
-     - Error
-     - Exception
-     - NullPointerException
-     - Throwable
-     - RuntimeException
 
 naming:
   active: true
@@ -312,8 +268,6 @@ style:
     active: true
   OptionalAbstractKeyword:
     active: true
-  OptionalReturnKeyword:
-    active: false
   OptionalUnit:
     active: false
   OptionalWhenBraces:

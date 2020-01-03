@@ -18,7 +18,7 @@ class DetektConfigurator implements Configurator {
     private static final String DETEKT_NOT_APPLIED = 'The Detekt plugin is configured but not applied. Please apply the plugin in your build script.\nFor more information see https://github.com/arturbosch/detekt.'
     private static final String XML_REPORT_NOT_ENABLED = 'XML report must be enabled. Please make sure to enable "reports.xml" in your Detekt configuration'
 
-    private static final String LAST_COMPATIBLE_DETEKT_VERSION = '1.0.0-RC14'
+    private static final String LAST_COMPATIBLE_DETEKT_VERSION = '1.3.1'
     private static final String MIN_COMPATIBLE_DETEKT_VERSION = '1.0.0.RC9.2' // Do not forget to update detekt.md
     private static final String DETEKT_CONFIGURATION_ERROR = """\
 A problem occurred while configuring Detekt. Please make sure to use a compatible version:

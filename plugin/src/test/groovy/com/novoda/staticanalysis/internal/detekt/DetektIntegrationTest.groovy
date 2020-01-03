@@ -21,17 +21,14 @@ class DetektIntegrationTest {
         return [
                 [TestProjectRule.forKotlinProject(), "1.0.0.RC9.2"],
                 [TestProjectRule.forAndroidKotlinProject(), "1.0.0.RC9.2"],
-                [TestProjectRule.forKotlinProject(), "1.0.0-RC10"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC10"],
-                [TestProjectRule.forKotlinProject(), "1.0.0-RC11"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC11"],
-                [TestProjectRule.forKotlinProject(), "1.0.0-RC12"],
-                [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC12"],
-                // Work fine but requires Gradle 5.x to run
-                // [TestProjectRule.forKotlinProject(), "1.0.0-RC13"],
-                // [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC13"],
-                // [TestProjectRule.forKotlinProject(), "1.0.0-RC14"],
-                // [TestProjectRule.forAndroidKotlinProject(), "1.0.0-RC14"],
+                [TestProjectRule.forKotlinProject(), "1.0.1"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.0.1"],
+                [TestProjectRule.forKotlinProject(), "1.1.1"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.1.1"],
+                [TestProjectRule.forKotlinProject(), "1.2.2"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.2.2"],
+                [TestProjectRule.forKotlinProject(), "1.3.1"],
+                [TestProjectRule.forAndroidKotlinProject(), "1.3.1"],
         ]*.toArray()
     }
 
