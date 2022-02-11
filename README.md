@@ -1,4 +1,8 @@
-# Gradle static analysis plugin
+# [DEPRECATED] Gradle static analysis plugin
+
+> :warning: A fork of this project is maintained at https://github.com/GradleUp/static-analysis-plugin/
+> Please migrate by using `com.gradleup.static-analysis` plugin id instead.
+
 [![](https://ci.novoda.com/buildStatus/icon?job=gradle-static-analysis-plugin)](https://ci.novoda.com/job/gradle-static-analysis-plugin/lastSuccessfulBuild) [![](https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg)](LICENSE.txt) [![Bintray](https://api.bintray.com/packages/novoda-oss/maven/gradle-static-analysis-plugin/images/download.svg)](https://bintray.com/novoda-oss/maven/gradle-static-analysis-plugin/_latestVersion)
 
 A Gradle plugin to easily apply the same setup of static analysis tools across different Android, Java or Kotlin projects.
